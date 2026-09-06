@@ -201,7 +201,7 @@ export default function PortfolioPage() {
                 </div>
                 <div>
                   <p className="text-xs text-ink-muted">After correlation</p>
-                  <p className="font-display text-2xl" style={{ color: "var(--sand)" }}>
+                  <p className="font-display text-2xl" style={{ color: "var(--warn-ink)" }}>
                     {analyse.data.diversification.correlation_adjusted !== null
                       ? analyse.data.diversification.correlation_adjusted.toFixed(2)
                       : "—"}

@@ -113,7 +113,7 @@ export default function MethodologyPage() {
           <Card>
             <p className="text-sm text-ink-secondary">{method.body}</p>
             {method.caveat ? (
-              <p className="mt-2 text-xs" style={{ color: "var(--sand)" }}>
+              <p className="mt-2 text-xs" style={{ color: "var(--warn-ink)" }}>
                 {method.caveat}
               </p>
             ) : null}

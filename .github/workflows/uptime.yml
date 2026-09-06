@@ -1,0 +1,117 @@
+name: Uptime
+
+# Nothing was watching the deployment. An outage would have lasted until someone happened to open
+# the site — which for a project shown to an examiner means finding out during the demo.
+#
+# Actions minutes are free on a public repository, so a check every half hour costs nothing. It
+# opens an issue rather than sending mail: the repository is where the record belongs, and an
+# issue is closed by the fix rather than dismissed by the reader.
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Probe the API
+        id: probe
+        run: |
+          set +e
+          API="${{ vars.API_URL || 'https://yieldmap-api.onrender.com' }}"
+          # The free instance sleeps after 15 minutes and takes about 50 seconds to wake, so a
+          # short timeout would report an outage every time nobody had visited. 90s distinguishes
+          # "asleep" from "down"; the wake time itself is recorded because it is what a first
+          # visitor actually experiences.
+          start=$(date +%s)
+          body=$(curl -sS --max-time 90 -w '\n%{http_code}' "$API/health")
+          code=$(printf '%s' "$body" | tail -1)
+          elapsed=$(( $(date +%s) - start ))
+
+          echo "status=$code" >> "$GITHUB_OUTPUT"
+          echo "seconds=$elapsed" >> "$GITHUB_OUTPUT"
+          echo "url=$API" >> "$GITHUB_OUTPUT"
+          printf '%s\n' "$body" | head -n -1 > /tmp/health.json
+          cat /tmp/health.json
+
+          if [ "$code" != "200" ]; then
+            echo "down=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # A 200 is not enough: the service answers before its database is loaded, and a healthy
+          # shell serving no data is the failure most likely to go unnoticed.
+          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          import json
+          h = json.load(open("/tmp/health.json"))
+          problems = []
+          if not h.get("database", {}).get("present"):
+              problems.append("the analytics database is not loaded")
+          if not h.get("auth", {}).get("configured"):
+              problems.append("authentication is not configured, so writes are unreachable")
+          print(f"degraded={'true' if problems else 'false'}")
+          print(f"problems={'; '.join(problems)}")
+          PY
+
+      - name: Open an issue when it is down
+        if: steps.probe.outputs.down == 'true' || steps.probe.outputs.degraded == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { status, seconds, url, problems, down } = ${{ toJSON(steps.probe.outputs) }};
+            const title = down === 'true'
+              ? `API unreachable (HTTP ${status})`
+              : `API degraded: ${problems}`;
+
+            // One open issue per condition, reopened rather than duplicated: a probe every half
+            // hour would otherwise file forty-eight issues for one outage.
+            const existing = await github.rest.issues.listForRepo({
+              owner: context.repo.owner, repo: context.repo.repo,
+              state: 'open', labels: 'uptime',
+            });
+            const match = existing.data.find(i => i.title === title);
+            if (match) {
+              core.info(`already open: #${match.number}`);
+              return;
+            }
+            await github.rest.issues.create({
+              owner: context.repo.owner, repo: context.repo.repo,
+              title,
+              labels: ['uptime'],
+              body: [
+                `\`${url}/health\` answered **${status}** after ${seconds}s.`,
+                problems ? `\nWhat is wrong: ${problems}` : '',
+                '\nRunbook: [`docs/runbook.md`](../blob/main/docs/runbook.md)',
+                `\nChecked by [this run](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}).`,
+              ].join('\n'),
+            });
+
+      - name: Close the issue when it recovers
+        if: steps.probe.outputs.down != 'true' && steps.probe.outputs.degraded != 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const open = await github.rest.issues.listForRepo({
+              owner: context.repo.owner, repo: context.repo.repo,
+              state: 'open', labels: 'uptime',
+            });
+            for (const issue of open.data) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner, repo: context.repo.repo,
+                issue_number: issue.number,
+                body: `Recovered: \`/health\` answered 200 in ${{ steps.probe.outputs.seconds }}s.`,
+              });
+              await github.rest.issues.update({
+                owner: context.repo.owner, repo: context.repo.repo,
+                issue_number: issue.number, state: 'closed',
+              });
+            }

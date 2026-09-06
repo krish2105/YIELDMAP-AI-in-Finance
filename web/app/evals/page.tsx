@@ -45,7 +45,7 @@ export default function EvalsPage() {
   if (!report.data) return null;
 
   const data = report.data;
-  const gate = (met: boolean) => (met ? "var(--teal-ink)" : "var(--sand)");
+  const gate = (met: boolean) => (met ? "var(--teal-ink)" : "var(--warn-ink)");
 
   return (
     <>
@@ -80,14 +80,14 @@ export default function EvalsPage() {
             <p className="text-xs uppercase tracking-wide text-ink-muted">Retrieval</p>
             <p className="mt-1 font-display text-lg text-ink">{data.retrieval_backend ?? "—"}</p>
             {data.degraded ? (
-              <p className="text-xs" style={{ color: "var(--sand)" }}>
+              <p className="text-xs" style={{ color: "var(--warn-ink)" }}>
                 degraded
               </p>
             ) : null}
           </Card>
         </div>
         {data.caveat ? (
-          <p className="mt-2 text-xs" style={{ color: "var(--sand)" }}>
+          <p className="mt-2 text-xs" style={{ color: "var(--warn-ink)" }}>
             {data.caveat}
           </p>
         ) : null}

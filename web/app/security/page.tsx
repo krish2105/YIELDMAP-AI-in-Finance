@@ -48,7 +48,7 @@ function Stat({ label, value, tone }: { label: string; value: string; tone?: "go
       <p
         className="mt-1 font-display text-2xl tabular-nums text-ink"
         style={
-          tone ? { color: tone === "good" ? "var(--teal-ink)" : "var(--sand)" } : undefined
+          tone ? { color: tone === "good" ? "var(--teal-ink)" : "var(--warn-ink)" } : undefined
         }
       >
         {value}

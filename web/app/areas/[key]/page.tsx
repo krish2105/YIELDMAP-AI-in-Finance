@@ -155,7 +155,7 @@ export default function AreaPage({ params }: { params: Promise<{ key: string }> 
                   className="rounded-lg px-3 py-2 text-xs"
                   style={{
                     background: "var(--bg-sunken)",
-                    color: forecast.beats_naive ? "var(--teal-ink)" : "var(--sand)",
+                    color: forecast.beats_naive ? "var(--teal-ink)" : "var(--warn-ink)",
                   }}
                 >
                   {forecast.beats_naive

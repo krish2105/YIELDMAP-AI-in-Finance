@@ -85,7 +85,7 @@ export default function AreasPage() {
                           {area.coord_confidence ?? "mapped"}
                         </span>
                       ) : (
-                        <span style={{ color: "var(--sand)" }}>no centroid</span>
+                        <span style={{ color: "var(--warn-ink)" }}>no centroid</span>
                       )}
                     </td>
                   </tr>

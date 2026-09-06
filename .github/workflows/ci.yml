@@ -92,6 +92,12 @@ jobs:
       - run: npm run typecheck
       - run: npm test
 
+      - name: Palette
+        # Colourblind separation and contrast, computed from the palette that ships rather than
+        # judged by eye. The validator is the dataviz reference implementation.
+        run: npm run palette
+
+
   docs:
     runs-on: ubuntu-latest
     steps:
@@ -136,3 +142,41 @@ jobs:
       - name: Secrets are not committed
         # The one audit finding that must block: a key in the tree cannot be un-leaked.
         run: uv run python scripts/scan_secrets.py
+
+  measure:
+    # Its own job because it needs both halves: a browser to render in and the API to answer.
+    # Frame rate and accessibility were targets the plan set and nothing measured — the one place
+    # this project was not applying its own rule to itself.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - run: uv python install 3.12
+      - run: uv sync
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+
+      - name: Build the warehouse
+        run: uv run python -m scripts.build_all --synthetic
+
+      - name: Frame rate and accessibility
+        # axe found seven serious contrast failures the first time it ran, all from one token used
+        # for every hint, caption and sample-size chip in the interface.
+        run: npm run e2e:measure
+
+      - name: Publish what was measured
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: measurements
+          path: |
+            docs/results/fps_*.json
+            docs/results/accessibility_*.json
+            docs/results/palette.json
+          if-no-files-found: warn

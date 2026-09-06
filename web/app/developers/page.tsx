@@ -73,7 +73,7 @@ export default function DevelopersPage() {
             </Card>
           ))}
         </div>
-        <p className="mt-2 text-xs" style={{ color: "var(--sand)" }}>
+        <p className="mt-2 text-xs" style={{ color: "var(--warn-ink)" }}>
           Limitation: {developers.data.limitation}.
         </p>
       </Section>

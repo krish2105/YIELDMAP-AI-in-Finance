@@ -1,0 +1,11 @@
+{
+  "provenance": "REAL",
+  "note": "axe-core against WCAG 2.1 A and AA on seven representative pages. Automated checks find roughly a third of real accessibility problems; passing here is a floor, not a claim of compliance.",
+  "project": "desktop",
+  "pages": 7,
+  "standard": "WCAG 2.1 A + AA",
+  "violations": 0,
+  "serious_or_critical": 0,
+  "findings": [],
+  "measured_at": "2026-09-06T20:04:19.502Z"
+}

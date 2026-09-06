@@ -96,7 +96,7 @@ export default function DataPage() {
             </li>
           </ol>
           {freshness.data.warning ? (
-            <p className="mt-3 text-xs" style={{ color: "var(--sand)" }}>
+            <p className="mt-3 text-xs" style={{ color: "var(--warn-ink)" }}>
               {freshness.data.warning}
             </p>
           ) : null}

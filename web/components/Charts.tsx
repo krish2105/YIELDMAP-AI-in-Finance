@@ -383,7 +383,15 @@ export function DataTable({
   caption?: string;
 }) {
   return (
-    <div className="overflow-x-auto rounded-lg border border-line">
+    // tabindex and a role, because a region that scrolls must be focusable: without them a
+    // keyboard user cannot scroll a wide table sideways, and the columns past the fold are
+    // simply unreachable. axe flags this as `scrollable-region-focusable`.
+    <div
+      className="overflow-x-auto rounded-lg border border-line"
+      tabIndex={0}
+      role="region"
+      aria-label={caption ?? "Data table"}
+    >
       <table className="w-full text-xs">
         {caption ? <caption className="p-2 text-left text-ink-muted">{caption}</caption> : null}
         <thead className="bg-sunken">

@@ -33,12 +33,24 @@
   --bg-sunken: #ebe6da;
   --ink: #14140f;
   --ink-secondary: #4a4a41;
-  --ink-muted: #77776c;
+  /* 5.07:1 on the page, 5.44 on raised, 4.59 on sunken. Was #77776c, which measured 4.01,
+     4.30 and 3.63 — under the 4.5 AA needs for body text on every surface it is used on, and
+     it is used for every hint, caption and n= chip in the interface. axe found 39 failing
+     nodes on the landing page alone. */
+  --ink-muted: #67675c;
   --line: #d9d3c4;
   --line-strong: #bdb5a1;
   --teal: #1baf7a;
   --teal-ink: #0f6f4d;
-  --sand: #a97f12;
+  /* 3.53:1 on the page, 3.19 on sunken — clears the 3:1 a border or a chart mark needs on
+     every surface. #a97f12 measured 2.94 on sunken, which is a shape whose edge disappears
+     against the one background it most often sits on. */
+  --sand: #a2790f;
+  /* The same warning, dark enough to be read as text. `--sand` is a mark colour: it carries
+     borders and fills, where 3:1 is the bar, and it measures 3.48:1 on raised — fine behind a
+     shape, a failure in front of one. Splitting them is the dataviz rule that text wears a
+     text token and never the series colour. 5.54:1 on raised, 4.68 on sunken. */
+  --warn-ink: #8f5908;
   --surface-chart: #fcfcfb;
   --shadow: 0 1px 2px rgb(20 20 15 / 0.06), 0 8px 24px -12px rgb(20 20 15 / 0.14);
 }
@@ -56,12 +68,18 @@
     --bg-sunken: #0d0d0f;
     --ink: #f2f1ec;
     --ink-secondary: #b6b5ad;
-    --ink-muted: #85847d;
+    /* 6.01:1 on the page. The old #85847d passed, but only just on raised (4.52), which is
+       no margin at all for a token this widely used. */
+    --ink-muted: #94938b;
     --line: #2c2c31;
     --line-strong: #43434a;
     --teal: #199e70;
     --teal-ink: #5fd3a8;
     --sand: #c98500;
+  --warn-ink: #c98500;
+    /* Already 5.53:1 on raised, so the mark colour is legible as text in this theme and the
+       two tokens coincide. Kept separate so a change to one cannot silently break the other. */
+    --warn-ink: #c98500;
     --surface-chart: #1a1a19;
     --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 12px 32px -16px rgb(0 0 0 / 0.7);
   }
@@ -74,12 +92,13 @@
   --bg-sunken: #0d0d0f;
   --ink: #f2f1ec;
   --ink-secondary: #b6b5ad;
-  --ink-muted: #85847d;
+  --ink-muted: #94938b;
   --line: #2c2c31;
   --line-strong: #43434a;
   --teal: #199e70;
   --teal-ink: #5fd3a8;
   --sand: #c98500;
+  --warn-ink: #c98500;
   --surface-chart: #1a1a19;
   --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 12px 32px -16px rgb(0 0 0 / 0.7);
 }

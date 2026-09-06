@@ -13,9 +13,12 @@
     "web:build": "npm --workspace @yieldmap/web run build",
     "web:typecheck": "npm --workspace @yieldmap/web run typecheck",
     "e2e": "playwright test",
-    "e2e:desktop": "playwright test --project=desktop"
+    "e2e:desktop": "playwright test --project=desktop",
+    "e2e:measure": "playwright test e2e/measure.spec.ts",
+    "palette": "node scripts/check_palette.mjs"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
     "@eslint/js": "^9.15.0",
     "@playwright/test": "^1.63.0",
     "eslint": "^9.15.0",

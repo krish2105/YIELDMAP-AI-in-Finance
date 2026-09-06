@@ -74,6 +74,8 @@ Every figure below is read from `docs/results/`, produced by the models in `fina
 | Journey | 34 Playwright tests green on a desktop viewport and a Pixel 7 | the full journey, on a phone |
 | Python | 703 tests | — |
 | Access control | writes need a token the API signed; the role is never something a caller sends | no credential, no write |
+| Frame rate | 60fps desktop, 61fps on a Pixel 7 — measured in software rasterisation, so a floor | 60 / 30 |
+| Accessibility | 0 violations across 7 pages, WCAG 2.1 AA, both viewports — was 7 serious | none serious |
 
 ## Running it
 
@@ -103,6 +105,7 @@ loses on restart), and `SENTRY_DSN` for error tracking. Neither is required to r
 | [`docs/pitch.md`](docs/pitch.md) | The one-page version |
 | [`docs/loading_real_data.md`](docs/loading_real_data.md) | How to replace the stand-in with the published files — one command, ten minutes |
 | [`docs/limits.md`](docs/limits.md) | What it costs, where the free tier stops, and what breaks first |
+| [`docs/runbook.md`](docs/runbook.md) | What to do when something is wrong, written for whoever gets the alert |
 | [`docs/security.md`](docs/security.md) | The OWASP ASI mapping and the red-team results, generated from the register and the last measured run |
 | [`docs/term4_yieldmap.ipynb`](docs/term4_yieldmap.ipynb) | Every model, with its plots and the tables the report cites |
 

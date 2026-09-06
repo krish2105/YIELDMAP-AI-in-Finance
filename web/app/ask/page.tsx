@@ -140,7 +140,7 @@ export default function AskPage() {
               <span>language: {ask.data.language}</span>
               {ask.data.backend ? <span>answered by: {ask.data.backend}</span> : null}
               {ask.data.degraded ? (
-                <span style={{ color: "var(--sand)" }}>running degraded</span>
+                <span style={{ color: "var(--warn-ink)" }}>running degraded</span>
               ) : null}
             </div>
 
@@ -156,7 +156,7 @@ export default function AskPage() {
               <details className="mt-3">
                 <summary
                   className="cursor-pointer text-xs"
-                  style={{ color: "var(--sand)" }}
+                  style={{ color: "var(--warn-ink)" }}
                 >
                   {ask.data.dropped_sentences.length} sentence(s) were removed for citing nothing
                 </summary>
@@ -193,7 +193,7 @@ export default function AskPage() {
                     <span className="block text-ink-muted">
                       {citation.source}
                       {citation.status && citation.status !== "verified" ? (
-                        <span style={{ color: "var(--sand)" }}> · {citation.status}</span>
+                        <span style={{ color: "var(--warn-ink)" }}> · {citation.status}</span>
                       ) : null}
                       {ask.data!.used_sources.includes(citation.n) ? null : (
                         <span> · retrieved but not used</span>
@@ -222,7 +222,7 @@ export default function AskPage() {
                     <span className="text-ink-muted">
                       {document.chunks} passages
                       {document.status !== "verified" ? (
-                        <span style={{ color: "var(--sand)" }}> · {document.status}</span>
+                        <span style={{ color: "var(--warn-ink)" }}> · {document.status}</span>
                       ) : null}
                     </span>
                   </li>

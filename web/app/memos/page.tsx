@@ -145,13 +145,13 @@ export default function MemosPage() {
                   <span
                     className="text-xs"
                     style={{
-                      color: memo.citation_coverage === 1 ? "var(--teal-ink)" : "var(--sand)",
+                      color: memo.citation_coverage === 1 ? "var(--teal-ink)" : "var(--warn-ink)",
                     }}
                   >
                     {Math.round(memo.citation_coverage * 100)}% cited
                   </span>
                   {memo.blocked ? (
-                    <span className="text-xs" style={{ color: "var(--sand)" }}>
+                    <span className="text-xs" style={{ color: "var(--warn-ink)" }}>
                       withheld by the audit
                     </span>
                   ) : null}
@@ -190,9 +190,9 @@ export default function MemosPage() {
                             style={{
                               color:
                                 finding.severity === "block"
-                                  ? "var(--sand)"
+                                  ? "var(--warn-ink)"
                                   : finding.severity === "warn"
-                                    ? "var(--sand)"
+                                    ? "var(--warn-ink)"
                                     : "var(--ink-muted)",
                             }}
                           >

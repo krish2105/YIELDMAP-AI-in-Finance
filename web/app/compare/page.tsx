@@ -156,7 +156,7 @@ function CompareInner() {
           </Section>
 
           {(query.data?.areas ?? []).some((a) => !a.found) ? (
-            <p className="text-xs" style={{ color: "var(--sand)" }}>
+            <p className="text-xs" style={{ color: "var(--warn-ink)" }}>
               No recent transactions for:{" "}
               {(query.data?.areas ?? [])
                 .filter((a) => !a.found)

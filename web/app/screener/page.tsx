@@ -48,7 +48,14 @@ export default function ScreenerPage() {
       : "light";
 
   const header = (key: SortKey, label: string) => (
-    <th scope="col" className="px-3 py-2 text-right font-medium text-ink-secondary">
+    // aria-sort belongs on the columnheader. It was on the button inside it, where the attribute
+    // is not allowed and assistive technology does not look for it — so the sort state was
+    // announced to nobody.
+    <th
+      scope="col"
+      aria-sort={sort === key ? (descending ? "descending" : "ascending") : "none"}
+      className="px-3 py-2 text-right font-medium text-ink-secondary"
+    >
       <button
         type="button"
         onClick={() => {
@@ -59,7 +66,6 @@ export default function ScreenerPage() {
           }
         }}
         className="hover:text-ink"
-        aria-sort={sort === key ? (descending ? "descending" : "ascending") : "none"}
       >
         {label} {sort === key ? (descending ? "↓" : "↑") : ""}
       </button>

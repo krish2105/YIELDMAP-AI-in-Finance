@@ -16,6 +16,7 @@ const config: Config = {
         teal: "var(--teal)",
         "teal-ink": "var(--teal-ink)",
         sand: "var(--sand)",
+        "warn-ink": "var(--warn-ink)",
       },
       fontFamily: {
         display: "var(--font-display)",

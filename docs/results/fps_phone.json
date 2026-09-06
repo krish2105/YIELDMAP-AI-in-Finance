@@ -1,0 +1,15 @@
+{
+  "provenance": "REAL",
+  "note": "Frames per second counted in-page with requestAnimationFrame while the scene is being orbited. Measured in headless Chromium with SwiftShader — software rasterisation, no GPU — so this is a floor rather than what the hardware does.",
+  "project": "phone",
+  "viewport": {
+    "width": 412,
+    "height": 839
+  },
+  "renderer": "swiftshader (headless, software)",
+  "interacted": true,
+  "fps": 60,
+  "target": 30,
+  "met": true,
+  "measured_at": "2026-09-06T20:04:40.623Z"
+}

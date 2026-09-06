@@ -124,7 +124,7 @@ export default function KpiTile({
               kpi.delta.direction === "up"
                 ? "var(--teal-ink)"
                 : kpi.delta.direction === "down"
-                  ? "var(--sand)"
+                  ? "var(--warn-ink)"
                   : "var(--ink-muted)",
           }}
         >

@@ -170,7 +170,7 @@ export default function CrewPage() {
                   style={{
                     color:
                       event.kind === "error"
-                        ? "var(--sand)"
+                        ? "var(--warn-ink)"
                         : event.kind === "done"
                           ? "var(--teal-ink)"
                           : "var(--ink-muted)",
