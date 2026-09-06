@@ -1,0 +1,48 @@
+{
+  "success": true,
+  "result": {
+    "count": 2,
+    "results": [
+      {
+        "id": "6f9a1e00-0000-4000-8000-000000000001",
+        "name": "dld_transactions",
+        "title": "DLD Transactions",
+        "resources": [
+          {
+            "id": "res-1",
+            "name": "Transactions (CSV)",
+            "format": "csv",
+            "url": "https://www.dubaipulse.gov.ae/dataset/dld_transactions/resource/res-1/download/transactions.csv",
+            "size": 812345678,
+            "last_modified": "2026-09-05T02:11:00"
+          },
+          {
+            "id": "res-2",
+            "name": "Transactions data dictionary",
+            "format": "PDF",
+            "url": "https://www.dubaipulse.gov.ae/dataset/dld_transactions/resource/res-2/download/dictionary.pdf"
+          }
+        ]
+      },
+      {
+        "id": "6f9a1e00-0000-4000-8000-000000000002",
+        "name": "dld_rent_contracts",
+        "title": "DLD Rent Contracts (Ejari)",
+        "resources": [
+          {
+            "id": "res-3",
+            "name": "Rent contracts (CSV)",
+            "format": "CSV",
+            "url": "https://www.dubaipulse.gov.ae/dataset/dld_rent_contracts/resource/res-3/download/rent_contracts.csv",
+            "size": 401234567
+          },
+          {
+            "id": "res-4",
+            "name": "No url resource",
+            "format": "CSV"
+          }
+        ]
+      }
+    ]
+  }
+}
