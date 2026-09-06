@@ -34,7 +34,13 @@ Which rung a given table came from is recorded in `docs/results/provenance.json`
 | Buildings and units | DLD via Dubai Pulse | building register | Open data, attribution to DLD | recorded by the ingest job |
 
 Row counts, column lists, date ranges and null rates are measured rather than asserted — see
-`docs/results/profile.json`, produced by `etl/profile.py`.
+`docs/results/profile.json`, produced by `etl/profile.py`. The table below is generated from that
+file by the ingest job, so it cannot drift from the data.
+
+<!-- profile:start -->
+No profile has been produced yet. Run the ingest workflow (`.github/workflows/ingest.yml`); it
+writes `docs/results/profile.json` and regenerates this table.
+<!-- profile:end -->
 
 ## Reference documents (RAG corpus)
 
