@@ -36,15 +36,23 @@ Click any KPI tile and the query is right there. Cells with too few transactions
 
 | What | Where | Status |
 |---|---|---|
-| Ingest job | [Actions → Ingest DLD open data](https://github.com/krish2105/YIELDMAP-AI-in-Finance/actions/workflows/ingest.yml) | running; probe and discovery reports land in `docs/results/` |
-| Continuous integration | [Actions → CI](https://github.com/krish2105/YIELDMAP-AI-in-Finance/actions/workflows/ci.yml) | green |
-| Work in progress | [pull request #1](https://github.com/krish2105/YIELDMAP-AI-in-Finance/pull/1) | draft |
-| API | Render | from Phase C |
-| Web | Vercel | from Phase D |
+| **Web app** | https://yieldmap.vercel.app | twenty tabs, live |
+| **Analytics API** | https://yieldmap-api.onrender.com | free tier: sleeps after 15 minutes idle, so the first request takes about 50 seconds |
+| API health | https://yieldmap-api.onrender.com/health | says which database is loaded and whether it is real or generated |
+| Ingest job | [Actions → Ingest DLD open data](https://github.com/krish2105/YIELDMAP-AI-in-Finance/actions/workflows/ingest.yml) | nightly; probe and discovery reports land in `docs/results/` |
+| Continuous integration | [Actions → CI](https://github.com/krish2105/YIELDMAP-AI-in-Finance/actions/workflows/ci.yml) | four jobs: tests, web, docs, security |
+| Notebook | [`docs/term4_yieldmap.ipynb`](docs/term4_yieldmap.ipynb) | GitHub renders it with its charts |
 
-There is no site to visit yet — the web layer is Phase D. What is checkable now is the ingest
-run's job summary, which prints the reachability table for every candidate source, and
-[`docs/term4_yieldmap.ipynb`](docs/term4_yieldmap.ipynb), which GitHub renders with its charts.
+**The figures are currently generated, not real, and the site says so on every page.** The Dubai
+Land Department's open-data portal refuses automated clients from every network this project can
+reach; `docs/datasets.md` records exactly what was attempted and what each host returned. The
+stand-in is stamped `SYNTHETIC` in the database, in a banner on every page, and in every results
+file, and a check in CI blocks it from reaching any submitted artefact. Point the ingest job at a
+real drop and every number on the site changes; nothing else has to.
+
+Answers on `/ask` and memos on `/crew` run on an offline fixture backend and are marked degraded
+in the interface. That is the zero-cost default: setting `GEMINI_API_KEY` on the Render service
+switches the free model tier on with no code change.
 
 ## Measured so far
 

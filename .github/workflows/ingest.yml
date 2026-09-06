@@ -236,3 +236,27 @@ jobs:
           path: data/raw/
           if-no-files-found: ignore
           retention-days: 7
+
+      # ------------------------------------------------------- redeploy on real data
+      - name: Redeploy the API when the drop is real
+        # The deployed service rebuilds its warehouse during its own build, so it only picks up a
+        # new drop when it redeploys. Only a real drop is worth a redeploy: regenerating the
+        # stand-in produces the same rows from the same seed and would churn the service nightly
+        # for nothing.
+        #
+        # Skipped silently when RENDER_DEPLOY_HOOK is not configured, so a fork or a repository
+        # without the secret still runs the ingest rather than failing on a step it cannot do.
+        if: steps.probe.outputs.verdict == 'reachable'
+        env:
+          HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
+        run: |
+          if [ -z "${HOOK}" ]; then
+            echo "::notice::RENDER_DEPLOY_HOOK is not set; skipping the redeploy"
+            exit 0
+          fi
+          code=$(curl -sS -o /dev/null -w "%{http_code}" -X POST "${HOOK}")
+          if [ "${code}" != "200" ] && [ "${code}" != "201" ]; then
+            echo "::error::the deploy hook returned ${code}"
+            exit 1
+          fi
+          echo "redeploy requested"

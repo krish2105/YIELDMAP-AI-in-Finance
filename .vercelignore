@@ -1,0 +1,28 @@
+# Vercel builds the Next workspace in web/. Everything below is the Python half of this
+# repository or local state, and uploading it only slows the build and inflates the bundle that
+# gets traced into the serverless function.
+.venv/
+data/
+docs/
+tests/
+etl/
+finance/
+rag/
+agents/
+api/
+security/
+scripts/
+db/
+e2e/
+notebooks/
+*.duckdb
+*.parquet
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+uv.lock
+pyproject.toml
+playwright.config.ts
+
+# The web app reads config/kpi_thresholds.json at build time, so config/ is deliberately not
+# ignored: both halves of this project read the same thresholds file, which is the point of it.
