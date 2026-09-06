@@ -1,0 +1,6 @@
+{
+  "_comment": "Single source of truth for KPI confidence, read by both web/lib/kpi.ts and api/kpi.py. Keeping one file means the UI and the API can never disagree about whether a cell has enough data to show.",
+  "min_n": 5,
+  "high": { "min_n": 30, "max_cv": 0.35 },
+  "medium": { "min_n": 10, "max_cv": 0.6 }
+}
