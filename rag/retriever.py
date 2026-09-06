@@ -29,6 +29,7 @@ from pathlib import Path
 from typing import Any
 
 import numpy as np
+import regex
 
 from rag.indexer import EMBED_CACHE, Chunk, load_index
 from rag.provider import LLMProvider, ProviderUnavailable
@@ -36,7 +37,15 @@ from rag.provider import LLMProvider, ProviderUnavailable
 # The constant in reciprocal rank fusion. 60 is the value from the original paper and is not
 # sensitive; it exists to stop the top rank dominating everything below it.
 RRF_K = 60
-TOKEN = re.compile(r"[a-z0-9']+")
+
+# Tokenisation has to hold for three scripts, and the obvious patterns fail twice over.
+# `[a-z0-9]+` silently discards every Arabic and Devanagari character, turning a question asked in
+# Arabic into an empty query — the retriever then answers from whatever happened to rank first,
+# with no sign anything went wrong. Widening it to `\w` fixes Arabic but still breaks Hindi, where
+# vowel marks are combining characters that `\w` excludes, so "सर्विस" shatters into six
+# fragments. Letters, marks and digits together is the class that actually works. The eval caught
+# both, which is what it is for.
+TOKEN = regex.compile(r"[\p{L}\p{M}\p{N}]+")
 
 
 def tokenize(text: str) -> list[str]:
@@ -140,7 +149,14 @@ class OfflineEmbedder:
         from sklearn.feature_extraction.text import TfidfVectorizer
 
         self.vectorizer = TfidfVectorizer(
-            lowercase=True, stop_words="english", ngram_range=(1, 2), min_df=1
+            lowercase=True,
+            stop_words="english",
+            ngram_range=(1, 2),
+            min_df=1,
+            # scikit-learn takes a standard-library pattern, which cannot express combining
+            # marks, so tokenisation is handed to the same function the lexical index uses.
+            tokenizer=tokenize,
+            token_pattern=None,
         )
         matrix = self.vectorizer.fit_transform(texts)
         components = max(2, min(dimensions, matrix.shape[1] - 1, max(2, matrix.shape[0] - 1)))

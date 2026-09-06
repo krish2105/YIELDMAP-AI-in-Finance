@@ -29,6 +29,13 @@ jobs:
       - name: Tests
         run: uv run pytest -q
 
+      - name: Retrieval eval
+        # Gated: recall@5 at 0.80 and faithfulness at 0.90, across English, Hindi and Arabic.
+        # Runs offline against the fixture backend, so it needs no key and no quota.
+        run: |
+          uv run python -m rag.indexer
+          uv run python -m rag.evals.run --gate
+
   web:
     runs-on: ubuntu-latest
     steps:
