@@ -1,0 +1,816 @@
+{
+  "generated_at": "2026-09-06T16:05:34+00:00",
+  "provenance": "SYNTHETIC",
+  "method_id": "repeat_sales_v1",
+  "method": "Bailey-Muth-Nourse weighted least squares on period dummies",
+  "identity": "building, bedroom count and floor area, because the registry lacks a stable unit identifier on older rows",
+  "min_hold_days": 90,
+  "weighting": "inverse holding period, since a long gap accumulates more idiosyncratic noise",
+  "sql": "select ts, area_key, building_name, property_type, rooms, area_sqm, price_aed, price_per_sqm, transaction_id from transactions where price_per_sqm is not null and area_sqm is not null and property_type = 'unit' order by ts",
+  "diagnostics": {
+    "n_pairs": 5079,
+    "n_periods": 144,
+    "rank": 143,
+    "periods_dropped_as_disconnected": 0,
+    "pairs_dropped_as_disconnected": 0,
+    "r_squared": 0.26667477352939106,
+    "median_hold_days": 1302.0,
+    "thin_periods": 0
+  },
+  "annual": [
+    {
+      "year": 2014,
+      "index": 109.38,
+      "growth": null,
+      "n_pairs": 831
+    },
+    {
+      "year": 2015,
+      "index": 111.01,
+      "growth": 0.0149,
+      "n_pairs": 775
+    },
+    {
+      "year": 2016,
+      "index": 104.96,
+      "growth": -0.0545,
+      "n_pairs": 824
+    },
+    {
+      "year": 2017,
+      "index": 102.48,
+      "growth": -0.0236,
+      "n_pairs": 860
+    },
+    {
+      "year": 2018,
+      "index": 94.59,
+      "growth": -0.077,
+      "n_pairs": 803
+    },
+    {
+      "year": 2019,
+      "index": 89.71,
+      "growth": -0.0516,
+      "n_pairs": 882
+    },
+    {
+      "year": 2020,
+      "index": 83.84,
+      "growth": -0.0654,
+      "n_pairs": 879
+    },
+    {
+      "year": 2021,
+      "index": 84.85,
+      "growth": 0.012,
+      "n_pairs": 876
+    },
+    {
+      "year": 2022,
+      "index": 95.33,
+      "growth": 0.1236,
+      "n_pairs": 854
+    },
+    {
+      "year": 2023,
+      "index": 110.23,
+      "growth": 0.1562,
+      "n_pairs": 868
+    },
+    {
+      "year": 2024,
+      "index": 129.11,
+      "growth": 0.1713,
+      "n_pairs": 913
+    },
+    {
+      "year": 2025,
+      "index": 153.56,
+      "growth": 0.1894,
+      "n_pairs": 793
+    }
+  ],
+  "series": [
+    {
+      "period": "2014-01-01",
+      "index": 100.0,
+      "n_pairs": 84
+    },
+    {
+      "period": "2014-02-01",
+      "index": 114.757,
+      "n_pairs": 70
+    },
+    {
+      "period": "2014-03-01",
+      "index": 124.66,
+      "n_pairs": 75
+    },
+    {
+      "period": "2014-04-01",
+      "index": 100.602,
+      "n_pairs": 68
+    },
+    {
+      "period": "2014-05-01",
+      "index": 111.097,
+      "n_pairs": 81
+    },
+    {
+      "period": "2014-06-01",
+      "index": 108.44,
+      "n_pairs": 69
+    },
+    {
+      "period": "2014-07-01",
+      "index": 103.089,
+      "n_pairs": 70
+    },
+    {
+      "period": "2014-08-01",
+      "index": 119.916,
+      "n_pairs": 64
+    },
+    {
+      "period": "2014-09-01",
+      "index": 117.058,
+      "n_pairs": 70
+    },
+    {
+      "period": "2014-10-01",
+      "index": 103.003,
+      "n_pairs": 56
+    },
+    {
+      "period": "2014-11-01",
+      "index": 103.694,
+      "n_pairs": 66
+    },
+    {
+      "period": "2014-12-01",
+      "index": 106.283,
+      "n_pairs": 58
+    },
+    {
+      "period": "2015-01-01",
+      "index": 103.835,
+      "n_pairs": 58
+    },
+    {
+      "period": "2015-02-01",
+      "index": 104.358,
+      "n_pairs": 46
+    },
+    {
+      "period": "2015-03-01",
+      "index": 119.078,
+      "n_pairs": 68
+    },
+    {
+      "period": "2015-04-01",
+      "index": 120.071,
+      "n_pairs": 85
+    },
+    {
+      "period": "2015-05-01",
+      "index": 125.209,
+      "n_pairs": 60
+    },
+    {
+      "period": "2015-06-01",
+      "index": 113.34,
+      "n_pairs": 45
+    },
+    {
+      "period": "2015-07-01",
+      "index": 118.627,
+      "n_pairs": 76
+    },
+    {
+      "period": "2015-08-01",
+      "index": 106.525,
+      "n_pairs": 63
+    },
+    {
+      "period": "2015-09-01",
+      "index": 96.763,
+      "n_pairs": 67
+    },
+    {
+      "period": "2015-10-01",
+      "index": 107.824,
+      "n_pairs": 73
+    },
+    {
+      "period": "2015-11-01",
+      "index": 103.403,
+      "n_pairs": 72
+    },
+    {
+      "period": "2015-12-01",
+      "index": 113.072,
+      "n_pairs": 62
+    },
+    {
+      "period": "2016-01-01",
+      "index": 105.783,
+      "n_pairs": 56
+    },
+    {
+      "period": "2016-02-01",
+      "index": 108.5,
+      "n_pairs": 69
+    },
+    {
+      "period": "2016-03-01",
+      "index": 113.725,
+      "n_pairs": 67
+    },
+    {
+      "period": "2016-04-01",
+      "index": 105.435,
+      "n_pairs": 77
+    },
+    {
+      "period": "2016-05-01",
+      "index": 109.15,
+      "n_pairs": 79
+    },
+    {
+      "period": "2016-06-01",
+      "index": 104.328,
+      "n_pairs": 77
+    },
+    {
+      "period": "2016-07-01",
+      "index": 101.424,
+      "n_pairs": 70
+    },
+    {
+      "period": "2016-08-01",
+      "index": 113.159,
+      "n_pairs": 56
+    },
+    {
+      "period": "2016-09-01",
+      "index": 100.917,
+      "n_pairs": 61
+    },
+    {
+      "period": "2016-10-01",
+      "index": 99.359,
+      "n_pairs": 73
+    },
+    {
+      "period": "2016-11-01",
+      "index": 90.194,
+      "n_pairs": 70
+    },
+    {
+      "period": "2016-12-01",
+      "index": 107.532,
+      "n_pairs": 69
+    },
+    {
+      "period": "2017-01-01",
+      "index": 103.11,
+      "n_pairs": 65
+    },
+    {
+      "period": "2017-02-01",
+      "index": 100.029,
+      "n_pairs": 65
+    },
+    {
+      "period": "2017-03-01",
+      "index": 102.968,
+      "n_pairs": 91
+    },
+    {
+      "period": "2017-04-01",
+      "index": 102.662,
+      "n_pairs": 67
+    },
+    {
+      "period": "2017-05-01",
+      "index": 113.968,
+      "n_pairs": 76
+    },
+    {
+      "period": "2017-06-01",
+      "index": 95.944,
+      "n_pairs": 79
+    },
+    {
+      "period": "2017-07-01",
+      "index": 105.132,
+      "n_pairs": 70
+    },
+    {
+      "period": "2017-08-01",
+      "index": 107.638,
+      "n_pairs": 75
+    },
+    {
+      "period": "2017-09-01",
+      "index": 101.268,
+      "n_pairs": 62
+    },
+    {
+      "period": "2017-10-01",
+      "index": 106.231,
+      "n_pairs": 72
+    },
+    {
+      "period": "2017-11-01",
+      "index": 97.828,
+      "n_pairs": 68
+    },
+    {
+      "period": "2017-12-01",
+      "index": 92.996,
+      "n_pairs": 70
+    },
+    {
+      "period": "2018-01-01",
+      "index": 101.804,
+      "n_pairs": 55
+    },
+    {
+      "period": "2018-02-01",
+      "index": 101.975,
+      "n_pairs": 51
+    },
+    {
+      "period": "2018-03-01",
+      "index": 97.409,
+      "n_pairs": 80
+    },
+    {
+      "period": "2018-04-01",
+      "index": 94.119,
+      "n_pairs": 63
+    },
+    {
+      "period": "2018-05-01",
+      "index": 91.147,
+      "n_pairs": 59
+    },
+    {
+      "period": "2018-06-01",
+      "index": 96.464,
+      "n_pairs": 67
+    },
+    {
+      "period": "2018-07-01",
+      "index": 98.461,
+      "n_pairs": 73
+    },
+    {
+      "period": "2018-08-01",
+      "index": 93.818,
+      "n_pairs": 94
+    },
+    {
+      "period": "2018-09-01",
+      "index": 98.748,
+      "n_pairs": 75
+    },
+    {
+      "period": "2018-10-01",
+      "index": 77.71,
+      "n_pairs": 59
+    },
+    {
+      "period": "2018-11-01",
+      "index": 89.888,
+      "n_pairs": 59
+    },
+    {
+      "period": "2018-12-01",
+      "index": 93.557,
+      "n_pairs": 68
+    },
+    {
+      "period": "2019-01-01",
+      "index": 90.135,
+      "n_pairs": 63
+    },
+    {
+      "period": "2019-02-01",
+      "index": 101.038,
+      "n_pairs": 77
+    },
+    {
+      "period": "2019-03-01",
+      "index": 81.002,
+      "n_pairs": 71
+    },
+    {
+      "period": "2019-04-01",
+      "index": 92.165,
+      "n_pairs": 81
+    },
+    {
+      "period": "2019-05-01",
+      "index": 87.396,
+      "n_pairs": 86
+    },
+    {
+      "period": "2019-06-01",
+      "index": 99.719,
+      "n_pairs": 77
+    },
+    {
+      "period": "2019-07-01",
+      "index": 92.748,
+      "n_pairs": 80
+    },
+    {
+      "period": "2019-08-01",
+      "index": 91.4,
+      "n_pairs": 83
+    },
+    {
+      "period": "2019-09-01",
+      "index": 86.394,
+      "n_pairs": 61
+    },
+    {
+      "period": "2019-10-01",
+      "index": 85.162,
+      "n_pairs": 68
+    },
+    {
+      "period": "2019-11-01",
+      "index": 84.44,
+      "n_pairs": 63
+    },
+    {
+      "period": "2019-12-01",
+      "index": 84.892,
+      "n_pairs": 72
+    },
+    {
+      "period": "2020-01-01",
+      "index": 85.054,
+      "n_pairs": 72
+    },
+    {
+      "period": "2020-02-01",
+      "index": 83.573,
+      "n_pairs": 74
+    },
+    {
+      "period": "2020-03-01",
+      "index": 84.523,
+      "n_pairs": 76
+    },
+    {
+      "period": "2020-04-01",
+      "index": 88.892,
+      "n_pairs": 72
+    },
+    {
+      "period": "2020-05-01",
+      "index": 83.963,
+      "n_pairs": 89
+    },
+    {
+      "period": "2020-06-01",
+      "index": 89.032,
+      "n_pairs": 60
+    },
+    {
+      "period": "2020-07-01",
+      "index": 90.909,
+      "n_pairs": 66
+    },
+    {
+      "period": "2020-08-01",
+      "index": 76.984,
+      "n_pairs": 85
+    },
+    {
+      "period": "2020-09-01",
+      "index": 80.531,
+      "n_pairs": 80
+    },
+    {
+      "period": "2020-10-01",
+      "index": 84.414,
+      "n_pairs": 76
+    },
+    {
+      "period": "2020-11-01",
+      "index": 80.496,
+      "n_pairs": 61
+    },
+    {
+      "period": "2020-12-01",
+      "index": 77.755,
+      "n_pairs": 68
+    },
+    {
+      "period": "2021-01-01",
+      "index": 85.151,
+      "n_pairs": 62
+    },
+    {
+      "period": "2021-02-01",
+      "index": 84.681,
+      "n_pairs": 57
+    },
+    {
+      "period": "2021-03-01",
+      "index": 89.125,
+      "n_pairs": 65
+    },
+    {
+      "period": "2021-04-01",
+      "index": 87.943,
+      "n_pairs": 82
+    },
+    {
+      "period": "2021-05-01",
+      "index": 79.957,
+      "n_pairs": 71
+    },
+    {
+      "period": "2021-06-01",
+      "index": 82.862,
+      "n_pairs": 72
+    },
+    {
+      "period": "2021-07-01",
+      "index": 83.586,
+      "n_pairs": 82
+    },
+    {
+      "period": "2021-08-01",
+      "index": 93.014,
+      "n_pairs": 72
+    },
+    {
+      "period": "2021-09-01",
+      "index": 88.106,
+      "n_pairs": 88
+    },
+    {
+      "period": "2021-10-01",
+      "index": 74.248,
+      "n_pairs": 82
+    },
+    {
+      "period": "2021-11-01",
+      "index": 83.239,
+      "n_pairs": 65
+    },
+    {
+      "period": "2021-12-01",
+      "index": 86.258,
+      "n_pairs": 78
+    },
+    {
+      "period": "2022-01-01",
+      "index": 84.44,
+      "n_pairs": 68
+    },
+    {
+      "period": "2022-02-01",
+      "index": 87.292,
+      "n_pairs": 65
+    },
+    {
+      "period": "2022-03-01",
+      "index": 90.939,
+      "n_pairs": 85
+    },
+    {
+      "period": "2022-04-01",
+      "index": 88.879,
+      "n_pairs": 67
+    },
+    {
+      "period": "2022-05-01",
+      "index": 97.14,
+      "n_pairs": 68
+    },
+    {
+      "period": "2022-06-01",
+      "index": 98.701,
+      "n_pairs": 67
+    },
+    {
+      "period": "2022-07-01",
+      "index": 107.349,
+      "n_pairs": 69
+    },
+    {
+      "period": "2022-08-01",
+      "index": 93.229,
+      "n_pairs": 73
+    },
+    {
+      "period": "2022-09-01",
+      "index": 96.02,
+      "n_pairs": 78
+    },
+    {
+      "period": "2022-10-01",
+      "index": 101.192,
+      "n_pairs": 79
+    },
+    {
+      "period": "2022-11-01",
+      "index": 102.677,
+      "n_pairs": 74
+    },
+    {
+      "period": "2022-12-01",
+      "index": 96.147,
+      "n_pairs": 61
+    },
+    {
+      "period": "2023-01-01",
+      "index": 91.225,
+      "n_pairs": 99
+    },
+    {
+      "period": "2023-02-01",
+      "index": 99.038,
+      "n_pairs": 78
+    },
+    {
+      "period": "2023-03-01",
+      "index": 95.274,
+      "n_pairs": 62
+    },
+    {
+      "period": "2023-04-01",
+      "index": 110.472,
+      "n_pairs": 73
+    },
+    {
+      "period": "2023-05-01",
+      "index": 113.823,
+      "n_pairs": 70
+    },
+    {
+      "period": "2023-06-01",
+      "index": 109.182,
+      "n_pairs": 75
+    },
+    {
+      "period": "2023-07-01",
+      "index": 130.844,
+      "n_pairs": 63
+    },
+    {
+      "period": "2023-08-01",
+      "index": 115.172,
+      "n_pairs": 69
+    },
+    {
+      "period": "2023-09-01",
+      "index": 119.248,
+      "n_pairs": 70
+    },
+    {
+      "period": "2023-10-01",
+      "index": 105.228,
+      "n_pairs": 79
+    },
+    {
+      "period": "2023-11-01",
+      "index": 115.861,
+      "n_pairs": 62
+    },
+    {
+      "period": "2023-12-01",
+      "index": 117.342,
+      "n_pairs": 68
+    },
+    {
+      "period": "2024-01-01",
+      "index": 124.452,
+      "n_pairs": 69
+    },
+    {
+      "period": "2024-02-01",
+      "index": 126.388,
+      "n_pairs": 77
+    },
+    {
+      "period": "2024-03-01",
+      "index": 121.543,
+      "n_pairs": 83
+    },
+    {
+      "period": "2024-04-01",
+      "index": 122.367,
+      "n_pairs": 69
+    },
+    {
+      "period": "2024-05-01",
+      "index": 132.362,
+      "n_pairs": 76
+    },
+    {
+      "period": "2024-06-01",
+      "index": 124.53,
+      "n_pairs": 81
+    },
+    {
+      "period": "2024-07-01",
+      "index": 131.665,
+      "n_pairs": 81
+    },
+    {
+      "period": "2024-08-01",
+      "index": 143.79,
+      "n_pairs": 80
+    },
+    {
+      "period": "2024-09-01",
+      "index": 136.468,
+      "n_pairs": 81
+    },
+    {
+      "period": "2024-10-01",
+      "index": 131.723,
+      "n_pairs": 83
+    },
+    {
+      "period": "2024-11-01",
+      "index": 121.704,
+      "n_pairs": 65
+    },
+    {
+      "period": "2024-12-01",
+      "index": 132.299,
+      "n_pairs": 68
+    },
+    {
+      "period": "2025-01-01",
+      "index": 153.584,
+      "n_pairs": 70
+    },
+    {
+      "period": "2025-02-01",
+      "index": 146.99,
+      "n_pairs": 55
+    },
+    {
+      "period": "2025-03-01",
+      "index": 148.198,
+      "n_pairs": 66
+    },
+    {
+      "period": "2025-04-01",
+      "index": 149.622,
+      "n_pairs": 69
+    },
+    {
+      "period": "2025-05-01",
+      "index": 147.751,
+      "n_pairs": 63
+    },
+    {
+      "period": "2025-06-01",
+      "index": 164.636,
+      "n_pairs": 70
+    },
+    {
+      "period": "2025-07-01",
+      "index": 135.971,
+      "n_pairs": 65
+    },
+    {
+      "period": "2025-08-01",
+      "index": 165.956,
+      "n_pairs": 68
+    },
+    {
+      "period": "2025-09-01",
+      "index": 141.641,
+      "n_pairs": 71
+    },
+    {
+      "period": "2025-10-01",
+      "index": 163.674,
+      "n_pairs": 64
+    },
+    {
+      "period": "2025-11-01",
+      "index": 162.933,
+      "n_pairs": 56
+    },
+    {
+      "period": "2025-12-01",
+      "index": 161.775,
+      "n_pairs": 76
+    }
+  ]
+}
