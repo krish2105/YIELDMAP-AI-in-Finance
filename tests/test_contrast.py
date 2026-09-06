@@ -46,9 +46,8 @@ def tokens() -> dict[str, dict[str, str]]:
     browser uses, and then the test would be checking a palette nobody sees.
     """
     css = CSS.read_text()
-    # `:root` is light; the first `[data-theme="dark"]`-ish block is dark. Both list the same
-    # token names, so the last value wins per block.
-    blocks = re.split(r"@media[^{]*\{|:root(?:\[data-theme=\"dark\"\])?\s*\{", css)
+    # Both palettes list the same token names, and the light one comes first. So the first time a
+    # name repeats, everything after it belongs to the dark theme.
     light: dict[str, str] = {}
     dark: dict[str, str] = {}
     seen_dark = False
