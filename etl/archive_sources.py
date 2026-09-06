@@ -47,6 +47,28 @@ HEADERS = {
     "Accept-Language": "en-GB,en;q=0.9,ar;q=0.8",
 }
 
+# Credential shapes that turn up in a publisher's own page source — a Google Maps browser key,
+# most often. Redacted before the archive is written: republishing someone else's key in a public
+# repository is not made acceptable by the fact that they published it first, and this project's
+# own secret scan would refuse the commit anyway. The hash recorded is of the original bytes, so
+# the provenance claim is unaffected; `redacted_bytes` records that the stored copy differs.
+CREDENTIAL_SHAPES: tuple[re.Pattern[bytes], ...] = (
+    re.compile(rb"AIza[0-9A-Za-z_\-]{35}"),
+    re.compile(rb"gsk_[0-9A-Za-z]{40,}"),
+    re.compile(rb"sk-ant-[0-9A-Za-z_\-]{20,}"),
+    re.compile(rb"gh[pousr]_[0-9A-Za-z]{36,}"),
+)
+
+
+def redact(payload: bytes) -> tuple[bytes, int]:
+    """Replace anything credential-shaped. Returns the cleaned bytes and how many were replaced."""
+    count = 0
+    for pattern in CREDENTIAL_SHAPES:
+        payload, n = pattern.subn(b"[REDACTED-BY-YIELDMAP]", payload)
+        count += n
+    return payload, count
+
+
 SCRIPT_OR_STYLE = re.compile(r"<(script|style|noscript)\b[^>]*>.*?</\1>", re.S | re.I)
 TAG = re.compile(r"<[^>]+>")
 WHITESPACE = re.compile(r"[ \t\r\f\v]+")
@@ -64,6 +86,10 @@ class Archived:
     content_type: str | None = None
     retrieved_at: str | None = None
     text_chars: int = 0
+    # How many credential-shaped strings were replaced before the copy was written. The hash
+    # above is of the original, so a non-zero count means the stored file will not re-hash
+    # to it — deliberately, and recorded so nobody reads that as tampering.
+    redacted: int = 0
     # Whether the archived text contains the phrases the citation rests on. None when the
     # document declared none to look for.
     corroborated: bool | None = None
@@ -155,14 +181,17 @@ def fetch(
         )
 
     payload = response.content
+    # Hashed before redaction: the provenance claim is about what the publisher served.
     digest = hashlib.sha256(payload).hexdigest()
     content_type = response.headers.get("content-type", "")
+
+    stored, redacted_count = redact(payload)
     suffix = ".pdf" if "pdf" in content_type else ".html"
-    (archive / f"{key}{suffix}").write_bytes(payload)
+    (archive / f"{key}{suffix}").write_bytes(stored)
 
     text = ""
     if "pdf" not in content_type:
-        text = readable(payload.decode(response.encoding or "utf-8", errors="replace"))
+        text = readable(stored.decode(response.encoding or "utf-8", errors="replace"))
         (archive / f"{key}.txt").write_text(text)
 
     missing: list[str] = []
@@ -175,6 +204,11 @@ def fetch(
     notes: list[str] = []
     if "pdf" in content_type:
         notes.append("binary archived; text not extracted")
+    if redacted_count:
+        notes.append(
+            f"{redacted_count} credential-shaped string(s) redacted from the stored copy; the "
+            "sha256 is of the bytes as served"
+        )
     if corroborated is False:
         notes.append(
             "the page was archived but does not contain the terms this citation rests on — it is "
@@ -191,6 +225,7 @@ def fetch(
         content_type=content_type,
         retrieved_at=datetime.now(UTC).isoformat(timespec="seconds"),
         text_chars=len(text),
+        redacted=redacted_count,
         corroborated=corroborated,
         missing_terms=missing,
         notes=notes,

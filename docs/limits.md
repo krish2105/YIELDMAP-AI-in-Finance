@@ -57,6 +57,19 @@ Recording this rather than fixing it now is deliberate: switching costs money or
 solve a problem that starts on the day of first revenue, and the honest answer to "could you sell
 this?" is better than a bill.
 
+## Build minutes
+
+The nightly ingest commits its own output — probe results, archived source pages — and each of
+those commits triggered a full front-end build producing a byte-identical deployment. Two such
+builds ran in one evening before anyone noticed.
+
+`scripts/vercel_should_build.sh` now decides: a commit touching only `docs/`, `corpus/`, the
+Python half or the workflows skips the build. It is deliberately conservative — anything not
+clearly irrelevant builds, because a skipped build that should have run ships stale code, which is
+far worse than a wasted minute. `config/` is explicitly *not* skippable: `web/lib/kpi.ts` imports
+`config/kpi_thresholds.json` at build time, so a threshold change has to reach the bundle.
+Eighteen tests cover both directions, and the "must build" cases are the ones that matter.
+
 ## Storage
 
 Memos go to Postgres when `DATABASE_URL` is set and to a file store otherwise. On a free-tier

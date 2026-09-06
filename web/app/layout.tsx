@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Archivo, IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
 
+import { SpeedInsights } from "@vercel/speed-insights/next";
+
 import Providers from "@/components/Providers";
 import Shell from "@/components/Shell";
 import "./globals.css";
@@ -54,6 +56,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Providers>
           <Shell>{children}</Shell>
         </Providers>
+        {/*
+          Core Web Vitals from real devices on real networks. The frame rate and bundle figures in
+          docs/results/ are measured in headless Chromium on a CI runner, which is a floor and not
+          an experience — this is the only way to learn what the site is actually like to use on a
+          phone in Dubai.
+
+          Speed Insights only. Vercel Analytics was installed and removed: it counts visitors, and
+          this project's posture is that it holds no personal data. A pageview total is not worth
+          giving that up.
+        */}
+        <SpeedInsights />
       </body>
     </html>
   );

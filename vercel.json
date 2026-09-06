@@ -13,5 +13,6 @@
   "env": {
     "API_ORIGIN": "https://yieldmap-api.onrender.com",
     "VERCEL_PREVIEW_FEEDBACK_ENABLED": "0"
-  }
+  },
+  "ignoreCommand": "bash scripts/vercel_should_build.sh"
 }

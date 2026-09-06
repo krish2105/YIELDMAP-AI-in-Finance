@@ -24,11 +24,17 @@ export default function proxy(request: NextRequest) {
     // no 'strict-dynamic': it makes a browser ignore 'self' entirely, which blocks every chunk
     // Next emits as a plain script tag. What is left still refuses any inline script without the
     // nonce and any script from another origin, which is the protection worth having.
-    `script-src 'self' 'nonce-${nonce}' 'unsafe-eval'`,
+    // va.vercel-scripts.com serves the Speed Insights collector. It is the one origin other
+    // than this one allowed to run script, and it adds no trust that was not already given:
+    // Vercel serves every byte of this application, so a compromise there reaches the page
+    // with or without this entry. That reasoning is what makes it acceptable — not that the
+    // measurement is useful, which would justify anything.
+    `script-src 'self' 'nonce-${nonce}' 'unsafe-eval' https://va.vercel-scripts.com`,
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob:",
     "font-src 'self' data:",
-    "connect-src 'self'",
+    // The collector posts its measurements back to the same origin it came from.
+    "connect-src 'self' https://va.vercel-scripts.com https://vitals.vercel-insights.com",
     "worker-src 'self' blob:",
     "frame-ancestors 'none'",
     "base-uri 'self'",

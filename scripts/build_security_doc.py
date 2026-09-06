@@ -98,6 +98,13 @@ should be visible and fixed, not turn an unrelated pull request red.
   the analytics API, which means no cross-origin requests, no CORS to configure, and
   `connect-src 'self'` rather than a list of allowed hosts.
 - `X-Frame-Options: DENY` and `frame-ancestors 'none'`; `X-Content-Type-Options: nosniff`.
+- **One origin other than this one may run script**: `va.vercel-scripts.com`, which serves the
+  Speed Insights collector. It is allowed because it adds no trust that was not already given —
+  Vercel serves every byte of this application, so a compromise there reaches the page with or
+  without the entry. That is the argument; "the measurement is useful" is not, because it would
+  justify any script at all. Vercel Analytics was installed and removed on the same reasoning
+  reversed: it counts visitors, this project holds no personal data, and a pageview total is not
+  worth giving that up.
 
 ## Roles
 

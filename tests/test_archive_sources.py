@@ -236,3 +236,61 @@ class TestCorroborationIsNotRetrieval:
         )
         archive.stamp_corpus([good], corpus)
         assert "status: archived and corroborated" in (corpus / "dld_fees.md").read_text()
+
+
+class TestThirdPartyCredentialsAreNotRepublished:
+    """The archive found a Google API key in the Land Department's own page source.
+
+    Not this project's key, and one the publisher exposes themselves — but republishing someone
+    else's credential in a public repository is not made acceptable by the fact that they
+    published it first. The secret scan caught it on the commit, which is the scan working; this
+    stops it arriving in the first place.
+    """
+
+    def test_a_key_in_the_publishers_html_is_redacted(self) -> None:
+        served = b'<script>var k="AIzaSy' + b"B" * 33 + b'";</script>'
+        cleaned, count = archive.redact(served)
+        assert count == 1
+        assert b"AIzaSy" not in cleaned
+        assert b"[REDACTED-BY-YIELDMAP]" in cleaned
+
+    @pytest.mark.parametrize(
+        "secret",
+        [b"AIza" + b"a" * 35, b"gsk_" + b"b" * 44, b"sk-ant-" + b"c" * 30, b"ghp_" + b"d" * 36],
+        ids=["google", "groq", "anthropic", "github"],
+    )
+    def test_every_shape_the_scanner_blocks_is_also_redacted(self, secret: bytes) -> None:
+        """The two lists must agree, or the archive writes what the scan then refuses."""
+        _, count = archive.redact(b"prefix " + secret + b" suffix")
+        assert count == 1
+
+    def test_ordinary_content_is_untouched(self) -> None:
+        page = b"<p>The transfer fee is 4% of the purchase price.</p>"
+        cleaned, count = archive.redact(page)
+        assert count == 0
+        assert cleaned == page
+
+    def test_the_hash_is_of_what_was_served_not_what_was_stored(
+        self, tmp_path, monkeypatch
+    ) -> None:
+        """Provenance is a claim about the publisher's bytes, so the hash must be of those.
+
+        The stored copy differs, deliberately, and the record says so — otherwise a later reader
+        re-hashing the file would find a mismatch and read it as tampering.
+        """
+        served = b"<html><body>fee 4%<script>k='AIza" + b"z" * 35 + b"'</script></body></html>"
+        transport = httpx.MockTransport(
+            lambda r: httpx.Response(200, content=served, headers={"content-type": "text/html"})
+        )
+        original = httpx.Client
+        monkeypatch.setattr(
+            httpx, "Client", lambda **kw: original(**{**kw, "transport": transport})
+        )
+
+        result = archive.fetch("x", "https://x.test", archive=tmp_path)
+        assert result.sha256 == hashlib.sha256(served).hexdigest()
+        assert result.redacted == 1
+        stored = (tmp_path / "x.html").read_bytes()
+        assert b"AIza" not in stored
+        assert hashlib.sha256(stored).hexdigest() != result.sha256
+        assert any("sha256 is of the bytes as served" in n for n in result.notes)
