@@ -109,6 +109,15 @@ const hi: Dictionary = {
   "common.search": "खोजें",
   "common.close": "बंद करें",
   "theme.toggle": "थीम बदलें",
+  "kpi.copy": "क्वेरी कॉपी करें",
+  "kpi.copied": "कॉपी हो गया",
+  "kpi.method": "विधि",
+  "kpi.confidence.high": "उच्च विश्वसनीयता",
+  "kpi.confidence.medium": "मध्यम विश्वसनीयता",
+  "kpi.confidence.low": "कम विश्वसनीयता",
+  "kpi.confidence.insufficient": "रिपोर्ट करने के लिए बहुत कम रिकॉर्ड",
+  "common.none": "अभी दिखाने के लिए कुछ नहीं",
+  "role.label": "भूमिका",
 };
 
 const ar: Dictionary = {
@@ -149,9 +158,49 @@ const ar: Dictionary = {
   "common.search": "بحث",
   "common.close": "إغلاق",
   "theme.toggle": "تبديل السمة",
+  "kpi.copy": "نسخ الاستعلام",
+  "kpi.copied": "تم النسخ",
+  "kpi.method": "الطريقة",
+  "kpi.confidence.high": "ثقة عالية",
+  "kpi.confidence.medium": "ثقة متوسطة",
+  "kpi.confidence.low": "ثقة منخفضة",
+  "kpi.confidence.insufficient": "السجلات أقل من أن يُبنى عليها رقم",
+  "common.none": "لا يوجد ما يُعرض بعد",
+  "role.label": "الدور",
 };
 
 const DICTIONARIES: Record<Locale, Dictionary> = { en, hi, ar };
+
+/**
+ * Keys that are deliberately identical in every language, so English text under a non-English
+ * locale is not a gap for them. `app.name` is a brand, and `kpi.sample` is the mathematical "n ="
+ * that reads the same in all three.
+ */
+export const SHARED_ACROSS_LOCALES = ["app.name", "kpi.sample"] as const;
+
+/** Every key the interface can ask for, which is by definition every key English defines. */
+export const TRANSLATION_KEYS = Object.keys(en);
+
+/**
+ * Keys where a locale still shows the English string.
+ *
+ * This compares the rendered text rather than asking whether the key is present, because `hi` and
+ * `ar` are built by spreading `en` — so every key is always present in every dictionary and a
+ * presence check can never report anything. That spread is what let nine strings, including the
+ * confidence label on every KPI tile, sit in English behind a right-to-left layout without
+ * anything looking wrong.
+ *
+ * Comparing the text also catches the other way it goes wrong: an English string pasted into a
+ * translated dictionary, which a presence check counts as translated.
+ */
+export function untranslated(locale: Locale): string[] {
+  if (locale === "en") return [];
+  const dictionary = DICTIONARIES[locale];
+  const shared = new Set<string>(SHARED_ACROSS_LOCALES);
+  return TRANSLATION_KEYS.filter(
+    (key) => !shared.has(key) && dictionary[key] === en[key],
+  );
+}
 
 export function translator(locale: Locale) {
   const dictionary = DICTIONARIES[locale] ?? en;
