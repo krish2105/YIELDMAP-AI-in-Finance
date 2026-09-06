@@ -94,6 +94,19 @@ ladder has moved and `docs/loading_real_data.md` needs revisiting.
 open and the service is fine, the probe is wrong — check it is not timing out on the 50-second
 cold start.
 
+## A deploy went to a branch nobody is on
+
+`render.yaml` declares `branch: main`, but the live service was created against the feature branch
+before the blueprint existed and Render does not reconcile the two on its own. Once the pull
+request merges, the branch it watches stops receiving commits and the API quietly freezes at
+whatever was last pushed there — it stays up, serving old code, which is the failure that does not
+page anyone.
+
+Fix it once, in the dashboard: **Render → yieldmap-api → Settings → Build & Deploy → Branch →
+`main` → Save**. Confirm with `list_services`, or by checking the next commit to `main` triggers a
+deploy. The same applies to Vercel, which takes production from the repository's default branch
+and needs no action.
+
 ## What has no procedure yet
 
 Said plainly, because a runbook that pretends to cover everything is worse than one with gaps:
