@@ -17,12 +17,14 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import sys
 import time
 from dataclasses import asdict
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
+from urllib.parse import urljoin
 
 import httpx
 
@@ -37,16 +39,17 @@ USER_AGENT = (
     "+https://github.com/krish2105/YIELDMAP-AI-in-Finance)"
 )
 TIMEOUT = httpx.Timeout(60.0, connect=30.0)
+PROBE_TIMEOUT = httpx.Timeout(20.0, connect=10.0)
 
 
 def _now() -> str:
     return datetime.now(UTC).isoformat(timespec="seconds")
 
 
-def _client() -> httpx.Client:
+def _client(*, timeout: httpx.Timeout | None = None) -> httpx.Client:
     # follow_redirects because open-data portals hop between www and CDN hosts.
     return httpx.Client(
-        timeout=TIMEOUT,
+        timeout=timeout or TIMEOUT,
         follow_redirects=True,
         headers={"User-Agent": USER_AGENT, "Accept": "*/*"},
     )
@@ -69,7 +72,8 @@ def probe_one(client: httpx.Client, cand: Candidate) -> dict[str, Any]:
             content_type=resp.headers.get("content-type", ""),
             content_length=resp.headers.get("content-length"),
             final_url=str(resp.url),
-            sample=body[:400].decode("utf-8", errors="replace"),
+            sample=body[:1500].decode("utf-8", errors="replace"),
+            platform=sniff_platform(resp.headers.get("content-type", ""), body),
         )
     except Exception as exc:  # noqa: BLE001 - a probe reports failures, it does not raise
         row.update(ok=False, status=None, error=f"{type(exc).__name__}: {exc}")
@@ -80,7 +84,7 @@ def probe_one(client: httpx.Client, cand: Candidate) -> dict[str, Any]:
 def probe(out: Path | None = None) -> dict[str, Any]:
     """Check every candidate source and write a reachability report."""
     rows: list[dict[str, Any]] = []
-    with _client() as client:
+    with _client(timeout=PROBE_TIMEOUT) as client:
         for cand in (*ALL_CANDIDATES, *REFERENCE_DOCS):
             row = probe_one(client, cand)
             state = "ok " if row.get("ok") else "FAIL"
@@ -111,6 +115,83 @@ def _on_actions() -> bool:
     import os
 
     return os.environ.get("GITHUB_ACTIONS") == "true"
+
+
+# ------------------------------------------------------------------ diagnosis
+
+PLATFORM_HINTS: tuple[tuple[str, str], ...] = (
+    ("ckan", "ckan"),
+    ("socrata", "socrata"),
+    ("opendatasoft", "opendatasoft"),
+    ("arcgis", "arcgis"),
+    ("dkan", "dkan"),
+    ("junar", "junar"),
+)
+
+
+def sniff_platform(content_type: str, body: bytes) -> str | None:
+    """Guess which open-data platform answered, so a failed discovery can be diagnosed.
+
+    When the catalogue call returns nothing, the useful question is not "did it fail" but "what is
+    this portal actually running", because that decides which discovery strategy can work.
+    """
+    text = body[:4000].decode("utf-8", errors="replace").lower()
+    for needle, name in PLATFORM_HINTS:
+        if needle in text:
+            return name
+    if "application/json" in content_type:
+        return "json-api"
+    if "text/html" in content_type:
+        return "html"
+    return None
+
+
+DOWNLOAD_LINK = re.compile(
+    r"""href\s*=\s*["']([^"']+?\.(?:csv|zip|xlsx|xls|json|parquet)(?:\?[^"']*)?)["']""",
+    re.IGNORECASE,
+)
+DATASET_LINK = re.compile(r"""href\s*=\s*["'](/dataset/[^"'#?]+)["']""", re.IGNORECASE)
+# A resource download is not a dataset page; following it as one would refetch the file as HTML.
+NOT_A_DATASET_PAGE = re.compile(r"(/download/|/resource/|\.[a-z0-9]{2,8}$)", re.IGNORECASE)
+
+
+def extract_download_links(html: str, base_url: str) -> list[dict[str, str]]:
+    """Find published download links on an open-data page.
+
+    This reads the government open-data portal's own download links, which is what that portal
+    publishes them for. It is not portal scraping in the sense the project rules forbid — that rule
+    is about property listing sites such as agent portals, whose data is neither open nor licensed
+    for reuse.
+    """
+    out: list[dict[str, str]] = []
+    seen: set[str] = set()
+    for match in DOWNLOAD_LINK.finditer(html):
+        url = urljoin(base_url, match.group(1))
+        if url in seen:
+            continue
+        seen.add(url)
+        suffix = url.split("?")[0].rsplit(".", 1)[-1].upper()
+        name = url.split("?")[0].rstrip("/").rsplit("/", 1)[-1]
+        out.append(
+            {
+                "url": url,
+                "name": name,
+                "format": suffix,
+                "found_on": base_url,
+            }
+        )
+    return out
+
+
+def extract_dataset_links(html: str, base_url: str) -> list[str]:
+    """Find dataset pages linked from a catalogue page."""
+    seen: dict[str, None] = {}
+    for match in DATASET_LINK.finditer(html):
+        url = urljoin(base_url, match.group(1))
+        if NOT_A_DATASET_PAGE.search(url):
+            continue
+        seen.setdefault(url, None)
+    return list(seen)
 
 
 # ----------------------------------------------------------------------- discover
@@ -162,13 +243,24 @@ def match_wanted(text: str) -> list[str]:
     return [key for key, needles in WANTED_DATASETS.items() if any(n in low for n in needles)]
 
 
-def discover(out: Path | None = None) -> dict[str, Any]:
-    """Ask the catalogue what exists, rather than guessing filenames."""
-    from etl.sources import CATALOGUE_CANDIDATES
+def discover(out: Path | None = None, *, max_pages: int = 40) -> dict[str, Any]:
+    """Ask the publisher what exists, rather than guessing filenames.
+
+    Two strategies, tried in order, because a portal that is reachable is not necessarily a
+    catalogue API:
+
+    1. the catalogue endpoints, which give structured resource records;
+    2. the published pages, reading the download links the portal itself puts on them, and
+       following one level of dataset links to find more.
+    """
+    from etl.sources import CATALOGUE_CANDIDATES, PAGE_CANDIDATES
 
     resources: list[dict[str, Any]] = []
     errors: list[dict[str, str]] = []
+    strategies: dict[str, int] = {"catalogue": 0, "html": 0}
+
     with _client() as client:
+        # --- strategy 1: structured catalogue -------------------------------
         for cand in CATALOGUE_CANDIDATES:
             if cand.kind != "catalogue":
                 continue
@@ -176,13 +268,52 @@ def discover(out: Path | None = None) -> dict[str, Any]:
                 resp = client.get(cand.url)
                 resp.raise_for_status()
                 found = extract_resources(resp.json())
-                print(f"[ok ] {cand.key}: {len(found)} resources", flush=True)
+                print(f"[catalogue ok ] {cand.key}: {len(found)} resources", flush=True)
+                strategies["catalogue"] += len(found)
                 resources.extend(found)
             except Exception as exc:  # noqa: BLE001
-                errors.append({"key": cand.key, "error": f"{type(exc).__name__}: {exc}"})
-                print(f"[FAIL] {cand.key}: {exc}", flush=True)
+                errors.append({"key": cand.key, "strategy": "catalogue", "error": _describe(exc)})
+                print(f"[catalogue FAIL] {cand.key}: {_describe(exc)}", flush=True)
 
-    # Deduplicate on url, keep the richest record.
+        # --- strategy 2: the portal's own published download links ----------
+        queue = [c.url for c in PAGE_CANDIDATES]
+        visited: set[str] = set()
+        while queue and len(visited) < max_pages:
+            url = queue.pop(0)
+            if url in visited:
+                continue
+            visited.add(url)
+            try:
+                resp = client.get(url)
+                resp.raise_for_status()
+                html = resp.text
+            except Exception as exc:  # noqa: BLE001
+                errors.append({"key": url, "strategy": "html", "error": _describe(exc)})
+                continue
+
+            links = extract_download_links(html, str(resp.url))
+            if links:
+                print(f"[html ok ] {url}: {len(links)} download link(s)", flush=True)
+            strategies["html"] += len(links)
+            for link in links:
+                resources.append(
+                    {
+                        "dataset_id": link["found_on"].rstrip("/").rsplit("/", 1)[-1],
+                        "dataset_title": link["found_on"],
+                        "resource_id": None,
+                        "name": link["name"],
+                        "format": link["format"],
+                        "url": link["url"],
+                        "size": None,
+                        "last_modified": None,
+                        "matches": match_wanted(f"{link['name']} {link['found_on']}"),
+                        "via": "html",
+                    }
+                )
+            for ds in extract_dataset_links(html, str(resp.url)):
+                if ds not in visited and len(queue) + len(visited) < max_pages:
+                    queue.append(ds)
+
     by_url: dict[str, dict[str, Any]] = {}
     for r in resources:
         by_url.setdefault(r["url"], r)
@@ -190,17 +321,30 @@ def discover(out: Path | None = None) -> dict[str, Any]:
     report = {
         "generated_at": _now(),
         "n_resources": len(by_url),
+        "strategies": strategies,
+        "pages_visited": sorted(visited),
         "errors": errors,
         "wanted": {
             key: [r for r in by_url.values() if key in r["matches"]] for key in WANTED_DATASETS
         },
-        "resources": sorted(by_url.values(), key=lambda r: (r["dataset_id"], r["name"] or "")),
+        "resources": sorted(
+            by_url.values(), key=lambda r: (r["dataset_id"] or "", r["name"] or "")
+        ),
     }
     if out:
         out.parent.mkdir(parents=True, exist_ok=True)
         out.write_text(json.dumps(report, indent=2, ensure_ascii=False))
         print(f"wrote {out}", flush=True)
+    print(
+        f"discovery: {len(by_url)} resources "
+        f"(catalogue {strategies['catalogue']}, html {strategies['html']})",
+        flush=True,
+    )
     return report
+
+
+def _describe(exc: Exception) -> str:
+    return f"{type(exc).__name__}: {exc}"
 
 
 # -------------------------------------------------------------------------- fetch

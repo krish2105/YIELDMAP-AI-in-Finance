@@ -13,7 +13,15 @@ from pathlib import Path
 
 import pytest
 
-from etl.download import extract_resources, fetch, match_wanted, write_manifest
+from etl.download import (
+    extract_dataset_links,
+    extract_download_links,
+    extract_resources,
+    fetch,
+    match_wanted,
+    sniff_platform,
+    write_manifest,
+)
 from etl.sources import ALL_CANDIDATES, REFERENCE_DOCS
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -131,3 +139,69 @@ class TestFetchManifest:
         loaded = json.loads(out.read_text())
         assert loaded["files"][0]["sha256"] == "abc"
         assert "generated_at" in loaded
+
+
+class TestPlatformSniffing:
+    """When discovery finds nothing, the useful question is what the portal is running."""
+
+    def test_recognises_a_ckan_portal(self):
+        assert sniff_platform("text/html", b"<html>Powered by CKAN</html>") == "ckan"
+
+    def test_recognises_an_arcgis_hub(self):
+        assert (
+            sniff_platform("text/html", b'<meta name="generator" content="ArcGIS Hub">') == "arcgis"
+        )
+
+    def test_falls_back_to_the_content_type(self):
+        assert sniff_platform("application/json", b'{"a":1}') == "json-api"
+        assert sniff_platform("text/html", b"<html><body>hello</body></html>") == "html"
+
+    def test_returns_nothing_for_an_unrecognisable_body(self):
+        assert sniff_platform("application/octet-stream", b"\x00\x01\x02") is None
+
+
+class TestPublishedLinkDiscovery:
+    """Reads the download links the open-data portal itself publishes."""
+
+    HTML = """
+      <a href="/dataset/dld_transactions/resource/1/download/Transactions.csv">CSV</a>
+      <a href="https://cdn.example.gov.ae/rent_contracts.zip?v=2">ZIP</a>
+      <a href='/dataset/dld_rent_contracts'>Rent contracts</a>
+      <a href="/dataset/dld_valuation">Valuations</a>
+      <a href="/about">About</a>
+      <a href="/dataset/dld_transactions/resource/1/download/Transactions.csv">duplicate</a>
+    """
+    BASE = "https://www.dubaipulse.gov.ae/dataset/dld_transactions"
+
+    def test_finds_tabular_downloads_and_resolves_relative_urls(self):
+        links = extract_download_links(self.HTML, self.BASE)
+        urls = [link["url"] for link in links]
+        assert (
+            "https://www.dubaipulse.gov.ae/dataset/dld_transactions/resource/1/download/Transactions.csv"
+            in urls
+        )
+        assert "https://cdn.example.gov.ae/rent_contracts.zip?v=2" in urls
+
+    def test_reads_the_format_from_the_extension_ignoring_the_query_string(self):
+        by_name = {link["name"]: link for link in extract_download_links(self.HTML, self.BASE)}
+        assert by_name["Transactions.csv"]["format"] == "CSV"
+        assert by_name["rent_contracts.zip"]["format"] == "ZIP"
+
+    def test_does_not_return_the_same_download_twice(self):
+        links = extract_download_links(self.HTML, self.BASE)
+        assert len(links) == len({link["url"] for link in links})
+
+    def test_ignores_pages_that_are_not_downloads(self):
+        names = {link["name"] for link in extract_download_links(self.HTML, self.BASE)}
+        assert "about" not in names
+
+    def test_follows_dataset_pages_but_not_resource_downloads(self):
+        """Following a download link as if it were a page would refetch the file as HTML."""
+        pages = extract_dataset_links(self.HTML, self.BASE)
+        assert "https://www.dubaipulse.gov.ae/dataset/dld_rent_contracts" in pages
+        assert "https://www.dubaipulse.gov.ae/dataset/dld_valuation" in pages
+        assert not any("/download/" in p for p in pages)
+
+    def test_survives_a_page_with_no_links(self):
+        assert extract_download_links("<html></html>", self.BASE) == []
+        assert extract_dataset_links("<html></html>", self.BASE) == []
