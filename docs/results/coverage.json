@@ -1,0 +1,66 @@
+{
+  "provenance": "REAL",
+  "note": "Line coverage of the Python tree, measured by pytest-cov in CI. The critical list is the set of modules that are the sole mechanism behind a rule in CLAUDE.md; they are held to a higher floor than the rest.",
+  "overall_percent": 78.65,
+  "overall_floor": 75.0,
+  "statements": 5521,
+  "missing_statements": 1179,
+  "critical_floor": 85.0,
+  "critical_modules": [
+    {
+      "path": "agents/auditor.py",
+      "rule": "every run is audited; an uncited memo is rejected",
+      "percent": 97.1,
+      "uncovered_lines": 2
+    },
+    {
+      "path": "agents/budget.py",
+      "rule": "agents run under a request budget and a kill switch",
+      "percent": 100.0,
+      "uncovered_lines": 0
+    },
+    {
+      "path": "agents/memory.py",
+      "rule": "retrieved memories are untrusted and quarantined",
+      "percent": 98.0,
+      "uncovered_lines": 1
+    },
+    {
+      "path": "api/auth.py",
+      "rule": "RBAC: roles are asserted by the server, never by the caller",
+      "percent": 89.2,
+      "uncovered_lines": 14
+    },
+    {
+      "path": "api/kpi.py",
+      "rule": "every number crossing the API carries the SQL that produced it",
+      "percent": 100.0,
+      "uncovered_lines": 0
+    },
+    {
+      "path": "api/limits.py",
+      "rule": "the endpoints that spend budget are rate limited",
+      "percent": 89.3,
+      "uncovered_lines": 8
+    },
+    {
+      "path": "etl/results.py",
+      "rule": "generated results are routed away from the real ones",
+      "percent": 100.0,
+      "uncovered_lines": 0
+    },
+    {
+      "path": "rag/quota.py",
+      "rule": "zero paid inference: allowances are counted, not assumed",
+      "percent": 98.3,
+      "uncovered_lines": 1
+    },
+    {
+      "path": "scripts/guard_synthetic.py",
+      "rule": "generated data cannot reach a Term 4 artefact",
+      "percent": 87.3,
+      "uncovered_lines": 10
+    }
+  ],
+  "failures": []
+}

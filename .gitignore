@@ -6,8 +6,9 @@ __pycache__/
 .ruff_cache/
 *.egg-info/
 .coverage
-# The raw pytest-cov dump. The summary that ships is docs/results/coverage.json.
-coverage.json
+# The raw pytest-cov dump at the repo root. Anchored, because an unanchored pattern also
+# matches docs/results/coverage.json — the summary that is meant to ship.
+/coverage.json
 htmlcov/
 
 # Node
