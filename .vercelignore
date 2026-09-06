@@ -15,7 +15,6 @@
 /agents/
 /api/
 /security/
-/scripts/
 /db/
 /e2e/
 /playwright.config.ts
@@ -29,3 +28,10 @@ __pycache__/
 
 # config/ is deliberately not ignored: web/lib/kpi.ts reads config/kpi_thresholds.json at build
 # time, and both halves of the project reading one thresholds file is the point of it.
+#
+# scripts/ is deliberately not ignored either, and for a sharper reason. vercel.json runs
+# `bash scripts/vercel_should_build.sh` as its ignoreCommand, and that command runs against the
+# source this file has already filtered — so excluding scripts/ deleted the very script Vercel was
+# told to run, and every deployment failed with "No such file or directory". It is 129 KB, nothing
+# in web/ imports it, so the tracer never follows it into a function. The cost of keeping it is
+# nil and the cost of excluding it was every deploy.

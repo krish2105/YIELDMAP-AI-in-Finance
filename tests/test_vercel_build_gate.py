@@ -108,3 +108,73 @@ def test_no_previous_deployment_builds() -> None:
     )
     assert result.returncode == BUILD
     assert "no comparable previous deployment" in result.stdout
+
+
+class TestTheDeploymentCanActuallyReachTheGate:
+    """vercel.json names this script as its ignoreCommand, and .vercelignore decides what the
+    build is allowed to see. Nothing connected the two, so excluding scripts/ from the upload
+    deleted the script Vercel had been told to run and every deployment failed with "No such file
+    or directory" — before a line of the app was built.
+
+    The general form: a path vercel.json depends on must survive .vercelignore.
+    """
+
+    IGNORE = ROOT / ".vercelignore"
+    CONFIG = ROOT / "vercel.json"
+
+    @staticmethod
+    def _patterns() -> list[str]:
+        return [
+            line.strip()
+            for line in TestTheDeploymentCanActuallyReachTheGate.IGNORE.read_text().splitlines()
+            if line.strip() and not line.lstrip().startswith("#")
+        ]
+
+    @staticmethod
+    def _excluded(path: str) -> str | None:
+        """The .vercelignore pattern that would remove `path` from the upload, if any.
+
+        .vercelignore uses gitignore semantics, so a pattern without a leading slash matches at
+        any depth. That is the trap this whole class exists for.
+        """
+        parts = path.split("/")
+        for pattern in TestTheDeploymentCanActuallyReachTheGate._patterns():
+            bare = pattern.strip("/")
+            if pattern.startswith("/"):
+                # Anchored: matches only from the repository root.
+                if path == bare or path.startswith(bare + "/"):
+                    return pattern
+            elif bare in parts:
+                # Unanchored: matches a segment of that name at any depth.
+                return pattern
+        return None
+
+    def test_the_ignore_command_script_is_uploaded(self) -> None:
+        import json
+        import re
+
+        command = json.loads(self.CONFIG.read_text())["ignoreCommand"]
+        # e.g. "bash scripts/vercel_should_build.sh" — take the repo-relative path it runs.
+        referenced = re.findall(r"[\w./-]+\.(?:sh|js|mjs|cjs)", command)
+        assert referenced, f"no script path found in ignoreCommand: {command!r}"
+
+        for path in referenced:
+            assert (ROOT / path).exists(), f"ignoreCommand runs {path}, which is not in the tree"
+            pattern = self._excluded(path)
+            assert pattern is None, (
+                f"vercel.json runs {path} but .vercelignore excludes it via {pattern!r}. "
+                f"The ignore step runs against the filtered source, so the deployment fails "
+                f"before it starts."
+            )
+
+    def test_the_helper_recognises_an_anchored_exclusion(self) -> None:
+        """A guard whose matcher is wrong passes everything. Checked against a path this file
+        genuinely does exclude."""
+        assert self._excluded("tests/test_vercel_build_gate.py") == "/tests/"
+
+    def test_the_helper_does_not_match_a_similar_prefix(self) -> None:
+        assert self._excluded("api_client/thing.sh") is None
+
+    def test_config_is_still_uploaded(self) -> None:
+        """web/lib/kpi.ts reads config/kpi_thresholds.json at build time."""
+        assert self._excluded("config/kpi_thresholds.json") is None
