@@ -1,0 +1,7 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "npm --workspace @yieldmap/web run build",
+  "outputDirectory": "web/.next",
+  "installCommand": "npm ci",
+  "framework": "nextjs"
+}

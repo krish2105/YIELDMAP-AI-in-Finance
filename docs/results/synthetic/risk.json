@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-06T16:25:56+00:00",
+  "generated_at": "2026-09-06T18:34:16+00:00",
   "provenance": "SYNTHETIC",
   "method_id": "risk_v1",
   "weights": {
@@ -57,8 +57,8 @@
   "sql": "select transaction_id, ts, area_key, building_name, project_name, property_type, rooms, area_sqm, price_aed, price_per_sqm, is_offplan from transactions where price_per_sqm is not null and area_sqm is not null order by ts",
   "anomalies": {
     "total_transactions": 120346,
-    "flagged": 1737,
-    "rate": 0.014433383743539462,
+    "flagged": 1739,
+    "rate": 0.014450002492812392,
     "by_rule": {
       "price out of line": 1204,
       "resold within 90 days": 544,
@@ -80,17 +80,17 @@
         "reasons": "price out of line"
       },
       {
+        "ts": "2017-02-01",
+        "area_key": "al kifaf",
+        "price_aed": 455426261.19,
+        "price_per_sqm": 71756.04056645244,
+        "reasons": "price out of line"
+      },
+      {
         "ts": "2019-05-31",
         "area_key": "al jadaf",
         "price_aed": 735517457.91,
         "price_per_sqm": 126067.16759422247,
-        "reasons": "price out of line"
-      },
-      {
-        "ts": "2020-08-18",
-        "area_key": "hadaeq sheikh mohammed bin rashid",
-        "price_aed": 561395837.13,
-        "price_per_sqm": 135008.04117366963,
         "reasons": "price out of line"
       },
       {
@@ -101,45 +101,10 @@
         "reasons": "price out of line"
       },
       {
-        "ts": "2025-01-16",
-        "area_key": "umm suqeim second",
-        "price_aed": 334665996.34,
-        "price_per_sqm": 67382.09881027405,
-        "reasons": "price out of line"
-      },
-      {
-        "ts": "2017-02-01",
-        "area_key": "al kifaf",
-        "price_aed": 455426261.19,
-        "price_per_sqm": 71756.04056645244,
-        "reasons": "price out of line"
-      },
-      {
-        "ts": "2019-01-25",
-        "area_key": "palm jumeirah",
-        "price_aed": 20587114.75,
-        "price_per_sqm": 3094.1828649325394,
-        "reasons": "price out of line"
-      },
-      {
-        "ts": "2014-07-04",
-        "area_key": "jumeirah second",
-        "price_aed": 312339297.72,
-        "price_per_sqm": 80382.55990488104,
-        "reasons": "price out of line"
-      },
-      {
         "ts": "2018-08-09",
         "area_key": "trade center first",
         "price_aed": 433875917.72,
         "price_per_sqm": 70072.32396884281,
-        "reasons": "price out of line"
-      },
-      {
-        "ts": "2014-06-16",
-        "area_key": "zaabeel first",
-        "price_aed": 30596205.24,
-        "price_per_sqm": 5007.2426211747525,
         "reasons": "price out of line"
       },
       {
@@ -150,45 +115,24 @@
         "reasons": "price out of line"
       },
       {
-        "ts": "2023-05-02",
-        "area_key": "muhaisanah fourth",
-        "price_aed": 53341815.81,
-        "price_per_sqm": 7359.136222162746,
+        "ts": "2025-01-16",
+        "area_key": "umm suqeim second",
+        "price_aed": 334665996.34,
+        "price_per_sqm": 67382.09881027405,
         "reasons": "price out of line"
       },
       {
-        "ts": "2018-10-20",
-        "area_key": "nakhlat jumeirah",
-        "price_aed": 37282001.36,
-        "price_per_sqm": 5793.088656846292,
-        "reasons": "price out of line"
-      },
-      {
-        "ts": "2020-09-24",
-        "area_key": "al hebiah third",
-        "price_aed": 9282884.76,
-        "price_per_sqm": 2484.2932696038943,
-        "reasons": "price out of line"
-      },
-      {
-        "ts": "2020-05-03",
+        "ts": "2020-08-18",
         "area_key": "hadaeq sheikh mohammed bin rashid",
-        "price_aed": 75214398.18,
-        "price_per_sqm": 10230.10586948775,
+        "price_aed": 561395837.13,
+        "price_per_sqm": 135008.04117366963,
         "reasons": "price out of line"
       },
       {
-        "ts": "2020-01-26",
-        "area_key": "um ramool",
-        "price_aed": 1289586.09,
-        "price_per_sqm": 38866.36799276673,
-        "reasons": "price out of line"
-      },
-      {
-        "ts": "2018-03-30",
-        "area_key": "saih shuaib 2",
-        "price_aed": 167408846.54,
-        "price_per_sqm": 69860.80596080657,
+        "ts": "2019-01-25",
+        "area_key": "palm jumeirah",
+        "price_aed": 20587114.75,
+        "price_per_sqm": 3094.1828649325394,
         "reasons": "price out of line"
       },
       {
@@ -199,10 +143,66 @@
         "reasons": "price out of line"
       },
       {
-        "ts": "2023-04-28",
-        "area_key": "al khairan first",
-        "price_aed": 91146863.77,
-        "price_per_sqm": 50946.50503893084,
+        "ts": "2014-07-04",
+        "area_key": "jumeirah second",
+        "price_aed": 312339297.72,
+        "price_per_sqm": 80382.55990488104,
+        "reasons": "price out of line"
+      },
+      {
+        "ts": "2024-07-04",
+        "area_key": "al hebiah first",
+        "price_aed": 348957478.73,
+        "price_per_sqm": 45814.485013949525,
+        "reasons": "price out of line"
+      },
+      {
+        "ts": "2014-06-16",
+        "area_key": "zaabeel first",
+        "price_aed": 30596205.24,
+        "price_per_sqm": 5007.2426211747525,
+        "reasons": "price out of line"
+      },
+      {
+        "ts": "2023-05-02",
+        "area_key": "muhaisanah fourth",
+        "price_aed": 53341815.81,
+        "price_per_sqm": 7359.136222162746,
+        "reasons": "price out of line"
+      },
+      {
+        "ts": "2024-12-02",
+        "area_key": "nad al shiba first",
+        "price_aed": 112655298.28,
+        "price_per_sqm": 19346.308966545253,
+        "reasons": "price out of line; resold within 90 days"
+      },
+      {
+        "ts": "2023-10-26",
+        "area_key": "nakhlat deira",
+        "price_aed": 261096242.84,
+        "price_per_sqm": 43183.09878172622,
+        "reasons": "price out of line"
+      },
+      {
+        "ts": "2020-05-03",
+        "area_key": "hadaeq sheikh mohammed bin rashid",
+        "price_aed": 75214398.18,
+        "price_per_sqm": 10230.10586948775,
+        "reasons": "price out of line"
+      },
+      {
+        "ts": "2018-10-20",
+        "area_key": "nakhlat jumeirah",
+        "price_aed": 37282001.36,
+        "price_per_sqm": 5793.088656846292,
+        "reasons": "price out of line"
+      },
+      {
+        "ts": "2024-09-06",
+        "area_key": "meaisem first",
+        "price_aed": 303397605.28,
+        "price_per_sqm": 50402.040896744766,
         "reasons": "price out of line"
       }
     ]
@@ -211,46 +211,46 @@
     "areas": 86,
     "areas_scored": 86,
     "areas_unscored": 0,
-    "median_score": 19.228921331446656
+    "median_score": 19.410557095498593
   },
   "areas": [
     {
       "area_key": "ras al khor industrial first",
       "n": 627,
-      "score": 28.7,
+      "score": 28.5,
       "components": {
         "offplan_share": 78.0,
         "developer_concentration": 0.0,
         "price_volatility": 21.4,
         "illiquidity": 0.0,
-        "anomaly_density": 27.9
+        "anomaly_density": 25.9
       },
       "raw": {
         "offplan_share": 0.5677830940988836,
         "developer_concentration": 0.006229507362723177,
         "price_volatility": 0.12499227088899086,
         "illiquidity": 627.0,
-        "anomaly_density": 0.022328548644338118
+        "anomaly_density": 0.02073365231259968
       },
       "reason": null
     },
     {
       "area_key": "wadi al safa 5",
       "n": 1575,
-      "score": 27.1,
+      "score": 27.0,
       "components": {
         "offplan_share": 86.9,
         "developer_concentration": 0.0,
         "price_volatility": 13.8,
         "illiquidity": 0.0,
-        "anomaly_density": 12.7
+        "anomaly_density": 11.1
       },
       "raw": {
         "offplan_share": 0.6215873015873016,
         "developer_concentration": 0.005149105568153187,
         "price_volatility": 0.09836245664794403,
         "illiquidity": 1575.0,
-        "anomaly_density": 0.010158730158730159
+        "anomaly_density": 0.008888888888888889
       },
       "reason": null
     },
@@ -267,30 +267,10 @@
       },
       "raw": {
         "offplan_share": 0.5475,
-        "developer_concentration": 0.006775000000000001,
+        "developer_concentration": 0.006775,
         "price_volatility": 0.1231658238939083,
         "illiquidity": 400.0,
         "anomaly_density": 0.015
-      },
-      "reason": null
-    },
-    {
-      "area_key": "bukadra",
-      "n": 1613,
-      "score": 26.4,
-      "components": {
-        "offplan_share": 81.9,
-        "developer_concentration": 0.0,
-        "price_volatility": 13.9,
-        "illiquidity": 0.0,
-        "anomaly_density": 17.0
-      },
-      "raw": {
-        "offplan_share": 0.5914445133292002,
-        "developer_concentration": 0.005182243312146465,
-        "price_volatility": 0.09881314294928605,
-        "illiquidity": 1613.0,
-        "anomaly_density": 0.013639181649101054
       },
       "reason": null
     },
@@ -315,6 +295,26 @@
       "reason": null
     },
     {
+      "area_key": "muhaisanah fourth",
+      "n": 2213,
+      "score": 26.2,
+      "components": {
+        "offplan_share": 78.7,
+        "developer_concentration": 0.0,
+        "price_volatility": 15.2,
+        "illiquidity": 0.0,
+        "anomaly_density": 20.3
+      },
+      "raw": {
+        "offplan_share": 0.5720741075463173,
+        "developer_concentration": 0.004982879582894409,
+        "price_volatility": 0.10304371324735843,
+        "illiquidity": 2213.0,
+        "anomaly_density": 0.016267510167193855
+      },
+      "reason": null
+    },
+    {
       "area_key": "nakhlat deira",
       "n": 1386,
       "score": 26.2,
@@ -327,7 +327,7 @@
       },
       "raw": {
         "offplan_share": 0.5382395382395382,
-        "developer_concentration": 0.005228537696070165,
+        "developer_concentration": 0.005228537696070164,
         "price_volatility": 0.11513397765514218,
         "illiquidity": 1386.0,
         "anomaly_density": 0.01875901875901876
@@ -335,42 +335,42 @@
       "reason": null
     },
     {
-      "area_key": "saih shuaib 2",
-      "n": 1949,
-      "score": 26.0,
+      "area_key": "bukadra",
+      "n": 1613,
+      "score": 26.1,
       "components": {
-        "offplan_share": 75.3,
+        "offplan_share": 81.9,
         "developer_concentration": 0.0,
-        "price_volatility": 17.9,
+        "price_volatility": 13.9,
         "illiquidity": 0.0,
-        "anomaly_density": 18.6
+        "anomaly_density": 14.7
       },
       "raw": {
-        "offplan_share": 0.5515649050795279,
-        "developer_concentration": 0.005141629773698263,
-        "price_volatility": 0.11251334040257528,
-        "illiquidity": 1949.0,
-        "anomaly_density": 0.014879425346331451
+        "offplan_share": 0.5914445133292002,
+        "developer_concentration": 0.0051822433121464645,
+        "price_volatility": 0.09881314294928605,
+        "illiquidity": 1613.0,
+        "anomaly_density": 0.011779293242405457
       },
       "reason": null
     },
     {
-      "area_key": "muhaisanah fourth",
-      "n": 2213,
-      "score": 26.0,
+      "area_key": "nakhlat jumeirah",
+      "n": 1087,
+      "score": 26.1,
       "components": {
-        "offplan_share": 78.7,
+        "offplan_share": 75.6,
         "developer_concentration": 0.0,
-        "price_volatility": 15.2,
+        "price_volatility": 17.7,
         "illiquidity": 0.0,
-        "anomaly_density": 17.5
+        "anomaly_density": 18.4
       },
       "raw": {
-        "offplan_share": 0.5720741075463173,
-        "developer_concentration": 0.004982879582894408,
-        "price_volatility": 0.10304371324735843,
-        "illiquidity": 2213.0,
-        "anomaly_density": 0.014008133755083597
+        "offplan_share": 0.5538178472861086,
+        "developer_concentration": 0.005361515070215957,
+        "price_volatility": 0.11188438338558197,
+        "illiquidity": 1087.0,
+        "anomaly_density": 0.014719411223551058
       },
       "reason": null
     },
@@ -387,7 +387,7 @@
       },
       "raw": {
         "offplan_share": 0.550761421319797,
-        "developer_concentration": 0.007433842665361127,
+        "developer_concentration": 0.007433842665361129,
         "price_volatility": 0.11915737435961479,
         "illiquidity": 394.0,
         "anomaly_density": 0.005076142131979695
@@ -395,122 +395,102 @@
       "reason": null
     },
     {
-      "area_key": "nakhlat jumeirah",
-      "n": 1087,
-      "score": 25.6,
+      "area_key": "saih shuaib 2",
+      "n": 1949,
+      "score": 25.5,
       "components": {
-        "offplan_share": 75.6,
+        "offplan_share": 75.3,
         "developer_concentration": 0.0,
-        "price_volatility": 17.7,
+        "price_volatility": 17.9,
         "illiquidity": 0.0,
-        "anomaly_density": 13.8
+        "anomaly_density": 13.5
       },
       "raw": {
-        "offplan_share": 0.5538178472861086,
-        "developer_concentration": 0.005361515070215958,
-        "price_volatility": 0.11188438338558197,
-        "illiquidity": 1087.0,
-        "anomaly_density": 0.011039558417663294
-      },
-      "reason": null
-    },
-    {
-      "area_key": "marsa dubai",
-      "n": 2033,
-      "score": 25.2,
-      "components": {
-        "offplan_share": 74.3,
-        "developer_concentration": 0.0,
-        "price_volatility": 15.7,
-        "illiquidity": 0.0,
-        "anomaly_density": 18.4
-      },
-      "raw": {
-        "offplan_share": 0.5459911460895229,
-        "developer_concentration": 0.005062315377191248,
-        "price_volatility": 0.10512355245457702,
-        "illiquidity": 2033.0,
-        "anomaly_density": 0.014756517461878997
+        "offplan_share": 0.5515649050795279,
+        "developer_concentration": 0.005141629773698263,
+        "price_volatility": 0.11251334040257528,
+        "illiquidity": 1949.0,
+        "anomaly_density": 0.0107747562852745
       },
       "reason": null
     },
     {
       "area_key": "al khairan first",
       "n": 1657,
-      "score": 25.0,
+      "score": 25.3,
       "components": {
         "offplan_share": 71.4,
         "developer_concentration": 0.0,
         "price_volatility": 18.4,
         "illiquidity": 0.0,
-        "anomaly_density": 16.6
+        "anomaly_density": 18.9
       },
       "raw": {
         "offplan_share": 0.5286662643331321,
-        "developer_concentration": 0.005170726483975192,
+        "developer_concentration": 0.005170726483975191,
         "price_volatility": 0.11446616257893584,
         "illiquidity": 1657.0,
-        "anomaly_density": 0.013277006638503319
+        "anomaly_density": 0.015087507543753771
+      },
+      "reason": null
+    },
+    {
+      "area_key": "marsa dubai",
+      "n": 2033,
+      "score": 25.0,
+      "components": {
+        "offplan_share": 74.3,
+        "developer_concentration": 0.0,
+        "price_volatility": 15.7,
+        "illiquidity": 0.0,
+        "anomaly_density": 17.2
+      },
+      "raw": {
+        "offplan_share": 0.5459911460895229,
+        "developer_concentration": 0.005062315377191249,
+        "price_volatility": 0.10512355245457702,
+        "illiquidity": 2033.0,
+        "anomaly_density": 0.013772749631087064
       },
       "reason": null
     },
     {
       "area_key": "trade center first",
       "n": 1683,
-      "score": 24.4,
+      "score": 24.6,
       "components": {
         "offplan_share": 70.9,
         "developer_concentration": 0.0,
         "price_volatility": 17.2,
         "illiquidity": 0.0,
-        "anomaly_density": 15.6
+        "anomaly_density": 17.1
       },
       "raw": {
         "offplan_share": 0.5252525252525253,
-        "developer_concentration": 0.005217672513467837,
+        "developer_concentration": 0.005217672513467838,
         "price_volatility": 0.11026394699851896,
         "illiquidity": 1683.0,
-        "anomaly_density": 0.012477718360071301
+        "anomaly_density": 0.013666072489601902
       },
       "reason": null
     },
     {
       "area_key": "jumeirah village triangle",
       "n": 1035,
-      "score": 24.4,
+      "score": 24.2,
       "components": {
         "offplan_share": 66.4,
         "developer_concentration": 0.0,
         "price_volatility": 20.3,
         "illiquidity": 0.0,
-        "anomaly_density": 16.9
+        "anomaly_density": 14.5
       },
       "raw": {
         "offplan_share": 0.4985507246376812,
         "developer_concentration": 0.00563933814091344,
         "price_volatility": 0.12115155137289595,
         "illiquidity": 1035.0,
-        "anomaly_density": 0.01352657004830918
-      },
-      "reason": null
-    },
-    {
-      "area_key": "al hebiah sixth",
-      "n": 785,
-      "score": 24.2,
-      "components": {
-        "offplan_share": 68.7,
-        "developer_concentration": 0.0,
-        "price_volatility": 17.6,
-        "illiquidity": 0.0,
-        "anomaly_density": 17.5
-      },
-      "raw": {
-        "offplan_share": 0.5121019108280255,
-        "developer_concentration": 0.0058858371536370645,
-        "price_volatility": 0.1115048511472751,
-        "illiquidity": 785.0,
-        "anomaly_density": 0.014012738853503185
+        "anomaly_density": 0.011594202898550725
       },
       "reason": null
     },
@@ -535,22 +515,22 @@
       "reason": null
     },
     {
-      "area_key": "al barsha south fourth",
-      "n": 1049,
-      "score": 23.5,
+      "area_key": "al hebiah sixth",
+      "n": 785,
+      "score": 24.0,
       "components": {
-        "offplan_share": 72.1,
+        "offplan_share": 68.7,
         "developer_concentration": 0.0,
-        "price_volatility": 13.7,
+        "price_volatility": 17.6,
         "illiquidity": 0.0,
-        "anomaly_density": 13.1
+        "anomaly_density": 15.9
       },
       "raw": {
-        "offplan_share": 0.5328884652049571,
-        "developer_concentration": 0.005655211145755045,
-        "price_volatility": 0.09805908305690791,
-        "illiquidity": 1049.0,
-        "anomaly_density": 0.010486177311725452
+        "offplan_share": 0.5121019108280255,
+        "developer_concentration": 0.005885837153637064,
+        "price_volatility": 0.1115048511472751,
+        "illiquidity": 785.0,
+        "anomaly_density": 0.012738853503184714
       },
       "reason": null
     },
@@ -567,7 +547,7 @@
       },
       "raw": {
         "offplan_share": 0.47942754919499103,
-        "developer_concentration": 0.006275581555358565,
+        "developer_concentration": 0.006275581555358567,
         "price_volatility": 0.1260796925808395,
         "illiquidity": 559.0,
         "anomaly_density": 0.008944543828264758
@@ -583,134 +563,134 @@
         "developer_concentration": 0.0,
         "price_volatility": 17.2,
         "illiquidity": 0.0,
-        "anomaly_density": 23.2
+        "anomaly_density": 22.4
       },
       "raw": {
         "offplan_share": 0.48022249690976515,
         "developer_concentration": 0.005234682137449367,
         "price_volatility": 0.11030969351194107,
         "illiquidity": 1618.0,
-        "anomaly_density": 0.018541409147095178
-      },
-      "reason": null
-    },
-    {
-      "area_key": "al hebiah fifth",
-      "n": 1711,
-      "score": 23.3,
-      "components": {
-        "offplan_share": 60.8,
-        "developer_concentration": 0.0,
-        "price_volatility": 21.3,
-        "illiquidity": 0.0,
-        "anomaly_density": 16.8
-      },
-      "raw": {
-        "offplan_share": 0.46464056107539453,
-        "developer_concentration": 0.005178784370803831,
-        "price_volatility": 0.12466367403097946,
-        "illiquidity": 1711.0,
-        "anomaly_density": 0.013442431326709527
-      },
-      "reason": null
-    },
-    {
-      "area_key": "al satwa",
-      "n": 837,
-      "score": 23.1,
-      "components": {
-        "offplan_share": 65.2,
-        "developer_concentration": 0.0,
-        "price_volatility": 18.3,
-        "illiquidity": 0.0,
-        "anomaly_density": 13.4
-      },
-      "raw": {
-        "offplan_share": 0.4910394265232975,
-        "developer_concentration": 0.005933748139012715,
-        "price_volatility": 0.11401494285226257,
-        "illiquidity": 837.0,
-        "anomaly_density": 0.010752688172043012
-      },
-      "reason": null
-    },
-    {
-      "area_key": "al muraqqabat",
-      "n": 1885,
-      "score": 23.1,
-      "components": {
-        "offplan_share": 68.0,
-        "developer_concentration": 0.0,
-        "price_volatility": 13.0,
-        "illiquidity": 0.0,
-        "anomaly_density": 21.9
-      },
-      "raw": {
-        "offplan_share": 0.5082228116710875,
-        "developer_concentration": 0.00511282004376306,
-        "price_volatility": 0.09540191798525156,
-        "illiquidity": 1885.0,
-        "anomaly_density": 0.01750663129973475
+        "anomaly_density": 0.01792336217552534
       },
       "reason": null
     },
     {
       "area_key": "trade center second",
       "n": 1900,
-      "score": 23.1,
+      "score": 23.0,
       "components": {
         "offplan_share": 64.6,
         "developer_concentration": 0.0,
         "price_volatility": 16.4,
         "illiquidity": 0.0,
-        "anomaly_density": 19.7
+        "anomaly_density": 19.1
       },
       "raw": {
         "offplan_share": 0.48789473684210527,
-        "developer_concentration": 0.005045429362880886,
+        "developer_concentration": 0.005045429362880884,
         "price_volatility": 0.10736426713381211,
         "illiquidity": 1900.0,
-        "anomaly_density": 0.015789473684210527
-      },
-      "reason": null
-    },
-    {
-      "area_key": "dubai investment park second",
-      "n": 1758,
-      "score": 23.0,
-      "components": {
-        "offplan_share": 68.1,
-        "developer_concentration": 0.0,
-        "price_volatility": 14.4,
-        "illiquidity": 0.0,
-        "anomaly_density": 16.4
-      },
-      "raw": {
-        "offplan_share": 0.5085324232081911,
-        "developer_concentration": 0.005157634658269493,
-        "price_volatility": 0.10026741794936637,
-        "illiquidity": 1758.0,
-        "anomaly_density": 0.013083048919226393
+        "anomaly_density": 0.015263157894736841
       },
       "reason": null
     },
     {
       "area_key": "al thanyah fourth",
       "n": 930,
-      "score": 22.9,
+      "score": 23.0,
       "components": {
         "offplan_share": 66.5,
         "developer_concentration": 0.0,
         "price_volatility": 16.3,
         "illiquidity": 0.0,
-        "anomaly_density": 13.4
+        "anomaly_density": 14.8
       },
       "raw": {
         "offplan_share": 0.4989247311827957,
-        "developer_concentration": 0.005515088449531737,
+        "developer_concentration": 0.005515088449531739,
         "price_volatility": 0.10699859314928534,
         "illiquidity": 930.0,
-        "anomaly_density": 0.010752688172043012
+        "anomaly_density": 0.011827956989247311
+      },
+      "reason": null
+    },
+    {
+      "area_key": "al hebiah fifth",
+      "n": 1711,
+      "score": 23.0,
+      "components": {
+        "offplan_share": 60.8,
+        "developer_concentration": 0.0,
+        "price_volatility": 21.3,
+        "illiquidity": 0.0,
+        "anomaly_density": 13.9
+      },
+      "raw": {
+        "offplan_share": 0.46464056107539453,
+        "developer_concentration": 0.005178784370803831,
+        "price_volatility": 0.12466367403097946,
+        "illiquidity": 1711.0,
+        "anomaly_density": 0.011104617182933957
+      },
+      "reason": null
+    },
+    {
+      "area_key": "al satwa",
+      "n": 837,
+      "score": 23.0,
+      "components": {
+        "offplan_share": 65.2,
+        "developer_concentration": 0.0,
+        "price_volatility": 18.3,
+        "illiquidity": 0.0,
+        "anomaly_density": 11.9
+      },
+      "raw": {
+        "offplan_share": 0.4910394265232975,
+        "developer_concentration": 0.005933748139012715,
+        "price_volatility": 0.11401494285226257,
+        "illiquidity": 837.0,
+        "anomaly_density": 0.009557945041816009
+      },
+      "reason": null
+    },
+    {
+      "area_key": "dubai investment park second",
+      "n": 1758,
+      "score": 22.9,
+      "components": {
+        "offplan_share": 68.1,
+        "developer_concentration": 0.0,
+        "price_volatility": 14.4,
+        "illiquidity": 0.0,
+        "anomaly_density": 15.6
+      },
+      "raw": {
+        "offplan_share": 0.5085324232081911,
+        "developer_concentration": 0.005157634658269493,
+        "price_volatility": 0.10026741794936637,
+        "illiquidity": 1758.0,
+        "anomaly_density": 0.012514220705346985
+      },
+      "reason": null
+    },
+    {
+      "area_key": "al barsha south fourth",
+      "n": 1049,
+      "score": 22.9,
+      "components": {
+        "offplan_share": 72.1,
+        "developer_concentration": 0.0,
+        "price_volatility": 13.7,
+        "illiquidity": 0.0,
+        "anomaly_density": 7.1
+      },
+      "raw": {
+        "offplan_share": 0.5328884652049571,
+        "developer_concentration": 0.0056552111457550455,
+        "price_volatility": 0.09805908305690791,
+        "illiquidity": 1049.0,
+        "anomaly_density": 0.005719733079122974
       },
       "reason": null
     },
@@ -727,7 +707,7 @@
       },
       "raw": {
         "offplan_share": 0.3447204968944099,
-        "developer_concentration": 0.007812198603448941,
+        "developer_concentration": 0.00781219860344894,
         "price_volatility": 0.12366038437985064,
         "illiquidity": 322.0,
         "anomaly_density": 0.018633540372670808
@@ -735,22 +715,62 @@
       "reason": null
     },
     {
+      "area_key": "al muraqqabat",
+      "n": 1885,
+      "score": 22.8,
+      "components": {
+        "offplan_share": 68.0,
+        "developer_concentration": 0.0,
+        "price_volatility": 13.0,
+        "illiquidity": 0.0,
+        "anomaly_density": 19.2
+      },
+      "raw": {
+        "offplan_share": 0.5082228116710875,
+        "developer_concentration": 0.005112820043763058,
+        "price_volatility": 0.09540191798525156,
+        "illiquidity": 1885.0,
+        "anomaly_density": 0.015384615384615385
+      },
+      "reason": null
+    },
+    {
+      "area_key": "madinat al mataar",
+      "n": 2186,
+      "score": 22.6,
+      "components": {
+        "offplan_share": 66.0,
+        "developer_concentration": 0.0,
+        "price_volatility": 13.9,
+        "illiquidity": 0.0,
+        "anomaly_density": 19.4
+      },
+      "raw": {
+        "offplan_share": 0.4958828911253431,
+        "developer_concentration": 0.004977612671169527,
+        "price_volatility": 0.09866038023172216,
+        "illiquidity": 2186.0,
+        "anomaly_density": 0.01555352241537054
+      },
+      "reason": null
+    },
+    {
       "area_key": "umm suqeim first",
       "n": 1723,
-      "score": 22.6,
+      "score": 22.5,
       "components": {
         "offplan_share": 62.1,
         "developer_concentration": 0.0,
         "price_volatility": 17.0,
         "illiquidity": 0.0,
-        "anomaly_density": 20.3
+        "anomaly_density": 18.9
       },
       "raw": {
         "offplan_share": 0.4724318049912943,
-        "developer_concentration": 0.0051089203494155255,
+        "developer_concentration": 0.005108920349415525,
         "price_volatility": 0.10938089702959526,
         "illiquidity": 1723.0,
-        "anomaly_density": 0.01625072547881602
+        "anomaly_density": 0.015089959373186303
       },
       "reason": null
     },
@@ -767,30 +787,10 @@
       },
       "raw": {
         "offplan_share": 0.48004314994606256,
-        "developer_concentration": 0.005607863810019213,
+        "developer_concentration": 0.0056078638100192126,
         "price_volatility": 0.11643006844896582,
         "illiquidity": 927.0,
         "anomaly_density": 0.006472491909385114
-      },
-      "reason": null
-    },
-    {
-      "area_key": "madinat al mataar",
-      "n": 2186,
-      "score": 22.3,
-      "components": {
-        "offplan_share": 66.0,
-        "developer_concentration": 0.0,
-        "price_volatility": 13.9,
-        "illiquidity": 0.0,
-        "anomaly_density": 16.6
-      },
-      "raw": {
-        "offplan_share": 0.4958828911253431,
-        "developer_concentration": 0.004977612671169525,
-        "price_volatility": 0.09866038023172216,
-        "illiquidity": 2186.0,
-        "anomaly_density": 0.013266239707227814
       },
       "reason": null
     },
@@ -817,40 +817,40 @@
     {
       "area_key": "meaisem first",
       "n": 1559,
-      "score": 21.9,
+      "score": 21.7,
       "components": {
         "offplan_share": 56.0,
         "developer_concentration": 0.0,
         "price_volatility": 19.3,
         "illiquidity": 0.0,
-        "anomaly_density": 20.8
+        "anomaly_density": 19.2
       },
       "raw": {
         "offplan_share": 0.43617703656189866,
-        "developer_concentration": 0.005174695872956834,
+        "developer_concentration": 0.005174695872956836,
         "price_volatility": 0.11764300349861945,
         "illiquidity": 1559.0,
-        "anomaly_density": 0.01667735728030789
+        "anomaly_density": 0.015394483643361129
       },
       "reason": null
     },
     {
       "area_key": "al goze industrial first",
       "n": 1374,
-      "score": 21.3,
+      "score": 21.2,
       "components": {
         "offplan_share": 59.4,
         "developer_concentration": 0.0,
         "price_volatility": 14.7,
         "illiquidity": 0.0,
-        "anomaly_density": 20.0
+        "anomaly_density": 19.1
       },
       "raw": {
         "offplan_share": 0.45633187772925765,
-        "developer_concentration": 0.005265176314546085,
+        "developer_concentration": 0.005265176314546084,
         "price_volatility": 0.10144383095613506,
         "illiquidity": 1374.0,
-        "anomaly_density": 0.01601164483260553
+        "anomaly_density": 0.015283842794759825
       },
       "reason": null
     },
@@ -877,40 +877,40 @@
     {
       "area_key": "jabal ali industrial first",
       "n": 1717,
-      "score": 21.0,
+      "score": 21.1,
       "components": {
         "offplan_share": 60.2,
         "developer_concentration": 0.0,
         "price_volatility": 16.4,
         "illiquidity": 0.0,
-        "anomaly_density": 10.2
+        "anomaly_density": 10.9
       },
       "raw": {
         "offplan_share": 0.46126965637740247,
         "developer_concentration": 0.005110768365541203,
         "price_volatility": 0.1074555797804894,
         "illiquidity": 1717.0,
-        "anomaly_density": 0.008153756552125802
+        "anomaly_density": 0.008736167734420501
       },
       "reason": null
     },
     {
       "area_key": "mirdif",
       "n": 890,
-      "score": 20.9,
+      "score": 20.8,
       "components": {
         "offplan_share": 60.7,
         "developer_concentration": 0.0,
         "price_volatility": 15.3,
         "illiquidity": 0.0,
-        "anomaly_density": 11.2
+        "anomaly_density": 9.8
       },
       "raw": {
         "offplan_share": 0.4640449438202247,
-        "developer_concentration": 0.005782098219921727,
+        "developer_concentration": 0.005782098219921728,
         "price_volatility": 0.10365871630201516,
         "illiquidity": 890.0,
-        "anomaly_density": 0.008988764044943821
+        "anomaly_density": 0.007865168539325843
       },
       "reason": null
     },
@@ -923,34 +923,14 @@
         "developer_concentration": 0.0,
         "price_volatility": 13.7,
         "illiquidity": 0.0,
-        "anomaly_density": 20.7
+        "anomaly_density": 20.1
       },
       "raw": {
         "offplan_share": 0.4466873706004141,
         "developer_concentration": 0.005146513551860571,
         "price_volatility": 0.09802613141464425,
         "illiquidity": 1932.0,
-        "anomaly_density": 0.016563146997929608
-      },
-      "reason": null
-    },
-    {
-      "area_key": "al barsha third",
-      "n": 1234,
-      "score": 20.2,
-      "components": {
-        "offplan_share": 51.3,
-        "developer_concentration": 0.0,
-        "price_volatility": 16.8,
-        "illiquidity": 0.0,
-        "anomaly_density": 23.3
-      },
-      "raw": {
-        "offplan_share": 0.40761750405186387,
-        "developer_concentration": 0.005543895410689566,
-        "price_volatility": 0.10886299590650474,
-        "illiquidity": 1234.0,
-        "anomaly_density": 0.018638573743922204
+        "anomaly_density": 0.016045548654244308
       },
       "reason": null
     },
@@ -975,22 +955,22 @@
       "reason": null
     },
     {
-      "area_key": "hor al anz",
-      "n": 739,
+      "area_key": "al barsha third",
+      "n": 1234,
       "score": 20.0,
       "components": {
-        "offplan_share": 49.9,
+        "offplan_share": 51.3,
         "developer_concentration": 0.0,
-        "price_volatility": 18.9,
+        "price_volatility": 16.8,
         "illiquidity": 0.0,
-        "anomaly_density": 18.6
+        "anomaly_density": 21.3
       },
       "raw": {
-        "offplan_share": 0.39918809201623817,
-        "developer_concentration": 0.005971204183688232,
-        "price_volatility": 0.11627244203063515,
-        "illiquidity": 739.0,
-        "anomaly_density": 0.014884979702300407
+        "offplan_share": 0.40761750405186387,
+        "developer_concentration": 0.005543895410689566,
+        "price_volatility": 0.10886299590650474,
+        "illiquidity": 1234.0,
+        "anomaly_density": 0.017017828200972446
       },
       "reason": null
     },
@@ -1007,7 +987,7 @@
       },
       "raw": {
         "offplan_share": 0.4235382308845577,
-        "developer_concentration": 0.0053462773860446094,
+        "developer_concentration": 0.005346277386044611,
         "price_volatility": 0.09682634827416386,
         "illiquidity": 1334.0,
         "anomaly_density": 0.019490254872563718
@@ -1037,100 +1017,120 @@
     {
       "area_key": "al warsan fourth",
       "n": 453,
-      "score": 19.5,
+      "score": 19.8,
       "components": {
         "offplan_share": 39.6,
         "developer_concentration": 0.0,
         "price_volatility": 20.9,
         "illiquidity": 0.0,
-        "anomaly_density": 33.1
+        "anomaly_density": 35.9
       },
       "raw": {
         "offplan_share": 0.33774834437086093,
-        "developer_concentration": 0.006603024233829902,
+        "developer_concentration": 0.0066030242338299015,
         "price_volatility": 0.12311175198655629,
         "illiquidity": 453.0,
-        "anomaly_density": 0.026490066225165563
+        "anomaly_density": 0.02869757174392936
       },
       "reason": null
     },
     {
-      "area_key": "al merkadh",
-      "n": 1784,
-      "score": 19.3,
+      "area_key": "hor al anz",
+      "n": 739,
+      "score": 19.7,
       "components": {
-        "offplan_share": 50.8,
+        "offplan_share": 49.9,
         "developer_concentration": 0.0,
-        "price_volatility": 14.5,
+        "price_volatility": 18.9,
         "illiquidity": 0.0,
-        "anomaly_density": 23.1
+        "anomaly_density": 15.2
       },
       "raw": {
-        "offplan_share": 0.4047085201793722,
-        "developer_concentration": 0.005168639023507409,
-        "price_volatility": 0.10065041507920258,
-        "illiquidity": 1784.0,
-        "anomaly_density": 0.018497757847533634
+        "offplan_share": 0.39918809201623817,
+        "developer_concentration": 0.005971204183688232,
+        "price_volatility": 0.11627244203063515,
+        "illiquidity": 739.0,
+        "anomaly_density": 0.012178619756427604
       },
       "reason": null
     },
     {
       "area_key": "al yelayiss 1",
       "n": 541,
-      "score": 19.1,
+      "score": 19.6,
       "components": {
         "offplan_share": 38.8,
         "developer_concentration": 0.0,
         "price_volatility": 26.0,
         "illiquidity": 0.0,
-        "anomaly_density": 16.2
+        "anomaly_density": 20.8
       },
       "raw": {
         "offplan_share": 0.33271719038817005,
-        "developer_concentration": 0.006112456907007969,
+        "developer_concentration": 0.006112456907007971,
         "price_volatility": 0.14093053212760778,
         "illiquidity": 541.0,
-        "anomaly_density": 0.012939001848428836
+        "anomaly_density": 0.0166358595194085
       },
       "reason": null
     },
     {
       "area_key": "port saeed",
       "n": 1284,
-      "score": 19.0,
+      "score": 19.3,
       "components": {
         "offplan_share": 56.5,
         "developer_concentration": 0.0,
         "price_volatility": 10.2,
         "illiquidity": 0.0,
-        "anomaly_density": 17.5
+        "anomaly_density": 20.4
       },
       "raw": {
         "offplan_share": 0.4392523364485981,
         "developer_concentration": 0.005261255228501273,
         "price_volatility": 0.08582984998331844,
         "illiquidity": 1284.0,
-        "anomaly_density": 0.014018691588785047
+        "anomaly_density": 0.016355140186915886
       },
       "reason": null
     },
     {
-      "area_key": "al hebiah first",
-      "n": 975,
-      "score": 18.3,
+      "area_key": "al merkadh",
+      "n": 1784,
+      "score": 19.1,
       "components": {
-        "offplan_share": 45.7,
+        "offplan_share": 50.8,
         "developer_concentration": 0.0,
-        "price_volatility": 19.5,
+        "price_volatility": 14.5,
         "illiquidity": 0.0,
-        "anomaly_density": 10.3
+        "anomaly_density": 21.0
       },
       "raw": {
-        "offplan_share": 0.37435897435897436,
-        "developer_concentration": 0.005481656804733727,
-        "price_volatility": 0.11824414437506171,
-        "illiquidity": 975.0,
-        "anomaly_density": 0.008205128205128205
+        "offplan_share": 0.4047085201793722,
+        "developer_concentration": 0.0051686390235074105,
+        "price_volatility": 0.10065041507920258,
+        "illiquidity": 1784.0,
+        "anomaly_density": 0.016816143497757848
+      },
+      "reason": null
+    },
+    {
+      "area_key": "al aweer first",
+      "n": 1969,
+      "score": 18.2,
+      "components": {
+        "offplan_share": 45.3,
+        "developer_concentration": 0.0,
+        "price_volatility": 16.3,
+        "illiquidity": 0.0,
+        "anomaly_density": 19.7
+      },
+      "raw": {
+        "offplan_share": 0.37176231589639414,
+        "developer_concentration": 0.005067629001168698,
+        "price_volatility": 0.10705976999388196,
+        "illiquidity": 1969.0,
+        "anomaly_density": 0.01574403250380904
       },
       "reason": null
     },
@@ -1155,162 +1155,162 @@
       "reason": null
     },
     {
-      "area_key": "al aweer first",
-      "n": 1969,
-      "score": 18.0,
+      "area_key": "al hebiah first",
+      "n": 975,
+      "score": 18.1,
       "components": {
-        "offplan_share": 45.3,
+        "offplan_share": 45.7,
         "developer_concentration": 0.0,
-        "price_volatility": 16.3,
+        "price_volatility": 19.5,
         "illiquidity": 0.0,
-        "anomaly_density": 17.8
+        "anomaly_density": 7.7
       },
       "raw": {
-        "offplan_share": 0.37176231589639414,
-        "developer_concentration": 0.005067629001168698,
-        "price_volatility": 0.10705976999388196,
-        "illiquidity": 1969.0,
-        "anomaly_density": 0.014220416455053326
+        "offplan_share": 0.37435897435897436,
+        "developer_concentration": 0.005481656804733727,
+        "price_volatility": 0.11824414437506171,
+        "illiquidity": 975.0,
+        "anomaly_density": 0.006153846153846154
       },
       "reason": null
     },
     {
       "area_key": "palm jumeirah",
       "n": 1960,
-      "score": 17.7,
+      "score": 17.8,
       "components": {
         "offplan_share": 44.9,
         "developer_concentration": 0.0,
         "price_volatility": 14.4,
         "illiquidity": 0.0,
-        "anomaly_density": 21.0
+        "anomaly_density": 23.0
       },
       "raw": {
         "offplan_share": 0.3693877551020408,
-        "developer_concentration": 0.005024989587671802,
+        "developer_concentration": 0.005024989587671804,
         "price_volatility": 0.10050351899416382,
         "illiquidity": 1960.0,
-        "anomaly_density": 0.01683673469387755
+        "anomaly_density": 0.018367346938775512
       },
       "reason": null
     },
     {
       "area_key": "umm suqeim second",
       "n": 1997,
-      "score": 17.4,
+      "score": 17.6,
       "components": {
         "offplan_share": 45.9,
         "developer_concentration": 0.0,
         "price_volatility": 14.7,
         "illiquidity": 0.0,
-        "anomaly_density": 15.0
+        "anomaly_density": 16.9
       },
       "raw": {
         "offplan_share": 0.3755633450175263,
-        "developer_concentration": 0.005035344704588177,
+        "developer_concentration": 0.005035344704588175,
         "price_volatility": 0.1015303109677711,
         "illiquidity": 1997.0,
-        "anomaly_density": 0.012018027040560842
+        "anomaly_density": 0.013520280420630946
       },
       "reason": null
     },
     {
       "area_key": "al goze industrial fourth",
       "n": 2161,
-      "score": 16.9,
+      "score": 16.8,
       "components": {
         "offplan_share": 43.5,
         "developer_concentration": 0.0,
         "price_volatility": 15.0,
         "illiquidity": 0.0,
-        "anomaly_density": 15.0
+        "anomaly_density": 14.5
       },
       "raw": {
         "offplan_share": 0.36094400740397964,
-        "developer_concentration": 0.005015288267189102,
+        "developer_concentration": 0.005015288267189104,
         "price_volatility": 0.10265938344219722,
         "illiquidity": 2161.0,
-        "anomaly_density": 0.012031466913465988
-      },
-      "reason": null
-    },
-    {
-      "area_key": "emirates hills second",
-      "n": 420,
-      "score": 16.8,
-      "components": {
-        "offplan_share": 21.8,
-        "developer_concentration": 0.0,
-        "price_volatility": 33.8,
-        "illiquidity": 0.0,
-        "anomaly_density": 11.9
-      },
-      "raw": {
-        "offplan_share": 0.23095238095238096,
-        "developer_concentration": 0.00665532879818594,
-        "price_volatility": 0.16814613596810404,
-        "illiquidity": 420.0,
-        "anomaly_density": 0.009523809523809525
+        "anomaly_density": 0.01156871818602499
       },
       "reason": null
     },
     {
       "area_key": "al goze industrial second",
       "n": 1296,
-      "score": 16.5,
+      "score": 16.8,
       "components": {
         "offplan_share": 44.7,
         "developer_concentration": 0.0,
         "price_volatility": 13.3,
         "illiquidity": 0.0,
-        "anomaly_density": 13.5
+        "anomaly_density": 16.4
       },
       "raw": {
         "offplan_share": 0.3680555555555556,
         "developer_concentration": 0.005204761088248742,
         "price_volatility": 0.09640539694331784,
         "illiquidity": 1296.0,
-        "anomaly_density": 0.010802469135802469
+        "anomaly_density": 0.013117283950617283
       },
       "reason": null
     },
     {
-      "area_key": "al jadaf",
-      "n": 2056,
+      "area_key": "emirates hills second",
+      "n": 420,
       "score": 16.5,
       "components": {
-        "offplan_share": 36.0,
+        "offplan_share": 21.8,
         "developer_concentration": 0.0,
-        "price_volatility": 17.1,
+        "price_volatility": 33.8,
         "illiquidity": 0.0,
-        "anomaly_density": 23.1
+        "anomaly_density": 8.9
       },
       "raw": {
-        "offplan_share": 0.316147859922179,
-        "developer_concentration": 0.005115047161955518,
-        "price_volatility": 0.10992341395231472,
-        "illiquidity": 2056.0,
-        "anomaly_density": 0.01848249027237354
+        "offplan_share": 0.23095238095238096,
+        "developer_concentration": 0.006655328798185942,
+        "price_volatility": 0.16814613596810404,
+        "illiquidity": 420.0,
+        "anomaly_density": 0.007142857142857143
       },
       "reason": null
     },
     {
       "area_key": "zaabeel first",
       "n": 1434,
-      "score": 16.3,
+      "score": 16.4,
       "components": {
         "offplan_share": 34.5,
         "developer_concentration": 0.0,
         "price_volatility": 17.6,
         "illiquidity": 0.0,
-        "anomaly_density": 23.5
+        "anomaly_density": 25.3
       },
       "raw": {
         "offplan_share": 0.3068340306834031,
         "developer_concentration": 0.005266597806994509,
         "price_volatility": 0.11173339789019336,
         "illiquidity": 1434.0,
-        "anomaly_density": 0.01882845188284519
+        "anomaly_density": 0.020223152022315203
+      },
+      "reason": null
+    },
+    {
+      "area_key": "al jadaf",
+      "n": 2056,
+      "score": 16.4,
+      "components": {
+        "offplan_share": 36.0,
+        "developer_concentration": 0.0,
+        "price_volatility": 17.1,
+        "illiquidity": 0.0,
+        "anomaly_density": 22.5
+      },
+      "raw": {
+        "offplan_share": 0.316147859922179,
+        "developer_concentration": 0.005115047161955518,
+        "price_volatility": 0.10992341395231472,
+        "illiquidity": 2056.0,
+        "anomaly_density": 0.01799610894941634
       },
       "reason": null
     },
@@ -1327,7 +1327,7 @@
       },
       "raw": {
         "offplan_share": 0.35418583256669733,
-        "developer_concentration": 0.005368285728552457,
+        "developer_concentration": 0.005368285728552458,
         "price_volatility": 0.0949594263735902,
         "illiquidity": 1087.0,
         "anomaly_density": 0.013799448022079117
@@ -1347,7 +1347,7 @@
       },
       "raw": {
         "offplan_share": 0.3379694019471488,
-        "developer_concentration": 0.00521122483127354,
+        "developer_concentration": 0.005211224831273539,
         "price_volatility": 0.10420366848851385,
         "illiquidity": 1438.0,
         "anomaly_density": 0.012517385257301807
@@ -1357,20 +1357,20 @@
     {
       "area_key": "hadaeq sheikh mohammed bin rashid",
       "n": 1902,
-      "score": 15.9,
+      "score": 15.8,
       "components": {
         "offplan_share": 33.3,
         "developer_concentration": 0.0,
         "price_volatility": 17.4,
         "illiquidity": 0.0,
-        "anomaly_density": 23.7
+        "anomaly_density": 22.3
       },
       "raw": {
         "offplan_share": 0.2996845425867508,
-        "developer_concentration": 0.0051061420763577215,
+        "developer_concentration": 0.005106142076357722,
         "price_volatility": 0.11086178388773278,
         "illiquidity": 1902.0,
-        "anomaly_density": 0.01892744479495268
+        "anomaly_density": 0.017875920084121977
       },
       "reason": null
     },
@@ -1387,7 +1387,7 @@
       },
       "raw": {
         "offplan_share": 0.3127413127413127,
-        "developer_concentration": 0.005639947724889811,
+        "developer_concentration": 0.00563994772488981,
         "price_volatility": 0.11395232484855064,
         "illiquidity": 777.0,
         "anomaly_density": 0.010296010296010296
@@ -1395,62 +1395,82 @@
       "reason": null
     },
     {
-      "area_key": "umm suqeim third",
-      "n": 1861,
-      "score": 15.4,
-      "components": {
-        "offplan_share": 35.6,
-        "developer_concentration": 0.0,
-        "price_volatility": 14.7,
-        "illiquidity": 0.0,
-        "anomaly_density": 20.8
-      },
-      "raw": {
-        "offplan_share": 0.3138097796883396,
-        "developer_concentration": 0.00512600477980528,
-        "price_volatility": 0.10155376225086632,
-        "illiquidity": 1861.0,
-        "anomaly_density": 0.016657710908113917
-      },
-      "reason": null
-    },
-    {
       "area_key": "dubai investment park first",
       "n": 681,
-      "score": 15.4,
+      "score": 15.5,
       "components": {
         "offplan_share": 33.3,
         "developer_concentration": 0.0,
         "price_volatility": 17.4,
         "illiquidity": 0.0,
-        "anomaly_density": 18.4
+        "anomaly_density": 20.2
       },
       "raw": {
         "offplan_share": 0.29955947136563876,
         "developer_concentration": 0.0060095609592009675,
         "price_volatility": 0.11075015689295684,
         "illiquidity": 681.0,
-        "anomaly_density": 0.014684287812041116
+        "anomaly_density": 0.016152716593245228
+      },
+      "reason": null
+    },
+    {
+      "area_key": "umm suqeim third",
+      "n": 1861,
+      "score": 15.5,
+      "components": {
+        "offplan_share": 35.6,
+        "developer_concentration": 0.0,
+        "price_volatility": 14.7,
+        "illiquidity": 0.0,
+        "anomaly_density": 21.5
+      },
+      "raw": {
+        "offplan_share": 0.3138097796883396,
+        "developer_concentration": 0.005126004779805281,
+        "price_volatility": 0.10155376225086632,
+        "illiquidity": 1861.0,
+        "anomaly_density": 0.017195056421278884
       },
       "reason": null
     },
     {
       "area_key": "nad al hamar",
       "n": 1964,
-      "score": 15.3,
+      "score": 15.4,
       "components": {
         "offplan_share": 32.0,
         "developer_concentration": 0.0,
         "price_volatility": 15.5,
         "illiquidity": 0.0,
-        "anomaly_density": 26.1
+        "anomaly_density": 27.4
       },
       "raw": {
         "offplan_share": 0.29175152749490835,
         "developer_concentration": 0.005128463047689365,
         "price_volatility": 0.10432702618852581,
         "illiquidity": 1964.0,
-        "anomaly_density": 0.020875763747454174
+        "anomaly_density": 0.02189409368635438
+      },
+      "reason": null
+    },
+    {
+      "area_key": "nad al shiba first",
+      "n": 1594,
+      "score": 14.9,
+      "components": {
+        "offplan_share": 37.0,
+        "developer_concentration": 0.0,
+        "price_volatility": 13.3,
+        "illiquidity": 0.0,
+        "anomaly_density": 16.5
+      },
+      "raw": {
+        "offplan_share": 0.321831869510665,
+        "developer_concentration": 0.005245517617036278,
+        "price_volatility": 0.09668337442447959,
+        "illiquidity": 1594.0,
+        "anomaly_density": 0.013174404015056462
       },
       "reason": null
     },
@@ -1467,7 +1487,7 @@
       },
       "raw": {
         "offplan_share": 0.3309993634627626,
-        "developer_concentration": 0.005242619551295945,
+        "developer_concentration": 0.005242619551295944,
         "price_volatility": 0.09654372300984104,
         "illiquidity": 1571.0,
         "anomaly_density": 0.010184595798854232
@@ -1475,62 +1495,22 @@
       "reason": null
     },
     {
-      "area_key": "nad al shiba first",
-      "n": 1594,
-      "score": 14.7,
-      "components": {
-        "offplan_share": 37.0,
-        "developer_concentration": 0.0,
-        "price_volatility": 13.3,
-        "illiquidity": 0.0,
-        "anomaly_density": 14.1
-      },
-      "raw": {
-        "offplan_share": 0.321831869510665,
-        "developer_concentration": 0.005245517617036279,
-        "price_volatility": 0.09668337442447959,
-        "illiquidity": 1594.0,
-        "anomaly_density": 0.011292346298619825
-      },
-      "reason": null
-    },
-    {
       "area_key": "um ramool",
       "n": 1208,
-      "score": 14.6,
+      "score": 14.7,
       "components": {
         "offplan_share": 35.1,
         "developer_concentration": 0.0,
         "price_volatility": 15.6,
         "illiquidity": 0.0,
-        "anomaly_density": 11.4
+        "anomaly_density": 12.4
       },
       "raw": {
         "offplan_share": 0.31043046357615894,
-        "developer_concentration": 0.005345160299986845,
+        "developer_concentration": 0.005345160299986844,
         "price_volatility": 0.10447903452467942,
         "illiquidity": 1208.0,
-        "anomaly_density": 0.009105960264900662
-      },
-      "reason": null
-    },
-    {
-      "area_key": "hor al anz east",
-      "n": 2280,
-      "score": 14.0,
-      "components": {
-        "offplan_share": 31.1,
-        "developer_concentration": 0.0,
-        "price_volatility": 14.1,
-        "illiquidity": 0.0,
-        "anomaly_density": 19.7
-      },
-      "raw": {
-        "offplan_share": 0.2868421052631579,
-        "developer_concentration": 0.005047706986765158,
-        "price_volatility": 0.09930080097760871,
-        "illiquidity": 2280.0,
-        "anomaly_density": 0.015789473684210527
+        "anomaly_density": 0.009933774834437087
       },
       "reason": null
     },
@@ -1547,7 +1527,7 @@
       },
       "raw": {
         "offplan_share": 0.2728624535315985,
-        "developer_concentration": 0.005328284573181686,
+        "developer_concentration": 0.005328284573181684,
         "price_volatility": 0.11689853475944222,
         "illiquidity": 1345.0,
         "anomaly_density": 0.008178438661710037
@@ -1557,120 +1537,160 @@
     {
       "area_key": "al barsha second",
       "n": 951,
-      "score": 13.5,
+      "score": 13.9,
       "components": {
         "offplan_share": 24.0,
         "developer_concentration": 0.0,
         "price_volatility": 18.7,
         "illiquidity": 0.0,
-        "anomaly_density": 18.4
+        "anomaly_density": 22.3
       },
       "raw": {
         "offplan_share": 0.24395373291272346,
         "developer_concentration": 0.005677791156798811,
         "price_volatility": 0.11560414415258322,
         "illiquidity": 951.0,
-        "anomaly_density": 0.014721345951629864
+        "anomaly_density": 0.017875920084121977
       },
       "reason": null
     },
     {
-      "area_key": "jabal ali first",
-      "n": 1424,
-      "score": 13.4,
+      "area_key": "hor al anz east",
+      "n": 2280,
+      "score": 13.8,
       "components": {
-        "offplan_share": 30.4,
+        "offplan_share": 31.1,
         "developer_concentration": 0.0,
-        "price_volatility": 15.0,
+        "price_volatility": 14.1,
         "illiquidity": 0.0,
-        "anomaly_density": 13.2
+        "anomaly_density": 18.1
       },
       "raw": {
-        "offplan_share": 0.28230337078651685,
-        "developer_concentration": 0.005321100555485417,
-        "price_volatility": 0.10235709652210509,
-        "illiquidity": 1424.0,
-        "anomaly_density": 0.010533707865168539
+        "offplan_share": 0.2868421052631579,
+        "developer_concentration": 0.005047706986765159,
+        "price_volatility": 0.09930080097760871,
+        "illiquidity": 2280.0,
+        "anomaly_density": 0.014473684210526316
       },
       "reason": null
     },
     {
       "area_key": "al warsan first",
       "n": 398,
-      "score": 13.2,
+      "score": 13.5,
       "components": {
         "offplan_share": 17.7,
         "developer_concentration": 0.0,
         "price_volatility": 22.6,
         "illiquidity": 0.5,
-        "anomaly_density": 18.8
+        "anomaly_density": 22.0
       },
       "raw": {
         "offplan_share": 0.20603015075376885,
-        "developer_concentration": 0.007259917678846494,
+        "developer_concentration": 0.007259917678846492,
         "price_volatility": 0.12912206323931855,
         "illiquidity": 398.0,
-        "anomaly_density": 0.01507537688442211
+        "anomaly_density": 0.017587939698492462
       },
       "reason": null
     },
     {
       "area_key": "al warqaa first",
       "n": 581,
-      "score": 12.5,
+      "score": 13.3,
       "components": {
         "offplan_share": 18.9,
         "developer_concentration": 0.0,
         "price_volatility": 21.5,
         "illiquidity": 0.0,
-        "anomaly_density": 12.9
+        "anomaly_density": 21.5
       },
       "raw": {
         "offplan_share": 0.2134251290877797,
-        "developer_concentration": 0.00620036082367335,
+        "developer_concentration": 0.006200360823673352,
         "price_volatility": 0.1252015352970029,
         "illiquidity": 581.0,
-        "anomaly_density": 0.010327022375215147
+        "anomaly_density": 0.01721170395869191
+      },
+      "reason": null
+    },
+    {
+      "area_key": "jabal ali first",
+      "n": 1424,
+      "score": 13.2,
+      "components": {
+        "offplan_share": 30.4,
+        "developer_concentration": 0.0,
+        "price_volatility": 15.0,
+        "illiquidity": 0.0,
+        "anomaly_density": 11.4
+      },
+      "raw": {
+        "offplan_share": 0.28230337078651685,
+        "developer_concentration": 0.005321100555485417,
+        "price_volatility": 0.10235709652210509,
+        "illiquidity": 1424.0,
+        "anomaly_density": 0.009129213483146067
       },
       "reason": null
     },
     {
       "area_key": "al nahda second",
       "n": 2089,
-      "score": 12.4,
+      "score": 12.5,
       "components": {
         "offplan_share": 26.6,
         "developer_concentration": 0.0,
         "price_volatility": 14.2,
         "illiquidity": 0.0,
-        "anomaly_density": 15.0
+        "anomaly_density": 15.6
       },
       "raw": {
         "offplan_share": 0.2594542843465773,
         "developer_concentration": 0.005082355982154582,
         "price_volatility": 0.09985404794193757,
         "illiquidity": 2089.0,
-        "anomaly_density": 0.011967448539971278
+        "anomaly_density": 0.01244614648157013
       },
       "reason": null
     },
     {
       "area_key": "al hebiah fourth",
       "n": 1055,
-      "score": 11.9,
+      "score": 12.2,
       "components": {
         "offplan_share": 15.9,
         "developer_concentration": 0.0,
         "price_volatility": 22.2,
         "illiquidity": 0.0,
-        "anomaly_density": 13.0
+        "anomaly_density": 15.4
       },
       "raw": {
         "offplan_share": 0.195260663507109,
-        "developer_concentration": 0.005605444621639224,
+        "developer_concentration": 0.0056054446216392256,
         "price_volatility": 0.12784837869301208,
         "illiquidity": 1055.0,
-        "anomaly_density": 0.01042654028436019
+        "anomaly_density": 0.012322274881516588
+      },
+      "reason": null
+    },
+    {
+      "area_key": "al barsha first",
+      "n": 1710,
+      "score": 12.0,
+      "components": {
+        "offplan_share": 20.4,
+        "developer_concentration": 0.0,
+        "price_volatility": 16.1,
+        "illiquidity": 0.0,
+        "anomaly_density": 20.5
+      },
+      "raw": {
+        "offplan_share": 0.2222222222222222,
+        "developer_concentration": 0.005180397387230258,
+        "price_volatility": 0.10647331820154343,
+        "illiquidity": 1710.0,
+        "anomaly_density": 0.016374269005847954
       },
       "reason": null
     },
@@ -1687,7 +1707,7 @@
       },
       "raw": {
         "offplan_share": 0.22684414864115363,
-        "developer_concentration": 0.005107959280289922,
+        "developer_concentration": 0.005107959280289924,
         "price_volatility": 0.10165145053784386,
         "illiquidity": 1803.0,
         "anomaly_density": 0.01774819744869662
@@ -1695,62 +1715,42 @@
       "reason": null
     },
     {
-      "area_key": "al barsha first",
-      "n": 1710,
-      "score": 11.8,
-      "components": {
-        "offplan_share": 20.4,
-        "developer_concentration": 0.0,
-        "price_volatility": 16.1,
-        "illiquidity": 0.0,
-        "anomaly_density": 18.3
-      },
-      "raw": {
-        "offplan_share": 0.2222222222222222,
-        "developer_concentration": 0.005180397387230259,
-        "price_volatility": 0.10647331820154343,
-        "illiquidity": 1710.0,
-        "anomaly_density": 0.014619883040935672
-      },
-      "reason": null
-    },
-    {
       "area_key": "emirates hills first",
       "n": 1679,
-      "score": 11.7,
+      "score": 11.5,
       "components": {
         "offplan_share": 21.5,
         "developer_concentration": 0.0,
         "price_volatility": 15.8,
         "illiquidity": 0.0,
-        "anomaly_density": 15.6
+        "anomaly_density": 14.1
       },
       "raw": {
         "offplan_share": 0.22870756402620607,
-        "developer_concentration": 0.005151751961039235,
+        "developer_concentration": 0.005151751961039234,
         "price_volatility": 0.10515645269063455,
         "illiquidity": 1679.0,
-        "anomaly_density": 0.012507444907683145
+        "anomaly_density": 0.011316259678379988
       },
       "reason": null
     },
     {
       "area_key": "al rigga",
       "n": 2065,
-      "score": 11.3,
+      "score": 11.4,
       "components": {
         "offplan_share": 23.0,
         "developer_concentration": 0.0,
         "price_volatility": 13.7,
         "illiquidity": 0.0,
-        "anomaly_density": 14.5
+        "anomaly_density": 15.7
       },
       "raw": {
         "offplan_share": 0.23825665859564166,
-        "developer_concentration": 0.005027642772133273,
+        "developer_concentration": 0.005027642772133271,
         "price_volatility": 0.09786374933867922,
         "illiquidity": 2065.0,
-        "anomaly_density": 0.01162227602905569
+        "anomaly_density": 0.012590799031476998
       },
       "reason": null
     },
@@ -1767,7 +1767,7 @@
       },
       "raw": {
         "offplan_share": 0.17969451931716082,
-        "developer_concentration": 0.0049920525941479,
+        "developer_concentration": 0.0049920525941479004,
         "price_volatility": 0.11130955949272461,
         "illiquidity": 2226.0,
         "anomaly_density": 0.018418688230008983
@@ -1777,20 +1777,20 @@
     {
       "area_key": "al thanyah third",
       "n": 1962,
-      "score": 10.9,
+      "score": 10.7,
       "components": {
         "offplan_share": 19.4,
         "developer_concentration": 0.0,
         "price_volatility": 13.1,
         "illiquidity": 0.0,
-        "anomaly_density": 21.0
+        "anomaly_density": 19.8
       },
       "raw": {
         "offplan_share": 0.2161060142711519,
         "developer_concentration": 0.005041767070776975,
         "price_volatility": 0.09581970193311866,
         "illiquidity": 1962.0,
-        "anomaly_density": 0.016819571865443424
+        "anomaly_density": 0.01580020387359837
       },
       "reason": null
     },
@@ -1803,14 +1803,14 @@
         "developer_concentration": 0.0,
         "price_volatility": 17.6,
         "illiquidity": 0.0,
-        "anomaly_density": 21.5
+        "anomaly_density": 20.9
       },
       "raw": {
         "offplan_share": 0.17693661971830985,
         "developer_concentration": 0.004959333465582225,
         "price_volatility": 0.11150311898975503,
         "illiquidity": 2272.0,
-        "anomaly_density": 0.01716549295774648
+        "anomaly_density": 0.016725352112676055
       },
       "reason": null
     },
@@ -1827,7 +1827,7 @@
       },
       "raw": {
         "offplan_share": 0.2073945696129405,
-        "developer_concentration": 0.005108529980199315,
+        "developer_concentration": 0.005108529980199316,
         "price_volatility": 0.09530929462194328,
         "illiquidity": 1731.0,
         "anomaly_density": 0.01733102253032929
@@ -1843,54 +1843,54 @@
         "developer_concentration": 0.0,
         "price_volatility": 17.8,
         "illiquidity": 0.0,
-        "anomaly_density": 18.1
+        "anomaly_density": 18.7
       },
       "raw": {
         "offplan_share": 0.1794871794871795,
         "developer_concentration": 0.005011364569926334,
         "price_volatility": 0.11213137492016229,
         "illiquidity": 2067.0,
-        "anomaly_density": 0.01451378809869376
+        "anomaly_density": 0.014997581035316884
       },
       "reason": null
     },
     {
       "area_key": "jumeirah second",
       "n": 1110,
-      "score": 10.0,
+      "score": 10.1,
       "components": {
         "offplan_share": 14.0,
         "developer_concentration": 0.0,
         "price_volatility": 15.4,
         "illiquidity": 0.0,
-        "anomaly_density": 19.1
+        "anomaly_density": 20.3
       },
       "raw": {
         "offplan_share": 0.1837837837837838,
         "developer_concentration": 0.0055141628114601104,
         "price_volatility": 0.10372610670073727,
         "illiquidity": 1110.0,
-        "anomaly_density": 0.015315315315315315
+        "anomaly_density": 0.016216216216216217
       },
       "reason": null
     },
     {
       "area_key": "wadi al safa 3",
       "n": 525,
-      "score": 9.0,
+      "score": 10.0,
       "components": {
         "offplan_share": 11.0,
         "developer_concentration": 0.0,
         "price_volatility": 18.6,
         "illiquidity": 0.0,
-        "anomaly_density": 7.1
+        "anomaly_density": 16.7
       },
       "raw": {
         "offplan_share": 0.1657142857142857,
-        "developer_concentration": 0.006585034013605442,
+        "developer_concentration": 0.006585034013605443,
         "price_volatility": 0.11496479423935496,
         "illiquidity": 525.0,
-        "anomaly_density": 0.005714285714285714
+        "anomaly_density": 0.013333333333333334
       },
       "reason": null
     },
@@ -1917,20 +1917,20 @@
     {
       "area_key": "al barsha south fifth",
       "n": 1831,
-      "score": 8.2,
+      "score": 8.1,
       "components": {
         "offplan_share": 9.2,
         "developer_concentration": 0.0,
         "price_volatility": 12.7,
         "illiquidity": 0.0,
-        "anomaly_density": 21.2
+        "anomaly_density": 19.8
       },
       "raw": {
         "offplan_share": 0.15510649918077554,
-        "developer_concentration": 0.005143232293163346,
+        "developer_concentration": 0.005143232293163345,
         "price_volatility": 0.09458483356204517,
         "illiquidity": 1831.0,
-        "anomaly_density": 0.016930638995084655
+        "anomaly_density": 0.015838339705079193
       },
       "reason": null
     }
