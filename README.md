@@ -68,6 +68,24 @@ Every figure below is read from `docs/results/`, produced by the models in `fina
 | Mortgage and DCF | 20% deposit case exact; levered 8.61% vs unlevered 5.75% at 3% growth | IRR matches a hand-computed case |
 | Forecast | beats seasonal naive on 77/86 areas (90%), 10.1% vs 15.2% error | 60% of areas |
 | Risk and anomalies | 1,737 of 120,346 flagged (1.44%); 86 areas scored | score in [0,100], monotone |
+| Retrieval | recall@5 and faithfulness gated in CI at 0.80 and 0.90, over 30 cases in English, Hindi and Arabic | above both gates |
+| Red team | 10/10 controls held against the OWASP ASI threat list | every attack fails to land |
+| Journey | 30 Playwright tests green on a desktop viewport and a Pixel 7 | the full journey, on a phone |
+
+## For the viva
+
+| Document | What it is |
+|---|---|
+| [`docs/viva_qa.md`](docs/viva_qa.md) | Fifteen likely questions, answered from what the code says, each naming the file that backs it |
+| [`docs/demo_script.md`](docs/demo_script.md) | A timed three-minute run-through, with what to click and what to say |
+| [`docs/pitch.md`](docs/pitch.md) | The one-page version |
+| [`docs/security.md`](docs/security.md) | The OWASP ASI mapping and the red-team results, generated from the register and the last measured run |
+| [`docs/term4_yieldmap.ipynb`](docs/term4_yieldmap.ipynb) | Every model, with its plots and the tables the report cites |
+
+The report and the slide deck are **deliberately not generated yet**:
+`scripts/guard_synthetic.py` blocks generated figures from reaching a submitted artefact, and it
+currently blocks. That is the guard working, not a gap — the documents above describe method rather
+than figures, which is why they are here.
 
 ## Development
 
