@@ -36,6 +36,17 @@ jobs:
           uv run python -m rag.indexer
           uv run python -m rag.evals.run --gate
 
+      - name: Red team
+        # Every OWASP ASI attack in security/redteam.py must fail to land. --gate exits non-zero
+        # if any control stops holding, so a change that weakens one cannot merge quietly.
+        run: uv run python -m security.redteam --out docs/results/redteam.json --gate
+
+      - name: The published red-team results are the ones just measured
+        # The /security page reads the committed redteam.json. If the freshly-run harness reaches
+        # a different verdict on any attack, the page is showing a claim rather than a
+        # measurement. Only the verdicts are compared: the timestamp differs on every run.
+        run: uv run python scripts/check_redteam_fresh.py
+
   web:
     runs-on: ubuntu-latest
     steps:
@@ -66,3 +77,30 @@ jobs:
         # The database is not committed, so this checks the results directory: a figure computed
         # from the synthetic stand-in must never appear alongside real ones.
         run: uv run python scripts/guard_synthetic.py
+
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - run: uv python install 3.12
+      - run: uv sync --extra dev
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+
+      - name: Python dependency audit
+        # Advisory data changes daily and is outside this repo's control, so a new advisory should
+        # be loud without turning every unrelated pull request red. The report is always printed.
+        run: uv run pip-audit --progress-spinner off || echo "::warning::pip-audit reported findings"
+
+      - name: Node dependency audit
+        run: npm audit --audit-level=high || echo "::warning::npm audit reported findings at high or above"
+
+      - name: Secrets are not committed
+        # The one audit finding that must block: a key in the tree cannot be un-leaked.
+        run: uv run python scripts/scan_secrets.py

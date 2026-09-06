@@ -11,10 +11,13 @@
     "typecheck": "tsc --noEmit && npm --workspace @yieldmap/web run typecheck",
     "web:dev": "npm --workspace @yieldmap/web run dev",
     "web:build": "npm --workspace @yieldmap/web run build",
-    "web:typecheck": "npm --workspace @yieldmap/web run typecheck"
+    "web:typecheck": "npm --workspace @yieldmap/web run typecheck",
+    "e2e": "playwright test",
+    "e2e:desktop": "playwright test --project=desktop"
   },
   "devDependencies": {
     "@eslint/js": "^9.15.0",
+    "@playwright/test": "^1.63.0",
     "eslint": "^9.15.0",
     "typescript": "^5.7.2",
     "typescript-eslint": "^8.16.0",

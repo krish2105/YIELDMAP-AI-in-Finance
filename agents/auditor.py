@@ -32,6 +32,32 @@ ADVICE_LANGUAGE = re.compile(
 
 SEVERITY_ORDER = {"info": 0, "warn": 1, "block": 2}
 
+# The memo ends with a standing notice, separated by a horizontal rule. Everything above the rule
+# is the memo's claims about Dubai; everything below is the memo's statement about itself. Only the
+# first kind can carry a citation, so the citation check reads the body and the rule marks where it
+# stops. This is a structural boundary the Advisor writes, not a list of sentences to excuse.
+NOTICE_RULE = re.compile(r"^-{3,}\s*$", re.MULTILINE)
+
+
+def memo_body(memo: str) -> str:
+    """The part of the memo that makes claims, i.e. everything above the closing notice."""
+    parts = NOTICE_RULE.split(memo)
+    return parts[0] if len(parts) > 1 else memo
+
+
+def uncited_sentences(memo: str) -> list[str]:
+    """Factual sentences in the memo body that carry no bracketed citation marker."""
+    from rag.ask import is_factual, split_sentences
+
+    return [
+        s
+        for s in split_sentences(memo_body(memo))
+        if is_factual(s) and not CITATION_MARKER.search(s)
+    ]
+
+
+CITATION_MARKER = re.compile(r"\[\d+\]")
+
 
 @dataclass
 class Finding:
@@ -131,6 +157,15 @@ def audit(
             )
         if not citations:
             report.add("citations", "block", "the memo cites nothing")
+        elif uncited := uncited_sentences(memo):
+            # Rule 3, enforced rather than merely measured: a memo whose claims are not all
+            # traceable is withheld, because a partly-sourced memo reads exactly like a fully
+            # sourced one.
+            report.add(
+                "citation_coverage",
+                "block",
+                f"{len(uncited)} factual sentence(s) carry no citation: {uncited[0]!r}",
+            )
         if "not advice" not in memo.lower() and "information, not advice" not in memo.lower():
             report.add("advice_notice", "warn", "the memo does not carry the advice notice")
 

@@ -26,6 +26,20 @@ export const metadata: Metadata = {
   robots: { index: false },
 };
 
+/**
+ * Rendered per request, deliberately.
+ *
+ * The Content-Security-Policy in `middleware.ts` carries a per-request nonce, and Next stamps that
+ * nonce onto its own inline bootstrap script by reading the CSP header off the incoming request.
+ * A statically prerendered page has no incoming request at the moment its HTML is written, so the
+ * script goes out unnonced and the browser refuses it: the app ships as inert static markup with
+ * no hydration, no interactivity and no error the user can see.
+ *
+ * Every route here reads live data from the API on the client, so prerendering was only ever
+ * producing an empty shell. Giving that shell up buys a policy that actually holds.
+ */
+export const dynamic = "force-dynamic";
+
 export const viewport: Viewport = {
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#f4f1ea" },

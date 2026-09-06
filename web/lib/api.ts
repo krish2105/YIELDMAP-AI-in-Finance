@@ -2,8 +2,12 @@
 
 import type { Kpi } from "./kpi";
 
-export const API_BASE =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8000";
+/**
+ * Same origin, always. Next rewrites /api to the FastAPI service at runtime, so this build runs
+ * unchanged against a local API, a preview deployment and production — and the browser never makes
+ * a cross-origin request.
+ */
+export const API_BASE = "/api";
 
 export type Role = "viewer" | "analyst" | "admin";
 export type Provenance = "REAL" | "SYNTHETIC";
