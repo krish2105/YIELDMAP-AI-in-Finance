@@ -1,7 +1,10 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "installCommand": "npm ci",
   "buildCommand": "npm --workspace @yieldmap/web run build",
   "outputDirectory": "web/.next",
-  "installCommand": "npm ci",
-  "framework": "nextjs"
+  "env": {
+    "API_ORIGIN": "https://yieldmap-api.onrender.com"
+  }
 }

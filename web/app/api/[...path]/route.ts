@@ -17,6 +17,14 @@ import { type NextRequest, NextResponse } from "next/server";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+/**
+ * Where the analytics API lives, read per request.
+ *
+ * The fallback is the local development port on purpose. Defaulting to the deployed API would
+ * mean a developer who forgets the variable silently queries production and never notices; a
+ * connection refused on localhost says exactly what is wrong. In deployment the value comes from
+ * vercel.json, which is the right place for it: the API's URL is configuration, not a secret.
+ */
 function origin(): string {
   return (process.env.API_ORIGIN ?? "http://127.0.0.1:8000").replace(/\/$/, "");
 }
