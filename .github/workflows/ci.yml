@@ -27,7 +27,7 @@ jobs:
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: yieldmap_test
         options: >-
-          --health-cmd pg_isready
+          --health-cmd "pg_isready -U postgres -d yieldmap_test"
           --health-interval 5s
           --health-timeout 5s
           --health-retries 10
