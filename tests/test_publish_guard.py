@@ -14,6 +14,7 @@ import pytest
 
 from etl.publish import build_area_dimension, build_freshness, publish
 from etl.results import result_path, results_dir
+from scripts import guard_synthetic
 from scripts.guard_synthetic import check, db_provenance, results_provenance
 
 
@@ -214,3 +215,36 @@ class TestProvenanceGuard:
         (results / "synthetic" / "clean.json").write_text('{"provenance": "SYNTHETIC"}')
         clean, reasons = check(tmp_path / "absent.duckdb", results)
         assert clean is True
+
+
+class TestTheGuardSaysWhatItInspected:
+    """A guard that vouches for something it never opened is worse than no guard."""
+
+    def test_an_absent_database_is_not_reported_as_a_clean_one(self, tmp_path, capsys) -> None:
+        results = tmp_path / "results"
+        results.mkdir()
+        code = guard_synthetic.main(
+            ["--db", str(tmp_path / "absent.duckdb"), "--results", str(results)]
+        )
+        out = capsys.readouterr().out
+        assert code == 0
+        assert "no database" in out
+        # The reassuring line must not appear when nothing was inspected: it is the same sentence
+        # whether the data is real, generated or missing, which is how a gap becomes a green tick.
+        assert "no synthetic data in the database" not in out
+
+    def test_the_report_records_whether_a_database_was_inspected(self, tmp_path) -> None:
+        results = tmp_path / "results"
+        results.mkdir()
+        report = tmp_path / "report.json"
+        guard_synthetic.main(
+            [
+                "--db",
+                str(tmp_path / "absent.duckdb"),
+                "--results",
+                str(results),
+                "--report",
+                str(report),
+            ]
+        )
+        assert json.loads(report.read_text())["db_inspected"] is False

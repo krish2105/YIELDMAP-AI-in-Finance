@@ -114,9 +114,11 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     clean, reasons = check(args.db, args.results)
+    db_inspected = args.db.exists()
     summary = {
         "clean": clean,
         "db": str(args.db),
+        "db_inspected": db_inspected,
         "db_provenance": db_provenance(args.db),
         "flagged_results": results_provenance(args.results),
         "reasons": reasons,
@@ -126,7 +128,16 @@ def main(argv: list[str] | None = None) -> int:
         args.report.write_text(json.dumps(summary, indent=2))
 
     if clean:
-        print("provenance guard: clean — no synthetic data in the database or results")
+        # Say what was actually inspected. An absent database is not a clean one, and a guard that
+        # vouches for something it never opened is worse than no guard: it is the same reassuring
+        # line whether the data is real, generated, or missing entirely.
+        if db_inspected:
+            print("provenance guard: clean — no synthetic data in the database or results")
+        else:
+            print(
+                f"provenance guard: no database at {args.db} — nothing inspected there. "
+                f"The results directory is clean."
+            )
         return 0
 
     print("provenance guard: BLOCKED — generated data must not reach a graded artefact")

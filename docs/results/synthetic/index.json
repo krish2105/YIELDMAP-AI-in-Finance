@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-06T18:34:10+00:00",
+  "generated_at": "2026-09-06T18:53:02+00:00",
   "provenance": "SYNTHETIC",
   "method_id": "repeat_sales_v1",
   "method": "Bailey-Muth-Nourse weighted least squares on period dummies",

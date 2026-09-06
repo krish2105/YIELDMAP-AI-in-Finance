@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-06T18:34:11+00:00",
+  "generated_at": "2026-09-06T18:53:02+00:00",
   "provenance": "SYNTHETIC",
   "method_id": "yield_v1",
   "window_months": 12,
@@ -109,7 +109,7 @@
     "median_gross_yield": 0.07122748465902407,
     "median_net_yield": 0.03431839481149866,
     "median_spread": 0.0359046787354104,
-    "gross_yield_cv": 0.23109085912276936
+    "gross_yield_cv": 0.23109085912276942
   },
   "table": [
     {

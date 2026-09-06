@@ -26,6 +26,14 @@ jobs:
       - run: uv sync --extra dev
       - name: Lint
         run: uv run ruff check . && uv run ruff format --check .
+
+      - name: Build the warehouse
+        # The database is derived data and is not committed, so a fresh runner has none — and the
+        # agent, red-team and API tests all query it. They were erroring on a missing file rather
+        # than failing on their assertions, which is a worse kind of red: it looks like the code is
+        # broken when the fixture is simply absent. Sixteen seconds from empty.
+        run: uv run python -m scripts.build_all --synthetic
+
       - name: Tests
         run: uv run pytest -q
 
