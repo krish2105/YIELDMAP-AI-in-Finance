@@ -1,0 +1,55 @@
+# Risk score weights.
+#
+# The score is a weighted sum of five components, each scaled to 0-100 where higher means more
+# risk. The weights are a judgement, not a measurement, so they live here where they can be argued
+# with rather than being buried in code. The interface shows the component breakdown alongside the
+# total, because a single number is only useful if you can see what drove it.
+
+version: 1
+
+components:
+  offplan_share:
+    weight: 0.25
+    label: Off-plan exposure
+    rationale: >
+      Off-plan buyers carry completion and developer risk that a completed-property buyer does
+      not, and off-plan-heavy areas repriced hardest in past downturns.
+    # Share of transactions that are off-plan, mapped linearly onto the score.
+    scale: {low: 0.10, high: 0.70}
+
+  developer_concentration:
+    weight: 0.15
+    label: Developer concentration
+    rationale: >
+      An area where most supply comes from one developer inherits that developer's delivery and
+      financial risk. Measured as a Herfindahl-Hirschman index over project shares.
+    scale: {low: 0.10, high: 0.60}
+
+  price_volatility:
+    weight: 0.30
+    label: Price volatility
+    rationale: >
+      Standard deviation of year-on-year change in median price per square metre. The largest
+      single weight, because volatility is the risk a buyer actually experiences.
+    scale: {low: 0.05, high: 0.40}
+
+  illiquidity:
+    weight: 0.20
+    label: Illiquidity
+    rationale: >
+      Thin markets are hard to exit. Measured from transaction count relative to the market, so a
+      low count scores as high risk.
+    scale: {low: 10, high: 400}
+    inverted: true
+
+  anomaly_density:
+    weight: 0.10
+    label: Anomaly density
+    rationale: >
+      Share of transactions flagged as unusual. A high rate suggests either unreliable recording
+      or unusual market behaviour, and either way makes the other numbers less trustworthy.
+    scale: {low: 0.0, high: 0.08}
+
+# Below this many transactions an area gets no score at all, only a statement that there is not
+# enough data. A risk score from twelve sales is a guess wearing a number's clothes.
+min_transactions: 30
