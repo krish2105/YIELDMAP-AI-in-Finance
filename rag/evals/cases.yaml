@@ -1,0 +1,170 @@
+# Thirty retrieval cases across English, Hindi and Arabic.
+#
+# Each case names the question and which source should be retrieved to answer it. `expect_doc`
+# matches a corpus document id; `expect_area` matches an area fact chunk. A case with neither is a
+# refusal case: the corpus genuinely does not cover it, and retrieving nothing relevant is the
+# correct behaviour.
+#
+# The set is deliberately mixed. Concept questions test the document half, area questions test the
+# fact half and the entity detection, multilingual questions test that a question asked in Arabic
+# or Hindi still finds English sources, and refusal cases test that the system knows what it does
+# not know.
+
+version: 1
+
+cases:
+  # ---------------------------------------------------------------- concepts, English
+  - id: en_rent_increase
+    lang: en
+    question: Can my landlord raise my rent by 15 percent this year?
+    expect_doc: rent_increase_rules
+    note: the answer depends on the gap to market rate, not on the percentage alone
+
+  - id: en_rent_notice
+    lang: en
+    question: How much notice must a landlord give before changing the rent?
+    expect_doc: rent_increase_rules
+
+  - id: en_transfer_fee
+    lang: en
+    question: What fee does the Dubai Land Department charge when a property transfers?
+    expect_doc: dld_fees
+
+  - id: en_who_pays_transfer
+    lang: en
+    question: Does the buyer or the seller pay the transfer fee in Dubai?
+    expect_doc: dld_fees
+
+  - id: en_mortgage_registration
+    lang: en
+    question: Is there a fee for registering a mortgage on a Dubai property?
+    expect_doc: dld_fees
+
+  - id: en_service_charge
+    lang: en
+    question: What is a service charge and what does it pay for?
+    expect_doc: service_charges
+
+  - id: en_service_charge_variation
+    lang: en
+    question: Why do service charges differ so much between buildings?
+    expect_doc: service_charges
+
+  - id: en_mollak
+    lang: en
+    question: What is Mollak?
+    expect_doc: service_charges
+
+  - id: en_ejari
+    lang: en
+    question: What is Ejari and why does it matter?
+    expect_doc: ejari
+
+  - id: en_vacancy
+    lang: en
+    question: Can vacancy be measured from the open rent data?
+    expect_doc: ejari
+    note: it cannot, and the corpus says so explicitly
+
+  - id: en_net_yield_method
+    lang: en
+    question: How is net yield calculated and what is subtracted from the rent?
+    expect_doc: methodology
+
+  - id: en_repeat_sales
+    lang: en
+    question: Why use a repeat-sales index instead of a median price?
+    expect_doc: methodology
+
+  - id: en_anomaly_rules
+    lang: en
+    question: How are unusual transactions detected?
+    expect_doc: methodology
+
+  - id: en_small_sample
+    lang: en
+    question: What happens when there are too few sales to be confident?
+    expect_doc: methodology
+
+  - id: en_risk_components
+    lang: en
+    question: What goes into the risk score?
+    expect_doc: methodology
+
+  # ------------------------------------------------------------------ areas, English
+  - id: en_area_jvc
+    lang: en
+    question: What is the median price per square metre in JVC?
+    expect_area: jumeirah village circle
+
+  - id: en_area_marina
+    lang: en
+    question: How much does property cost in Dubai Marina?
+    expect_area: marsa dubai
+
+  - id: en_area_downtown
+    lang: en
+    question: What are prices like in Downtown Dubai?
+    expect_area: burj khalifa
+
+  - id: en_area_business_bay
+    lang: en
+    question: How many sales were recorded in Business Bay?
+    expect_area: business bay
+
+  - id: en_area_jlt
+    lang: en
+    question: What is the off-plan share in JLT?
+    expect_area: al thanyah fifth
+
+  - id: en_area_silicon_oasis
+    lang: en
+    question: What rents are recorded in Dubai Silicon Oasis?
+    expect_area: nadd hessa
+
+  - id: en_area_palm
+    lang: en
+    question: What does property go for on Palm Jumeirah?
+    expect_area: palm jumeirah
+
+  - id: en_area_arjan
+    lang: en
+    question: What is the median price in Arjan?
+    expect_area: al barsha south fourth
+
+  # ----------------------------------------------------------------------- Arabic
+  - id: ar_rent_increase
+    lang: ar
+    question: هل يستطيع المالك زيادة الإيجار عند التجديد؟
+    expect_doc: rent_increase_rules
+
+  - id: ar_transfer_fee
+    lang: ar
+    question: ما هي رسوم نقل الملكية في دائرة الأراضي والأملاك بدبي؟
+    expect_doc: dld_fees
+
+  - id: ar_service_charge
+    lang: ar
+    question: ما هي رسوم الخدمات السنوية للمبنى؟
+    expect_doc: service_charges
+
+  - id: ar_area_marina
+    lang: ar
+    question: ما هو سعر المتر المربع في Dubai Marina؟
+    expect_area: marsa dubai
+
+  # ------------------------------------------------------------------------ Hindi
+  - id: hi_rent_increase
+    lang: hi
+    question: क्या मकान मालिक नवीनीकरण पर किराया बढ़ा सकता है?
+    expect_doc: rent_increase_rules
+
+  - id: hi_service_charge
+    lang: hi
+    question: सर्विस चार्ज क्या होता है?
+    expect_doc: service_charges
+
+  - id: hi_area_jvc
+    lang: hi
+    question: JVC में संपत्ति की कीमत क्या है?
+    expect_area: jumeirah village circle

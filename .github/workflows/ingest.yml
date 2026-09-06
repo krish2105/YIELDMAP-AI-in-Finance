@@ -1,0 +1,293 @@
+name: Ingest DLD open data
+
+# Downloads run here rather than in a developer sandbox: this runner has open egress, and the
+# sandbox's network policy blocks every government domain. See CLAUDE.md for the measured evidence.
+
+on:
+  workflow_dispatch:
+    inputs:
+      max_mb:
+        description: "Cap per file in MB (0 = no cap). Keep small while proving the path works."
+        required: false
+        default: "64"
+      publish_release:
+        description: "Attach the results to a GitHub Release"
+        required: false
+        default: "true"
+  schedule:
+    # Nightly, 02:20 UTC (06:20 Gulf Standard Time), after the publisher's own overnight refresh.
+    - cron: "20 2 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    outputs:
+      verdict: ${{ steps.probe.outputs.verdict }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - run: uv python install 3.12
+      - run: uv sync
+
+      # ------------------------------------------------------------------ probe
+      - name: Probe the publisher (go/no-go for real data)
+        id: probe
+        run: |
+          set -o pipefail
+          uv run python -m etl.download probe --out docs/results/source_probe.json | tee probe.log
+          verdict=$(python3 -c "import json;print(json.load(open('docs/results/source_probe.json'))['verdict'])")
+          echo "verdict=$verdict" >> "$GITHUB_OUTPUT"
+          echo "Probe verdict: $verdict"
+
+      - name: Summarise the probe
+        if: always()
+        run: |
+          {
+            echo "## Source probe"
+            echo
+            python3 - <<'PY'
+          import json, pathlib
+          p = pathlib.Path("docs/results/source_probe.json")
+          if not p.exists():
+              print("Probe produced no report.")
+              raise SystemExit
+          r = json.loads(p.read_text())
+          print(f"**Verdict: {r['verdict']}** — {r['n_reachable']}/{r['n_candidates']} candidates reachable.\n")
+          print("| ok | status | key | url |")
+          print("|---|---|---|---|")
+          for c in r["candidates"]:
+              mark = "yes" if c.get("ok") else "no"
+              status = c.get("status") or c.get("error", "")
+              print(f"| {mark} | {status} | `{c['key']}` | {c['url']} |")
+          PY
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # -------------------------------------------------------------- discover
+      - name: Discover catalogue resources
+        if: steps.probe.outputs.verdict == 'reachable'
+        continue-on-error: true
+        run: uv run python -m etl.download discover --out docs/results/source_discovery.json
+
+      - name: Discover links a browser renders
+        if: steps.probe.outputs.verdict == 'reachable'
+        continue-on-error: true
+        run: |
+          # The DLD open-data page answers 200 with almost no HTML: its dataset list and download
+          # links are built client-side, so a plain fetch finds nothing. Drive a real browser and
+          # record both what it renders and which API it calls.
+          uv run playwright install --with-deps chromium
+          uv run python -m etl.discover_spa --out docs/results/spa_discovery.json
+
+      - name: Summarise browser discovery
+        if: always()
+        continue-on-error: true
+        run: |
+          {
+            echo "## Browser discovery"
+            echo
+            python3 - <<'PY'
+          import json, pathlib
+          p = pathlib.Path("docs/results/spa_discovery.json")
+          if not p.exists():
+              print("No browser discovery report.")
+              raise SystemExit
+          r = json.loads(p.read_text())
+          print(f"{r['n_data_links']} data links, {r['n_api_requests']} api/data requests, "
+                f"{r.get('n_endpoints', 0)} endpoints harvested from the page's own scripts.\n")
+          if r.get("endpoints"):
+              print("### Endpoints found in the page scripts\n")
+              for e in r["endpoints"][:60]:
+                  print(f"- `{e['url']}`")
+              print()
+          for page in r["pages"]:
+              print(f"### {page['url']}")
+              if page.get("error"):
+                  print(f"- failed: {page['error']}")
+              for link in page.get("data_links", [])[:20]:
+                  print(f"- link: [{link['text']}]({link['href']})")
+              for req in page.get("requests", [])[:25]:
+                  print(f"- call: `{req['method']} {req['url']}`")
+              print()
+          PY
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Summarise discovery
+        if: always()
+        continue-on-error: true
+        run: |
+          {
+            echo "## Catalogue discovery"
+            echo
+            python3 - <<'PY'
+          import json, pathlib
+          p = pathlib.Path("docs/results/source_discovery.json")
+          if not p.exists():
+              print("No discovery report (catalogue unreachable or skipped).")
+              raise SystemExit
+          r = json.loads(p.read_text())
+          print(f"{r['n_resources']} resources found.\n")
+          for key, rows in r["wanted"].items():
+              print(f"- **{key}**: {len(rows)} matching resource(s)")
+              for row in rows[:5]:
+                  print(f"  - `{row['format']}` {row['name']} — {row['url']}")
+          PY
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # ----------------------------------------------------------------- fetch
+      - name: Download the wanted CSV resources
+        if: steps.probe.outputs.verdict == 'reachable'
+        continue-on-error: true
+        env:
+          MAX_MB: ${{ inputs.max_mb || '64' }}
+        run: |
+          uv run python - <<'PY'
+          import json, os, pathlib
+          from etl.download import fetch, write_manifest
+
+          cap_mb = int(os.environ.get("MAX_MB") or 0)
+          cap = cap_mb * 1024 * 1024 or None
+          disc = pathlib.Path("docs/results/source_discovery.json")
+          if not disc.exists():
+              print("nothing discovered; skipping downloads")
+              raise SystemExit(0)
+
+          report = json.loads(disc.read_text())
+          entries = []
+          for key, rows in report["wanted"].items():
+              csvs = [r for r in rows if r["format"] in {"CSV", "ZIP", "XLSX"}]
+              if not csvs:
+                  print(f"{key}: no tabular resource found")
+                  continue
+              row = max(csvs, key=lambda r: r.get("size") or 0)
+              dest = pathlib.Path("data/raw") / f"{key}.{row['format'].lower()}"
+              print(f"{key}: {row['url']}")
+              try:
+                  entry = fetch(row["url"], dest, max_bytes=cap)
+                  entry["dataset"] = key
+                  entries.append(entry)
+              except Exception as exc:
+                  print(f"  failed: {type(exc).__name__}: {exc}")
+          if entries:
+              write_manifest(entries, pathlib.Path("data/raw/manifest.json"))
+          PY
+
+      - name: Profile whatever landed
+        if: always()
+        continue-on-error: true
+        run: |
+          if ls data/raw/*.csv >/dev/null 2>&1; then
+            uv run python -m etl.profile --raw data/raw --out docs/results/profile.json
+          else
+            echo "no CSVs downloaded; nothing to profile"
+          fi
+
+      # --------------------------------------------------------------- publish
+      - name: Commit the reports back to the branch
+        if: always() && github.event_name == 'workflow_dispatch'
+        continue-on-error: true
+        run: |
+          # The probe and discovery reports are provenance, not scratch output: they record what
+          # the publisher served and when, so they belong in the repository rather than in a log
+          # that expires.
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f docs/results/*.json docs/datasets.md 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "no report changes to commit"
+            exit 0
+          fi
+          git commit -m "chore(etl): record source probe and discovery from run ${GITHUB_RUN_ID}
+
+          Written by the ingest workflow, which runs where the publisher is reachable.
+
+          Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
+          for attempt in 1 2 3 4; do
+            git pull --rebase origin "${GITHUB_REF_NAME}" && git push origin "HEAD:${GITHUB_REF_NAME}" && exit 0
+            echo "push attempt $attempt failed; retrying"
+            sleep $((2 ** attempt))
+          done
+          echo "could not push the reports"
+
+      - name: Upload reports as a workflow artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ingest-reports
+          path: |
+            docs/results/source_probe.json
+            docs/results/source_discovery.json
+            docs/results/profile.json
+            data/raw/manifest.json
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Upload the data drop
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dld-raw
+          path: data/raw/
+          if-no-files-found: ignore
+          retention-days: 7
+
+      # ------------------------------------------------------- archive the cited pages
+      - name: Archive the documents the corpus cites
+        # Every corpus document names a source_url, and until this ran every one also said
+        # "not yet archived" — a citation the reader had to take on trust, pointing at a page that
+        # can change without notice. The runner can reach dubailand.gov.ae where the sandbox
+        # cannot, so this is where the evidence gets taken.
+        continue-on-error: true
+        run: uv run python -m etl.archive_sources --stamp
+
+      - name: Commit the archive
+        continue-on-error: true
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f docs/sources docs/results/source_archive.json corpus/*.md 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "nothing new to archive"
+            exit 0
+          fi
+          git commit -m "chore(corpus): archive the cited pages from run ${GITHUB_RUN_ID}
+
+          Each page the corpus cites, with a SHA-256 and the moment it was taken, so a citation
+          points at a fixed thing rather than a live URL.
+
+          Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
+          for attempt in 1 2 3 4; do
+            git pull --rebase origin "${GITHUB_REF_NAME}" && git push origin "HEAD:${GITHUB_REF_NAME}" && exit 0
+            sleep $((2 ** attempt))
+          done
+          echo "could not push the archive"
+
+      # ------------------------------------------------------- redeploy on real data
+      - name: Redeploy the API when the drop is real
+        # The deployed service rebuilds its warehouse during its own build, so it only picks up a
+        # new drop when it redeploys. Only a real drop is worth a redeploy: regenerating the
+        # stand-in produces the same rows from the same seed and would churn the service nightly
+        # for nothing.
+        #
+        # Skipped silently when RENDER_DEPLOY_HOOK is not configured, so a fork or a repository
+        # without the secret still runs the ingest rather than failing on a step it cannot do.
+        if: steps.probe.outputs.verdict == 'reachable'
+        env:
+          HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
+        run: |
+          if [ -z "${HOOK}" ]; then
+            echo "::notice::RENDER_DEPLOY_HOOK is not set; skipping the redeploy"
+            exit 0
+          fi
+          code=$(curl -sS -o /dev/null -w "%{http_code}" -X POST "${HOOK}")
+          if [ "${code}" != "200" ] && [ "${code}" != "201" ]; then
+            echo "::error::the deploy hook returned ${code}"
+            exit 1
+          fi
+          echo "redeploy requested"

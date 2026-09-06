@@ -17,6 +17,24 @@ env:
 jobs:
   python:
     runs-on: ubuntu-latest
+    # A real Postgres, not a mock. The durable store is the one a deployment uses, so testing it
+    # against a stand-in would leave the path that matters unexercised. Service containers are
+    # free on a public repository.
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: yieldmap_test
+        options: >-
+          --health-cmd "pg_isready -U postgres -d yieldmap_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+        ports:
+          - 5432:5432
+    env:
+      TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/yieldmap_test
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
@@ -26,8 +44,53 @@ jobs:
       - run: uv sync --extra dev
       - name: Lint
         run: uv run ruff check . && uv run ruff format --check .
+
+      - name: Build the warehouse
+        # The database is derived data and is not committed, so a fresh runner has none — and the
+        # agent, red-team and API tests all query it. They were erroring on a missing file rather
+        # than failing on their assertions, which is a worse kind of red: it looks like the code is
+        # broken when the fixture is simply absent. Sixteen seconds from empty.
+        run: uv run python -m scripts.build_all --synthetic
+
       - name: Tests
-        run: uv run pytest -q
+        # Coverage is measured on the same run rather than a second one: the suite builds a
+        # warehouse and an index, and doing that twice to produce one number is not worth a minute.
+        run: |
+          uv run pytest -q \
+            --cov=api --cov=agents --cov=rag --cov=finance --cov=etl --cov=security --cov=scripts \
+            --cov-report=json:coverage.json --cov-report=term:skip-covered
+
+      - name: Coverage floors
+        # Two floors: one on the tree, and a higher one on the handful of modules that are the
+        # sole mechanism behind a rule in CLAUDE.md. A rename that leaves one of those unmeasured
+        # fails here rather than passing quietly. --compare-published also checks the committed
+        # figure the README quotes still describes what the suite covers, within a tolerance:
+        # this runner has a Postgres a laptop does not, so the two are never bit-identical.
+        run: uv run python -m scripts.coverage_gate --gate --compare-published
+
+      - name: Retrieval eval
+        # Gated: recall@5 at 0.80 and faithfulness at 0.90, across English, Hindi and Arabic.
+        # Runs offline against the fixture backend, so it needs no key and no quota.
+        run: |
+          uv run python -m rag.indexer
+          uv run python -m rag.evals.run --gate
+
+      - name: The operator upload path
+        # The seam the data ladder rests on: a person downloads the published files and this turns
+        # them into the warehouse. It has to work on the portal's real column names, so it is
+        # tested rather than assumed.
+        run: uv run pytest tests/test_ingest_upload.py -q
+
+      - name: Red team
+        # Every OWASP ASI attack in security/redteam.py must fail to land. --gate exits non-zero
+        # if any control stops holding, so a change that weakens one cannot merge quietly.
+        run: uv run python -m security.redteam --out docs/results/redteam.json --gate
+
+      - name: The published red-team results are the ones just measured
+        # The /security page reads the committed redteam.json. If the freshly-run harness reaches
+        # a different verdict on any attack, the page is showing a claim rather than a
+        # measurement. Only the verdicts are compared: the timestamp differs on every run.
+        run: uv run python scripts/check_redteam_fresh.py
 
   web:
     runs-on: ubuntu-latest
@@ -42,9 +105,108 @@ jobs:
       - run: npm run typecheck
       - run: npm test
 
+      - name: Palette
+        # Colourblind separation and contrast, computed from the palette that ships rather than
+        # judged by eye. The validator is the dataviz reference implementation.
+        run: npm run palette
+
+
   docs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - run: uv python install 3.12
+      - run: uv sync
+
       - name: No unfilled placeholders in docs
-        run: bash scripts/placeholder_scan.sh
+        run: uv run python scripts/placeholder_scan.py
+
+      - name: No generated data in the published results
+        # The database is not committed, so this checks the results directory: a figure computed
+        # from the synthetic stand-in must never appear alongside real ones.
+        run: uv run python scripts/guard_synthetic.py
+
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - run: uv python install 3.12
+      - run: uv sync --extra dev
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+
+      - name: Python dependency audit
+        # Advisory data changes daily and is outside this repo's control, so a new advisory should
+        # be loud without turning every unrelated pull request red. The report is always printed.
+        run: uv run pip-audit --progress-spinner off || echo "::warning::pip-audit reported findings"
+
+      - name: Node dependency audit
+        run: npm audit --audit-level=high || echo "::warning::npm audit reported findings at high or above"
+
+      - name: Secrets are not committed
+        # The one audit finding that must block: a key in the tree cannot be un-leaked.
+        run: uv run python scripts/scan_secrets.py
+
+  e2e:
+    # Its own job because it needs the whole stack: the warehouse, the API that queries it, the
+    # built web app, and a browser to drive them. Nothing here is mocked — the point is the seams.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - run: uv python install 3.12
+      - run: uv sync
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+
+      - name: Build the warehouse
+        run: uv run python -m scripts.build_all --synthetic
+
+      - name: Build the web app
+        # Playwright serves the app with `next start`, which needs a production build on disk.
+        # Without this step the web server exits before the first test runs and the job fails for
+        # a reason that has nothing to do with the code under test.
+        run: npm run web:build
+
+      - name: The journey, the frame rate and the accessibility audit
+        # Both specs, one job: the servers are expensive to start and the suites share them. The
+        # journey drives city → area → compare → simulate → ask → crew → memo, and the measure
+        # spec records frames per second and runs axe over seven pages. axe found seven serious
+        # contrast failures the first time it ran, all from one token used for every hint,
+        # caption and sample-size chip in the interface.
+        run: npm run e2e
+
+      - name: Publish what was measured
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: measurements
+          path: |
+            docs/results/fps_*.json
+            docs/results/accessibility_*.json
+            docs/results/palette.json
+          if-no-files-found: warn
+
+      - name: The report from a failed run
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          if-no-files-found: ignore
+          retention-days: 7

@@ -12,6 +12,10 @@ export default tseslint.config(
       "**/dist/**",
       "coverage/**",
       "data/**",
+      // Vendored from the dataviz reference implementation and run as-is. Linting a dependency's
+      // source to this project's rules would mean editing it, and then it is no longer the
+      // reference implementation.
+      "scripts/validate_palette.js",
     ],
   },
   js.configs.recommended,
@@ -19,6 +23,13 @@ export default tseslint.config(
   {
     rules: {
       "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
+    },
+  },
+  {
+    // Build and measurement scripts run under Node, not in a browser.
+    files: ["scripts/**/*.{js,mjs}", "*.config.{js,mjs,ts}", "playwright.config.ts"],
+    languageOptions: {
+      globals: { console: "readonly", process: "readonly", __dirname: "readonly" },
     },
   },
 );

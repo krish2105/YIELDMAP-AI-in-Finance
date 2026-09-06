@@ -1,0 +1,82 @@
+{
+  "generated_at": "2026-09-06T18:53:01+00:00",
+  "provenance": "SYNTHETIC",
+  "method_id": "hedonic_v1",
+  "target": "log price per square metre, back-transformed with Duan smearing",
+  "holdout": "most recent 12 months, split by time rather than at random",
+  "features": [
+    "area_key",
+    "property_type",
+    "rooms",
+    "area_sqm",
+    "is_offplan",
+    "month_index"
+  ],
+  "smearing_factor": 1.028475678122036,
+  "sql": "select ts, area_key, property_type, rooms, area_sqm, is_offplan, price_aed, price_per_sqm from transactions where price_per_sqm is not null and area_sqm is not null and price_aed is not null order by ts",
+  "metrics": {
+    "n_train": 110407,
+    "n_test": 9939,
+    "train_period": [
+      "2014-01-01",
+      "2024-12-31"
+    ],
+    "test_period": [
+      "2025-01-01",
+      "2025-12-30"
+    ],
+    "train": {
+      "mae_ppsqm": 3798.8995193926494,
+      "mape": 0.19095780541039298,
+      "median_ape": 0.14970833042666432,
+      "rmse_ppsqm": 5954.075396231981,
+      "bias": 0.05810337053585142
+    },
+    "test": {
+      "mae_ppsqm": 6216.96774497717,
+      "mape": 0.1888693780210203,
+      "median_ape": 0.16094773465645912,
+      "rmse_ppsqm": 9442.795790865737,
+      "bias": -0.055344679314830475
+    },
+    "baseline": {
+      "method": "median price per sqm for the same area, type and bedroom count",
+      "mape": 0.3638937196798019,
+      "mae_ppsqm": 11831.306136343392
+    },
+    "skill_vs_baseline": 0.48097653845960675,
+    "estimated_noise_floor_mape": 0.19369232713088858,
+    "importance": [
+      {
+        "feature": "area_key",
+        "importance": 0.26758703995637784,
+        "std": 0.0036880968115416187
+      },
+      {
+        "feature": "property_type",
+        "importance": 0.0921622457791853,
+        "std": 0.0010590093618764432
+      },
+      {
+        "feature": "is_offplan",
+        "importance": 0.0,
+        "std": 0.0
+      },
+      {
+        "feature": "month_index",
+        "importance": 0.0,
+        "std": 0.0
+      },
+      {
+        "feature": "rooms",
+        "importance": -2.5006258765192248e-05,
+        "std": 6.517264051036564e-06
+      },
+      {
+        "feature": "area_sqm",
+        "importance": -0.00011066066974988465,
+        "std": 4.122819567242909e-05
+      }
+    ]
+  }
+}

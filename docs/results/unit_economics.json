@@ -1,0 +1,173 @@
+{
+  "provenance": "REAL",
+  "note": "Rates and free-tier allowances as published on the date below. Request counts per operation come from the agent budgets and the Ask path, not from an estimate. This prices a counterfactual: nothing here spends money, and the paid backend refuses to run behind two separate switches.",
+  "rates_verified_on": "2026-09-06",
+  "monthly_cost_usd": 0.0,
+  "operations": {
+    "ask": {
+      "label": "One question answered with citations",
+      "model_requests": 1,
+      "embedding_requests": 1,
+      "cpu_seconds": 0.8
+    },
+    "memo": {
+      "label": "One crew run producing a cited memo",
+      "model_requests": 6,
+      "embedding_requests": 2,
+      "cpu_seconds": 4.5
+    },
+    "page": {
+      "label": "One page of the site, fully loaded",
+      "model_requests": 0,
+      "embedding_requests": 0,
+      "cpu_seconds": 0.15
+    }
+  },
+  "capacity_per_day": {
+    "ask": {
+      "label": "One question answered with citations",
+      "per_day_on_the_free_tier": 1000,
+      "note": null
+    },
+    "memo": {
+      "label": "One crew run producing a cited memo",
+      "per_day_on_the_free_tier": 250,
+      "note": null
+    },
+    "page": {
+      "label": "One page of the site, fully loaded",
+      "per_day_on_the_free_tier": null,
+      "note": "unbounded by model quota; bounded by CPU and the rate limiter"
+    }
+  },
+  "scenarios": {
+    "a demo day": {
+      "usage": {
+        "asks": 20,
+        "memos": 3,
+        "pages": 200
+      },
+      "model_requests": 38,
+      "embedding_requests": 26,
+      "cpu_seconds": 59.5,
+      "tiers": [
+        {
+          "tier": "Gemini 2.5 Flash (generation)",
+          "used": 38,
+          "free_per_day": 1500,
+          "share_of_free_tier": 0.0253,
+          "exhausted": false
+        },
+        {
+          "tier": "Gemini embeddings",
+          "used": 26,
+          "free_per_day": 1000,
+          "share_of_free_tier": 0.026,
+          "exhausted": false
+        }
+      ],
+      "binding_constraint": "Gemini embeddings"
+    },
+    "a busy course week, per day": {
+      "usage": {
+        "asks": 150,
+        "memos": 25,
+        "pages": 2000
+      },
+      "model_requests": 300,
+      "embedding_requests": 200,
+      "cpu_seconds": 532.5,
+      "tiers": [
+        {
+          "tier": "Gemini 2.5 Flash (generation)",
+          "used": 300,
+          "free_per_day": 1500,
+          "share_of_free_tier": 0.2,
+          "exhausted": false
+        },
+        {
+          "tier": "Gemini embeddings",
+          "used": 200,
+          "free_per_day": 1000,
+          "share_of_free_tier": 0.2,
+          "exhausted": false
+        }
+      ],
+      "binding_constraint": "Gemini 2.5 Flash (generation)"
+    },
+    "a hundred daily users": {
+      "usage": {
+        "asks": 800,
+        "memos": 120,
+        "pages": 20000
+      },
+      "model_requests": 1520,
+      "embedding_requests": 1040,
+      "cpu_seconds": 4180.0,
+      "tiers": [
+        {
+          "tier": "Gemini 2.5 Flash (generation)",
+          "used": 1520,
+          "free_per_day": 1500,
+          "share_of_free_tier": 1.0133,
+          "exhausted": true
+        },
+        {
+          "tier": "Gemini embeddings",
+          "used": 1040,
+          "free_per_day": 1000,
+          "share_of_free_tier": 1.04,
+          "exhausted": true
+        }
+      ],
+      "binding_constraint": "Gemini embeddings"
+    }
+  },
+  "tiers": [
+    {
+      "name": "Gemini 2.5 Flash (generation)",
+      "unit": "request",
+      "free_per_day": 1500,
+      "free_per_month": null,
+      "note": "Priced per token rather than per request, so a per-request figure would be invented. The ledger counts requests because that is how the free tier meters."
+    },
+    {
+      "name": "Gemini embeddings",
+      "unit": "request",
+      "free_per_day": 1000,
+      "free_per_month": null,
+      "note": "Cached to disk, so each chunk is embedded once rather than once per question."
+    },
+    {
+      "name": "Render web service (free)",
+      "unit": "instance-hour",
+      "free_per_day": null,
+      "free_per_month": 750,
+      "note": "750 hours covers one instance continuously. Sleeps after 15 minutes idle and takes about 50 seconds to wake, which is the real cost of this tier: latency, not money."
+    },
+    {
+      "name": "Vercel Hobby",
+      "unit": "deployment",
+      "free_per_day": null,
+      "free_per_month": null,
+      "note": "PROHIBITS COMMERCIAL USE. Adequate for a portfolio and a course submission, and a terms violation the moment this has a paying customer. Pro is $20/month, or the front end moves to Render alongside the API. See docs/limits.md."
+    },
+    {
+      "name": "GitHub Actions",
+      "unit": "minute",
+      "free_per_day": null,
+      "free_per_month": null,
+      "note": "Unlimited on a public repository, which is why the ingest runs there."
+    }
+  ],
+  "observed": {
+    "2026-09-06": {
+      "fake": 1000,
+      "_by_kind": {
+        "fake:generate": 930,
+        "fake:embed": 70
+      }
+    },
+    "updated_at": "2026-09-06T19:31:59+00:00"
+  }
+}

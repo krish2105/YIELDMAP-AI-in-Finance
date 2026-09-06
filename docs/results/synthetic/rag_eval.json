@@ -1,0 +1,810 @@
+{
+  "provenance": "SYNTHETIC",
+  "n_cases": 30,
+  "k": 5,
+  "recall_at_k": 1.0,
+  "recall_at_1": 0.8667,
+  "mrr": 0.9094,
+  "answer_rate": 1.0,
+  "faithfulness": 1.0,
+  "recall_target": 0.8,
+  "faithfulness_target": 0.9,
+  "recall_at_1_target": 0.7,
+  "recall_met": true,
+  "recall_at_1_met": true,
+  "faithfulness_met": true,
+  "passed": true,
+  "corpus": {
+    "chunks": 117,
+    "documents": 5,
+    "facts": 86,
+    "note": "A small corpus makes recall@5 easy and rank-sensitive measures the informative ones. These figures describe retrieval over this corpus, not retrieval in general."
+  },
+  "by_language": {
+    "ar": {
+      "cases": 4,
+      "recall": 1.0,
+      "faithfulness": 1.0,
+      "answer_rate": 1.0
+    },
+    "en": {
+      "cases": 23,
+      "recall": 1.0,
+      "faithfulness": 1.0,
+      "answer_rate": 1.0
+    },
+    "hi": {
+      "cases": 3,
+      "recall": 1.0,
+      "faithfulness": 1.0,
+      "answer_rate": 1.0
+    }
+  },
+  "retrieval_backend": "tfidf-svd",
+  "degraded": true,
+  "caveat": "Scored against the offline TF-IDF fallback because no embedding provider was reachable. Supplying GEMINI_API_KEY reruns the same harness against real embeddings.",
+  "failures": [],
+  "refusals": [],
+  "cases": [
+    {
+      "id": "en_rent_increase",
+      "lang": "en",
+      "question": "Can my landlord raise my rent by 15 percent this year?",
+      "expected": "rent_increase_rules",
+      "expected_kind": "doc",
+      "hit_rank": 1,
+      "recalled": true,
+      "faithful": true,
+      "answered": true,
+      "factual_sentences": 0,
+      "cited_sentences": 0,
+      "retrieved": [
+        "rent_increase_rules",
+        "rent_increase_rules",
+        "ejari",
+        "rent_increase_rules",
+        "methodology"
+      ],
+      "notes": [
+        "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
+      ]
+    },
+    {
+      "id": "en_rent_notice",
+      "lang": "en",
+      "question": "How much notice must a landlord give before changing the rent?",
+      "expected": "rent_increase_rules",
+      "expected_kind": "doc",
+      "hit_rank": 1,
+      "recalled": true,
+      "faithful": true,
+      "answered": true,
+      "factual_sentences": 0,
+      "cited_sentences": 0,
+      "retrieved": [
+        "rent_increase_rules",
+        "rent_increase_rules",
+        "ejari",
+        "rent_increase_rules",
+        "rent_increase_rules"
+      ],
+      "notes": [
+        "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
+      ]
+    },
+    {
+      "id": "en_transfer_fee",
+      "lang": "en",
+      "question": "What fee does the Dubai Land Department charge when a property transfers?",
+      "expected": "dld_fees",
+      "expected_kind": "doc",
+      "hit_rank": 1,
+      "recalled": true,
+      "faithful": true,
+      "answered": true,
+      "factual_sentences": 0,
+      "cited_sentences": 0,
+      "retrieved": [
+        "dld_fees",
+        "service_charges",
+        "ejari",
+        "dld_fees",
+        "rent_increase_rules"
+      ],
+      "notes": [
+        "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
+      ]
+    },
+    {
+      "id": "en_who_pays_transfer",
+      "lang": "en",
+      "question": "Does the buyer or the seller pay the transfer fee in Dubai?",
+      "expected": "dld_fees",
+      "expected_kind": "doc",
+      "hit_rank": 1,
+      "recalled": true,
+      "faithful": true,
+      "answered": true,
+      "factual_sentences": 0,
+      "cited_sentences": 0,
+      "retrieved": [
+        "dld_fees",
+        "service_charges",
+        "ejari",
+        "dld_fees",
+        "rent_increase_rules"
+      ],
+      "notes": [
+        "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
+      ]
+    },
+    {
+      "id": "en_mortgage_registration",
+      "lang": "en",
+      "question": "Is there a fee for registering a mortgage on a Dubai property?",
+      "expected": "dld_fees",
+      "expected_kind": "doc",
+      "hit_rank": 1,
+      "recalled": true,
+      "faithful": true,
+      "answered": true,
+      "factual_sentences": 0,
+      "cited_sentences": 0,
+      "retrieved": [
+        "dld_fees",
+        "dld_fees",
+        "dld_fees",
+        "dld_fees",
+        "rent_increase_rules"
+      ],
+      "notes": [
+        "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
+      ]
+    },
+    {
+      "id": "en_service_charge",
+      "lang": "en",
+      "question": "What is a service charge and what does it pay for?",
+      "expected": "service_charges",
+      "expected_kind": "doc",
+      "hit_rank": 2,
+      "recalled": true,
+      "faithful": true,
+      "answered": true,
+      "factual_sentences": 0,
+      "cited_sentences": 0,
+      "retrieved": [
+        "methodology",
+        "service_charges",
+        "ejari",
+        "service_charges",
+        "dld_fees"
+      ],
+      "notes": [
+        "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
+      ]
+    },
+    {
+      "id": "en_service_charge_variation",
+      "lang": "en",
+      "question": "Why do service charges differ so much between buildings?",
+      "expected": "service_charges",
+      "expected_kind": "doc",
+      "hit_rank": 1,
+      "recalled": true,
+      "faithful": true,
+      "answered": true,
+      "factual_sentences": 0,
+      "cited_sentences": 0,
+      "retrieved": [
+        "service_charges",
+        "service_charges",
+        "service_charges",
+        "service_charges",
+        "dld_fees"
+      ],
+      "notes": [
+        "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
+      ]
+    },
+    {
+      "id": "en_mollak",
+      "lang": "en",
+      "question": "What is Mollak?",
+      "expected": "service_charges",
+      "expected_kind": "doc",
+      "hit_rank": 1,
+      "recalled": true,
+      "faithful": true,
+      "answered": true,
+      "factual_sentences": 0,
+      "cited_sentences": 0,
+      "retrieved": [
+        "service_charges",
+        "service_charges",
+        "service_charges",
+        "service_charges",
+        "methodology"
+      ],
+      "notes": [
+        "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
+      ]
+    },
+    {
+      "id": "en_ejari",
+      "lang": "en",
+      "question": "What is Ejari and why does it matter?",
+      "expected": "ejari",
+      "expected_kind": "doc",
+      "hit_rank": 1,
+      "recalled": true,
+      "faithful": true,
+      "answered": true,
+      "factual_sentences": 0,
+      "cited_sentences": 0,
+      "retrieved": [
+        "ejari",
+        "ejari",
+        "ejari",
+        "methodology",
+        "dld_fees"
+      ],
+      "notes": [
+        "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
+      ]
+    },
+    {
+      "id": "en_vacancy",
+      "lang": "en",
+      "question": "Can vacancy be measured from the open rent data?",
+      "expected": "ejari",
+      "expected_kind": "doc",
+      "hit_rank": 1,
+      "recalled": true,
+      "faithful": true,
+      "answered": true,
+      "factual_sentences": 0,
+      "cited_sentences": 0,
+      "retrieved": [
+        "ejari",
+        "ejari",
+        "rent_increase_rules",
+        "rent_increase_rules",
+        "methodology"
+      ],
+      "notes": [
+        "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
+      ]
+    },
+    {
+      "id": "en_net_yield_method",
+      "lang": "en",
+      "question": "How is net yield calculated and what is subtracted from the rent?",
+      "expected": "methodology",
+      "expected_kind": "doc",
+      "hit_rank": 1,
+      "recalled": true,
+      "faithful": true,
+      "answered": true,
+      "factual_sentences": 0,
+      "cited_sentences": 0,
+      "retrieved": [
+        "methodology",
+        "ejari",
+        "service_charges",
+        "ejari",
+        "rent_increase_rules"
+      ],
+      "notes": [
+        "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
+      ]
+    },
+    {
+      "id": "en_repeat_sales",
+      "lang": "en",
+      "question": "Why use a repeat-sales index instead of a median price?",
+      "expected": "methodology",
+      "expected_kind": "doc",
+      "hit_rank": 1,
+      "recalled": true,
+      "faithful": true,
+      "answered": true,
+      "factual_sentences": 0,
+      "cited_sentences": 0,
+      "retrieved": [
+        "methodology",
+        "mirdif",
+        "jumeirah third",
+        "al safouh second",
+        "zaabeel first"
+      ],
+      "notes": [
+        "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
+      ]
+    },
+    {
+      "id": "en_anomaly_rules",
+      "lang": "en",
+      "question": "How are unusual transactions detected?",
+      "expected": "methodology",
+      "expected_kind": "doc",
+      "hit_rank": 3,
+      "recalled": true,
+      "faithful": true,
+      "answered": true,
+      "factual_sentences": 0,
+      "cited_sentences": 0,
+      "retrieved": [
+        "dld_fees",
+        "al raffa",
+        "methodology",
+        "al barsha south fourth",
+        "methodology"
+      ],
+      "notes": [
+        "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
+      ]
+    },
+    {
+      "id": "en_small_sample",
+      "lang": "en",
+      "question": "What happens when there are too few sales to be confident?",
+      "expected": "methodology",
+      "expected_kind": "doc",
+      "hit_rank": 5,
+      "recalled": true,
+      "faithful": true,
+      "answered": true,
+      "factual_sentences": 0,
+      "cited_sentences": 0,
+      "retrieved": [
+        "ejari",
+        "wadi al safa 7",
+        "rent_increase_rules",
+        "al warsan first",
+        "methodology"
+      ],
+      "notes": [
+        "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
+      ]
+    },
+    {
+      "id": "en_risk_components",
+      "lang": "en",
+      "question": "What goes into the risk score?",
+      "expected": "methodology",
+      "expected_kind": "doc",
+      "hit_rank": 1,
+      "recalled": true,
+      "faithful": true,
+      "answered": true,
+      "factual_sentences": 0,
+      "cited_sentences": 0,
+      "retrieved": [
+        "methodology",
+        "dld_fees",
+        "dubai investment park first",
+        "methodology",
+        "nad al shiba third"
+      ],
+      "notes": [
+        "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
+      ]
+    },
+    {
+      "id": "en_area_jvc",
+      "lang": "en",
+      "question": "What is the median price per square metre in JVC?",
+      "expected": "jumeirah village circle",
+      "expected_kind": "area",
+      "hit_rank": 1,
+      "recalled": true,
+      "faithful": true,
+      "answered": true,
+      "factual_sentences": 0,
+      "cited_sentences": 0,
+      "retrieved": [
+        "jumeirah village circle",
+        "wadi al safa 7",
+        "al yelayiss 2",
+        "al warsan first",
+        "al safouh second"
+      ],
+      "notes": [
+        "the question names Jumeirah Village Circle, so that area's recorded figures were included",
+        "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
+      ]
+    },
+    {
+      "id": "en_area_marina",
+      "lang": "en",
+      "question": "How much does property cost in Dubai Marina?",
+      "expected": "marsa dubai",
+      "expected_kind": "area",
+      "hit_rank": 1,
+      "recalled": true,
+      "faithful": true,
+      "answered": true,
+      "factual_sentences": 0,
+      "cited_sentences": 0,
+      "retrieved": [
+        "marsa dubai",
+        "ejari",
+        "rent_increase_rules",
+        "rent_increase_rules",
+        "dld_fees"
+      ],
+      "notes": [
+        "the question names Dubai Marina, so that area's recorded figures were included",
+        "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
+      ]
+    },
+    {
+      "id": "en_area_downtown",
+      "lang": "en",
+      "question": "What are prices like in Downtown Dubai?",
+      "expected": "burj khalifa",
+      "expected_kind": "area",
+      "hit_rank": 1,
+      "recalled": true,
+      "faithful": true,
+      "answered": true,
+      "factual_sentences": 0,
+      "cited_sentences": 0,
+      "retrieved": [
+        "burj khalifa",
+        "ejari",
+        "methodology",
+        "dld_fees",
+        "ejari"
+      ],
+      "notes": [
+        "the question names Downtown Dubai, so that area's recorded figures were included",
+        "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
+      ]
+    },
+    {
+      "id": "en_area_business_bay",
+      "lang": "en",
+      "question": "How many sales were recorded in Business Bay?",
+      "expected": "business bay",
+      "expected_kind": "area",
+      "hit_rank": 1,
+      "recalled": true,
+      "faithful": true,
+      "answered": true,
+      "factual_sentences": 0,
+      "cited_sentences": 0,
+      "retrieved": [
+        "business bay",
+        "wadi al safa 7",
+        "al warsan first",
+        "al safouh second",
+        "dubai investment park first"
+      ],
+      "notes": [
+        "the question names Business Bay, so that area's recorded figures were included",
+        "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
+      ]
+    },
+    {
+      "id": "en_area_jlt",
+      "lang": "en",
+      "question": "What is the off-plan share in JLT?",
+      "expected": "al thanyah fifth",
+      "expected_kind": "area",
+      "hit_rank": 1,
+      "recalled": true,
+      "faithful": true,
+      "answered": true,
+      "factual_sentences": 0,
+      "cited_sentences": 0,
+      "retrieved": [
+        "al thanyah fifth",
+        "methodology",
+        "methodology",
+        "rent_increase_rules",
+        "ejari"
+      ],
+      "notes": [
+        "the question names Jumeirah Lake Towers, so that area's recorded figures were included",
+        "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
+      ]
+    },
+    {
+      "id": "en_area_silicon_oasis",
+      "lang": "en",
+      "question": "What rents are recorded in Dubai Silicon Oasis?",
+      "expected": "nadd hessa",
+      "expected_kind": "area",
+      "hit_rank": 1,
+      "recalled": true,
+      "faithful": true,
+      "answered": true,
+      "factual_sentences": 0,
+      "cited_sentences": 0,
+      "retrieved": [
+        "nadd hessa",
+        "dld_fees",
+        "ejari",
+        "dubai investment park first",
+        "dubai investment park second"
+      ],
+      "notes": [
+        "the question names Dubai Silicon Oasis, so that area's recorded figures were included",
+        "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
+      ]
+    },
+    {
+      "id": "en_area_palm",
+      "lang": "en",
+      "question": "What does property go for on Palm Jumeirah?",
+      "expected": "palm jumeirah",
+      "expected_kind": "area",
+      "hit_rank": 4,
+      "recalled": true,
+      "faithful": true,
+      "answered": true,
+      "factual_sentences": 0,
+      "cited_sentences": 0,
+      "retrieved": [
+        "nakhlat jumeirah",
+        "jumeirah third",
+        "ejari",
+        "palm jumeirah",
+        "rent_increase_rules"
+      ],
+      "notes": [
+        "the question names Palm Jumeirah, Jumeirah, so that area's recorded figures were included",
+        "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
+      ]
+    },
+    {
+      "id": "en_area_arjan",
+      "lang": "en",
+      "question": "What is the median price in Arjan?",
+      "expected": "al barsha south fourth",
+      "expected_kind": "area",
+      "hit_rank": 1,
+      "recalled": true,
+      "faithful": true,
+      "answered": true,
+      "factual_sentences": 0,
+      "cited_sentences": 0,
+      "retrieved": [
+        "al barsha south fourth",
+        "wadi al safa 7",
+        "al warsan first",
+        "wadi al safa 3",
+        "methodology"
+      ],
+      "notes": [
+        "the question names Arjan and Dubai Science Park, so that area's recorded figures were included",
+        "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
+      ]
+    },
+    {
+      "id": "ar_rent_increase",
+      "lang": "ar",
+      "question": "هل يستطيع المالك زيادة الإيجار عند التجديد؟",
+      "expected": "rent_increase_rules",
+      "expected_kind": "doc",
+      "hit_rank": 1,
+      "recalled": true,
+      "faithful": true,
+      "answered": true,
+      "factual_sentences": 0,
+      "cited_sentences": 0,
+      "retrieved": [
+        "rent_increase_rules",
+        "ejari",
+        "dld_fees",
+        "methodology",
+        "dubai investment park first"
+      ],
+      "notes": [
+        "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
+      ]
+    },
+    {
+      "id": "ar_transfer_fee",
+      "lang": "ar",
+      "question": "ما هي رسوم نقل الملكية في دائرة الأراضي والأملاك بدبي؟",
+      "expected": "dld_fees",
+      "expected_kind": "doc",
+      "hit_rank": 1,
+      "recalled": true,
+      "faithful": true,
+      "answered": true,
+      "factual_sentences": 0,
+      "cited_sentences": 0,
+      "retrieved": [
+        "dld_fees",
+        "service_charges",
+        "ejari",
+        "methodology",
+        "rent_increase_rules"
+      ],
+      "notes": [
+        "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
+      ]
+    },
+    {
+      "id": "ar_service_charge",
+      "lang": "ar",
+      "question": "ما هي رسوم الخدمات السنوية للمبنى؟",
+      "expected": "service_charges",
+      "expected_kind": "doc",
+      "hit_rank": 1,
+      "recalled": true,
+      "faithful": true,
+      "answered": true,
+      "factual_sentences": 0,
+      "cited_sentences": 0,
+      "retrieved": [
+        "service_charges",
+        "ejari",
+        "dld_fees",
+        "methodology",
+        "dubai investment park second"
+      ],
+      "notes": [
+        "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
+      ]
+    },
+    {
+      "id": "ar_area_marina",
+      "lang": "ar",
+      "question": "ما هو سعر المتر المربع في Dubai Marina؟",
+      "expected": "marsa dubai",
+      "expected_kind": "area",
+      "hit_rank": 1,
+      "recalled": true,
+      "faithful": true,
+      "answered": true,
+      "factual_sentences": 0,
+      "cited_sentences": 0,
+      "retrieved": [
+        "marsa dubai",
+        "methodology",
+        "ejari",
+        "dld_fees",
+        "service_charges"
+      ],
+      "notes": [
+        "the question names Dubai Marina, so that area's recorded figures were included",
+        "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
+      ]
+    },
+    {
+      "id": "hi_rent_increase",
+      "lang": "hi",
+      "question": "क्या मकान मालिक नवीनीकरण पर किराया बढ़ा सकता है?",
+      "expected": "rent_increase_rules",
+      "expected_kind": "doc",
+      "hit_rank": 1,
+      "recalled": true,
+      "faithful": true,
+      "answered": true,
+      "factual_sentences": 0,
+      "cited_sentences": 0,
+      "retrieved": [
+        "rent_increase_rules",
+        "ejari",
+        "service_charges",
+        "dld_fees",
+        "methodology"
+      ],
+      "notes": [
+        "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
+      ]
+    },
+    {
+      "id": "hi_service_charge",
+      "lang": "hi",
+      "question": "सर्विस चार्ज क्या होता है?",
+      "expected": "service_charges",
+      "expected_kind": "doc",
+      "hit_rank": 1,
+      "recalled": true,
+      "faithful": true,
+      "answered": true,
+      "factual_sentences": 0,
+      "cited_sentences": 0,
+      "retrieved": [
+        "service_charges",
+        "ejari",
+        "methodology",
+        "dld_fees",
+        "rent_increase_rules"
+      ],
+      "notes": [
+        "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
+      ]
+    },
+    {
+      "id": "hi_area_jvc",
+      "lang": "hi",
+      "question": "JVC में संपत्ति की कीमत क्या है?",
+      "expected": "jumeirah village circle",
+      "expected_kind": "area",
+      "hit_rank": 1,
+      "recalled": true,
+      "faithful": true,
+      "answered": true,
+      "factual_sentences": 0,
+      "cited_sentences": 0,
+      "retrieved": [
+        "jumeirah village circle",
+        "service_charges",
+        "dld_fees",
+        "methodology",
+        "ejari"
+      ],
+      "notes": [
+        "the question names Jumeirah Village Circle, so that area's recorded figures were included",
+        "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "generated_at": "2026-09-06T20:10:04+00:00",
+  "n_resources": 1,
+  "skipped_hosts": [
+    "gateway.dubailand.gov.ae",
+    "www.centralbank.ae",
+    "www.dubaipulse.gov.ae"
+  ],
+  "strategies": {
+    "catalogue": 0,
+    "html": 2
+  },
+  "pages_visited": [
+    "https://dubailand.gov.ae/",
+    "https://dubailand.gov.ae/en/open-data/real-estate-data/"
+  ],
+  "errors": [],
+  "wanted": {
+    "transactions": [],
+    "rent_contracts": [],
+    "valuation": [],
+    "projects": [],
+    "buildings": [],
+    "units": []
+  },
+  "resources": [
+    {
+      "dataset_id": "dubailand.gov.ae",
+      "dataset_title": "https://dubailand.gov.ae/",
+      "resource_id": null,
+      "name": "site.webmanifest.json",
+      "format": "JSON",
+      "url": "https://dubailand.gov.ae/assets/img/favicon/site.webmanifest.json",
+      "size": null,
+      "last_modified": null,
+      "matches": [],
+      "via": "html"
+    }
+  ]
+}
