@@ -24,7 +24,7 @@ from dataclasses import asdict
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlsplit
 
 import httpx
 
@@ -243,7 +243,28 @@ def match_wanted(text: str) -> list[str]:
     return [key for key, needles in WANTED_DATASETS.items() if any(n in low for n in needles)]
 
 
-def discover(out: Path | None = None, *, max_pages: int = 40) -> dict[str, Any]:
+def unreachable_hosts(probe_report: Path) -> set[str]:
+    """Hosts the probe just proved dead.
+
+    Discovery re-attempting a host that timed out seconds ago costs a minute per URL and learns
+    nothing, so the probe's findings are carried forward rather than rediscovered.
+    """
+    if not probe_report.exists():
+        return set()
+    try:
+        report = json.loads(probe_report.read_text())
+    except (OSError, json.JSONDecodeError):
+        return set()
+    by_host: dict[str, list[bool]] = {}
+    for c in report.get("candidates", []):
+        host = urlsplit(c["url"]).netloc
+        by_host.setdefault(host, []).append(bool(c.get("ok")))
+    return {host for host, results in by_host.items() if not any(results)}
+
+
+def discover(
+    out: Path | None = None, *, max_pages: int = 40, probe_report: Path | None = None
+) -> dict[str, Any]:
     """Ask the publisher what exists, rather than guessing filenames.
 
     Two strategies, tried in order, because a portal that is reachable is not necessarily a
@@ -252,8 +273,17 @@ def discover(out: Path | None = None, *, max_pages: int = 40) -> dict[str, Any]:
     1. the catalogue endpoints, which give structured resource records;
     2. the published pages, reading the download links the portal itself puts on them, and
        following one level of dataset links to find more.
+
+    Hosts the probe found dead are skipped entirely.
     """
     from etl.sources import CATALOGUE_CANDIDATES, PAGE_CANDIDATES
+
+    dead = unreachable_hosts(probe_report or RESULTS_DIR / "source_probe.json")
+    if dead:
+        print(f"skipping hosts the probe found unreachable: {', '.join(sorted(dead))}", flush=True)
+
+    def alive(url: str) -> bool:
+        return urlsplit(url).netloc not in dead
 
     resources: list[dict[str, Any]] = []
     errors: list[dict[str, str]] = []
@@ -262,7 +292,7 @@ def discover(out: Path | None = None, *, max_pages: int = 40) -> dict[str, Any]:
     with _client() as client:
         # --- strategy 1: structured catalogue -------------------------------
         for cand in CATALOGUE_CANDIDATES:
-            if cand.kind != "catalogue":
+            if cand.kind != "catalogue" or not alive(cand.url):
                 continue
             try:
                 resp = client.get(cand.url)
@@ -276,11 +306,11 @@ def discover(out: Path | None = None, *, max_pages: int = 40) -> dict[str, Any]:
                 print(f"[catalogue FAIL] {cand.key}: {_describe(exc)}", flush=True)
 
         # --- strategy 2: the portal's own published download links ----------
-        queue = [c.url for c in PAGE_CANDIDATES]
+        queue = [c.url for c in PAGE_CANDIDATES if alive(c.url)]
         visited: set[str] = set()
         while queue and len(visited) < max_pages:
             url = queue.pop(0)
-            if url in visited:
+            if url in visited or not alive(url):
                 continue
             visited.add(url)
             try:
@@ -321,6 +351,7 @@ def discover(out: Path | None = None, *, max_pages: int = 40) -> dict[str, Any]:
     report = {
         "generated_at": _now(),
         "n_resources": len(by_url),
+        "skipped_hosts": sorted(dead),
         "strategies": strategies,
         "pages_visited": sorted(visited),
         "errors": errors,

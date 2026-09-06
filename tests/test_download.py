@@ -20,6 +20,7 @@ from etl.download import (
     fetch,
     match_wanted,
     sniff_platform,
+    unreachable_hosts,
     write_manifest,
 )
 from etl.sources import ALL_CANDIDATES, REFERENCE_DOCS
@@ -205,3 +206,41 @@ class TestPublishedLinkDiscovery:
     def test_survives_a_page_with_no_links(self):
         assert extract_download_links("<html></html>", self.BASE) == []
         assert extract_dataset_links("<html></html>", self.BASE) == []
+
+
+class TestCarryingForwardProbeFindings:
+    """Discovery re-attempting a host that just timed out costs a minute and learns nothing."""
+
+    def _report(self, tmp_path, candidates):
+        p = tmp_path / "source_probe.json"
+        p.write_text(json.dumps({"candidates": candidates}))
+        return p
+
+    def test_a_host_where_nothing_answered_is_dead(self, tmp_path):
+        report = self._report(
+            tmp_path,
+            [
+                {"url": "https://pulse.gov.ae/a", "ok": False},
+                {"url": "https://pulse.gov.ae/b", "ok": False},
+            ],
+        )
+        assert unreachable_hosts(report) == {"pulse.gov.ae"}
+
+    def test_one_working_url_keeps_the_whole_host_alive(self, tmp_path):
+        """A 404 on one path says nothing about the host, so the host stays in play."""
+        report = self._report(
+            tmp_path,
+            [
+                {"url": "https://dld.gov.ae/a", "ok": True},
+                {"url": "https://dld.gov.ae/b", "ok": False},
+            ],
+        )
+        assert unreachable_hosts(report) == set()
+
+    def test_no_report_means_nothing_is_assumed_dead(self, tmp_path):
+        assert unreachable_hosts(tmp_path / "absent.json") == set()
+
+    def test_a_corrupt_report_is_ignored_rather_than_fatal(self, tmp_path):
+        p = tmp_path / "source_probe.json"
+        p.write_text("{not json")
+        assert unreachable_hosts(p) == set()
