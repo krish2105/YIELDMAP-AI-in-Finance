@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-06T15:52:56+00:00",
+  "generated_at": "2026-09-06T20:10:03+00:00",
   "runner": "github-actions",
   "n_candidates": 13,
   "n_reachable": 4,
@@ -15,11 +15,11 @@
       "expect": [
         "200"
       ],
-      "checked_at": "2026-09-06T15:51:39+00:00",
+      "checked_at": "2026-09-06T20:08:45+00:00",
       "ok": false,
       "status": null,
       "error": "ConnectTimeout: timed out",
-      "elapsed_s": 10.41
+      "elapsed_s": 10.73
     },
     {
       "key": "pulse_ckan_search_dld",
@@ -30,11 +30,11 @@
       "expect": [
         "200"
       ],
-      "checked_at": "2026-09-06T15:51:49+00:00",
+      "checked_at": "2026-09-06T20:08:56+00:00",
       "ok": false,
       "status": null,
       "error": "ConnectTimeout: timed out",
-      "elapsed_s": 10.4
+      "elapsed_s": 10.72
     },
     {
       "key": "pulse_ckan_transactions",
@@ -45,11 +45,11 @@
       "expect": [
         "200"
       ],
-      "checked_at": "2026-09-06T15:52:00+00:00",
+      "checked_at": "2026-09-06T20:09:06+00:00",
       "ok": false,
       "status": null,
       "error": "ConnectTimeout: timed out",
-      "elapsed_s": 10.4
+      "elapsed_s": 10.38
     },
     {
       "key": "pulse_opendata_api",
@@ -60,11 +60,11 @@
       "expect": [
         "200"
       ],
-      "checked_at": "2026-09-06T15:52:10+00:00",
+      "checked_at": "2026-09-06T20:09:17+00:00",
       "ok": false,
       "status": null,
       "error": "ConnectTimeout: timed out",
-      "elapsed_s": 10.41
+      "elapsed_s": 10.33
     },
     {
       "key": "pulse_root",
@@ -75,11 +75,11 @@
       "expect": [
         "200"
       ],
-      "checked_at": "2026-09-06T15:52:21+00:00",
+      "checked_at": "2026-09-06T20:09:27+00:00",
       "ok": false,
       "status": null,
       "error": "ConnectTimeout: timed out",
-      "elapsed_s": 10.25
+      "elapsed_s": 10.33
     },
     {
       "key": "pulse_dataset_transactions",
@@ -90,11 +90,11 @@
       "expect": [
         "200"
       ],
-      "checked_at": "2026-09-06T15:52:31+00:00",
+      "checked_at": "2026-09-06T20:09:37+00:00",
       "ok": false,
       "status": null,
       "error": "ConnectTimeout: timed out",
-      "elapsed_s": 10.23
+      "elapsed_s": 10.36
     },
     {
       "key": "pulse_dataset_rent_contracts",
@@ -105,11 +105,11 @@
       "expect": [
         "200"
       ],
-      "checked_at": "2026-09-06T15:52:41+00:00",
+      "checked_at": "2026-09-06T20:09:48+00:00",
       "ok": false,
       "status": null,
       "error": "ConnectTimeout: timed out",
-      "elapsed_s": 10.21
+      "elapsed_s": 10.36
     },
     {
       "key": "dld_root",
@@ -120,7 +120,7 @@
       "expect": [
         "200"
       ],
-      "checked_at": "2026-09-06T15:52:51+00:00",
+      "checked_at": "2026-09-06T20:09:58+00:00",
       "ok": true,
       "status": 200,
       "content_type": "text/html; charset=utf-8",
@@ -128,7 +128,7 @@
       "final_url": "https://dubailand.gov.ae/",
       "sample": "\r\n<!DOCTYPE html>\r\n<html lang=\"ar\" dir=\"rtl\" translate=\"no\">\r\n\r\n<head>\r\n    <!-- Google Tag Manager -->\r\n    <script>\r\n        (function (w, d, s, l, i) {\r\n            w[l] = w[l] || []; w[l].push({\r\n                'gtm.start':\r\n                    new Date().getTime(), event: 'gtm.js'\r\n            }); var f = d.getElementsByTagName(s)[0],\r\n                j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =\r\n                    'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);\r\n        })(window, document, 'script', 'dataLayer', 'GTM-MZ6G8PG');</script>\r\n    <!-- End Google Tag Manager -->\r\n    <!--start: Microsoft clarity tag-->\r\n    <script>\r\n        (function (c, l, a, r, i, t, y) {\r\n            c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments) };\r\n            t = l.createElement(r); t.async = 1; t.src = \"https://www.clarity.ms/tag/\" + i;\r\n            y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);\r\n        })(window, document, \"clarity\", \"script\", \"t1ycjlho20\");\r\n    </script>\r\n    <!--end: Microsoft clarity ta-->\r\n    <meta charset=\"utf-8\">\r\n    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\r\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\r\n    <title>دائرة الأراضي والأملاك - الصفحة الرئيسية</title>\r\n    <meta name=\"description\" content=\"تسعى دائرة الأراضي والأملاك بد�",
       "platform": "html",
-      "elapsed_s": 0.87
+      "elapsed_s": 1.89
     },
     {
       "key": "dld_open_data",
@@ -139,7 +139,7 @@
       "expect": [
         "200"
       ],
-      "checked_at": "2026-09-06T15:52:52+00:00",
+      "checked_at": "2026-09-06T20:10:00+00:00",
       "ok": true,
       "status": 200,
       "content_type": "text/html; charset=utf-8",
@@ -147,7 +147,7 @@
       "final_url": "https://dubailand.gov.ae/en/open-data/real-estate-data/",
       "sample": "\r\n<!DOCTYPE html>\r\n<html lang=\"en\" dir=\"ltr\" translate=\"no\">\r\n\r\n<head>\r\n    <!-- Google Tag Manager -->\r\n    <script>\r\n        (function (w, d, s, l, i) {\r\n            w[l] = w[l] || []; w[l].push({\r\n                'gtm.start':\r\n                    new Date().getTime(), event: 'gtm.js'\r\n            }); var f = d.getElementsByTagName(s)[0],\r\n                j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =\r\n                    'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);\r\n        })(window, document, 'script', 'dataLayer', 'GTM-MZ6G8PG');</script>\r\n    <!-- End Google Tag Manager -->\r\n    <!--start: Microsoft clarity tag-->\r\n    <script>\r\n        (function (c, l, a, r, i, t, y) {\r\n            c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments) };\r\n            t = l.createElement(r); t.async = 1; t.src = \"https://www.clarity.ms/tag/\" + i;\r\n            y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);\r\n        })(window, document, \"clarity\", \"script\", \"t1ycjlho20\");\r\n    </script>\r\n    <!--end: Microsoft clarity ta-->\r\n    <meta charset=\"utf-8\">\r\n    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\r\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\r\n    <title>Dubai Land Department - Real Estate Data</title>\r\n    <meta name=\"description\" content=\"Dubai Land Department seeks to achieve the objectives of Dubai Government&#x27;s strategy i",
       "platform": "html",
-      "elapsed_s": 0.82
+      "elapsed_s": 0.78
     },
     {
       "key": "dld_gateway",
@@ -158,15 +158,15 @@
       "expect": [
         "200"
       ],
-      "checked_at": "2026-09-06T15:52:53+00:00",
+      "checked_at": "2026-09-06T20:10:01+00:00",
       "ok": false,
       "status": 404,
       "content_type": "application/json; charset=utf-8",
       "content_length": null,
       "final_url": "https://gateway.dubailand.gov.ae/",
-      "sample": "{\n  \"message\":\"no Route matched with those values\",\n  \"request_id\":\"51bdd0040081d77ed6c18d09b58cab15\"\n}",
+      "sample": "{\n  \"message\":\"no Route matched with those values\",\n  \"request_id\":\"7610b37150d23a05a39a77147057e828\"\n}",
       "platform": "json-api",
-      "elapsed_s": 0.81
+      "elapsed_s": 0.38
     },
     {
       "key": "dld_fees",
@@ -177,7 +177,7 @@
       "expect": [
         "200"
       ],
-      "checked_at": "2026-09-06T15:52:54+00:00",
+      "checked_at": "2026-09-06T20:10:01+00:00",
       "ok": true,
       "status": 200,
       "content_type": "text/html; charset=utf-8",
@@ -185,7 +185,7 @@
       "final_url": "https://dubailand.gov.ae/en/services/",
       "sample": "\r\n<!DOCTYPE html>\r\n<html lang=\"en\" dir=\"ltr\" translate=\"no\">\r\n\r\n<head>\r\n    <!-- Google Tag Manager -->\r\n    <script>\r\n        (function (w, d, s, l, i) {\r\n            w[l] = w[l] || []; w[l].push({\r\n                'gtm.start':\r\n                    new Date().getTime(), event: 'gtm.js'\r\n            }); var f = d.getElementsByTagName(s)[0],\r\n                j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =\r\n                    'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);\r\n        })(window, document, 'script', 'dataLayer', 'GTM-MZ6G8PG');</script>\r\n    <!-- End Google Tag Manager -->\r\n    <!--start: Microsoft clarity tag-->\r\n    <script>\r\n        (function (c, l, a, r, i, t, y) {\r\n            c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments) };\r\n            t = l.createElement(r); t.async = 1; t.src = \"https://www.clarity.ms/tag/\" + i;\r\n            y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);\r\n        })(window, document, \"clarity\", \"script\", \"t1ycjlho20\");\r\n    </script>\r\n    <!--end: Microsoft clarity ta-->\r\n    <meta charset=\"utf-8\">\r\n    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\r\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\r\n    <title>Dubai Land Department - Services</title>\r\n    <meta name=\"description\" content=\"Dubai Land Department seeks to achieve the objectives of Dubai Government&#x27;s strategy in the re",
       "platform": "html",
-      "elapsed_s": 0.3
+      "elapsed_s": 0.29
     },
     {
       "key": "cbuae_regulations",
@@ -196,15 +196,15 @@
       "expect": [
         "200"
       ],
-      "checked_at": "2026-09-06T15:52:54+00:00",
+      "checked_at": "2026-09-06T20:10:02+00:00",
       "ok": false,
       "status": 403,
       "content_type": "text/html; charset=UTF-8",
       "content_length": null,
       "final_url": "https://centralbank.ae/en/our-operations/banking-supervision/regulations/",
-      "sample": "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><meta http-equiv=\"content-security-policy\" content=\"default-src &#39;none&#39;; script-src &#39;nonce-7uJRPSZV0RCHAAfpSlYhSV&#39; &#39;unsafe-eval&#39; https://challenges.cloudflare.com; script-src-attr &#39;none&#39;; style-src &#39;unsafe-inline&#39;; img-src &#39;self&#39; https://challenges.cloudflare.com; connect-src &#39;self&#39; https://challenges.cloudflare.com; frame-src &#39;self&#39; https://challenges.cloudflare.com blob:; child-src &#39;self&#39; https://challenges.cloudflare.com blob:; worker-src blob:; form-action http: https:; base-uri &#39;self&#39;\"><style>*{box-sizing:border-box;margin:0;padding:0}html{line-height:1.15;-webkit-text-size-adjust:100%;color:#313131;font-family:system-ui,-apple-system,BlinkMacSystemFont,\"Segoe UI\",Roboto,\"Helvetica Neue\",Arial,\"Noto Sans\",sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\",\"Segoe UI Symbol\",\"Noto Color Emoji\"}body{display:flex;flex-direction:column;height:100vh;min-height:100vh}.main-content{margin:8rem auto;padding-left:1.5rem;max-width:60rem}@media (width <= 720px){.main-content{margin-top:4rem}}#challenge-error-text{background-image:url(\"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zd",
+      "sample": "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><meta http-equiv=\"content-security-policy\" content=\"default-src &#39;none&#39;; script-src &#39;nonce-mpQgNu1Pwj8YrxNrS1zKtB&#39; &#39;unsafe-eval&#39; https://challenges.cloudflare.com; script-src-attr &#39;none&#39;; style-src &#39;unsafe-inline&#39;; img-src &#39;self&#39; https://challenges.cloudflare.com; connect-src &#39;self&#39; https://challenges.cloudflare.com; frame-src &#39;self&#39; https://challenges.cloudflare.com blob:; child-src &#39;self&#39; https://challenges.cloudflare.com blob:; worker-src blob:; form-action http: https:; base-uri &#39;self&#39;\"><style>*{box-sizing:border-box;margin:0;padding:0}html{line-height:1.15;-webkit-text-size-adjust:100%;color:#313131;font-family:system-ui,-apple-system,BlinkMacSystemFont,\"Segoe UI\",Roboto,\"Helvetica Neue\",Arial,\"Noto Sans\",sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\",\"Segoe UI Symbol\",\"Noto Color Emoji\"}body{display:flex;flex-direction:column;height:100vh;min-height:100vh}.main-content{margin:8rem auto;padding-left:1.5rem;max-width:60rem}@media (width <= 720px){.main-content{margin-top:4rem}}#challenge-error-text{background-image:url(\"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zd",
       "platform": "html",
-      "elapsed_s": 0.43
+      "elapsed_s": 0.79
     },
     {
       "key": "rera_rent_index",
@@ -215,7 +215,7 @@
       "expect": [
         "200"
       ],
-      "checked_at": "2026-09-06T15:52:54+00:00",
+      "checked_at": "2026-09-06T20:10:02+00:00",
       "ok": true,
       "status": 200,
       "content_type": "text/html; charset=utf-8",
@@ -223,7 +223,7 @@
       "final_url": "https://dubailand.gov.ae/en/eservices/rental-index/",
       "sample": "\r\n<!DOCTYPE html>\r\n<html lang=\"en\" dir=\"ltr\" translate=\"no\">\r\n\r\n<head>\r\n    <!-- Google Tag Manager -->\r\n    <script>\r\n        (function (w, d, s, l, i) {\r\n            w[l] = w[l] || []; w[l].push({\r\n                'gtm.start':\r\n                    new Date().getTime(), event: 'gtm.js'\r\n            }); var f = d.getElementsByTagName(s)[0],\r\n                j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =\r\n                    'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);\r\n        })(window, document, 'script', 'dataLayer', 'GTM-MZ6G8PG');</script>\r\n    <!-- End Google Tag Manager -->\r\n    <!--start: Microsoft clarity tag-->\r\n    <script>\r\n        (function (c, l, a, r, i, t, y) {\r\n            c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments) };\r\n            t = l.createElement(r); t.async = 1; t.src = \"https://www.clarity.ms/tag/\" + i;\r\n            y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);\r\n        })(window, document, \"clarity\", \"script\", \"t1ycjlho20\");\r\n    </script>\r\n    <!--end: Microsoft clarity ta-->\r\n    <meta charset=\"utf-8\">\r\n    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\r\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\r\n    <title>Dubai Land Department - Rental Index</title>\r\n    <meta name=\"description\" content=\"Dubai Land Department seeks to achieve the objectives of Dubai Government&#x27;s strategy in th",
       "platform": "html",
-      "elapsed_s": 1.85
+      "elapsed_s": 0.54
     }
   ]
 }
