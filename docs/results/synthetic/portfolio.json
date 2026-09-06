@@ -1,0 +1,115 @@
+{
+  "generated_at": "2026-09-06T16:17:43+00:00",
+  "provenance": "SYNTHETIC",
+  "method_id": "portfolio_v1",
+  "holdings": 4,
+  "blended_yield": {
+    "gross": 0.06311660024033329,
+    "net": 0.029740463338785245,
+    "total_value": 16630796.51,
+    "total_acquisition": 17645444.3006,
+    "annual_gross_income": 1049679.335,
+    "annual_net_income": 524783.6893185714
+  },
+  "projection": {
+    "irr": 0.05288257331440227,
+    "flows": [
+      -17645444.3006,
+      664744.134737,
+      687127.8107791101,
+      710182.9971024834,
+      733929.8390155579,
+      19652447.29060791
+    ],
+    "years": 5,
+    "price_growth": 0.03
+  },
+  "concentration": {
+    "by_area": {
+      "groups": 4,
+      "hhi": 0.2823,
+      "effective": 3.54,
+      "largest_share": 0.3282
+    },
+    "by_developer": {
+      "groups": 4,
+      "hhi": 0.2823,
+      "effective": 3.54,
+      "largest_share": 0.3282
+    },
+    "by_holding": {
+      "count": 4,
+      "hhi": 0.2823,
+      "effective": 3.54
+    }
+  },
+  "correlation": {
+    "areas": [
+      "emirates hills third",
+      "muhaisanah fourth",
+      "al karama",
+      "al rigga"
+    ],
+    "months_compared": 143,
+    "matrix": [
+      [
+        1.0,
+        0.0439,
+        0.0229,
+        0.052
+      ],
+      [
+        0.0439,
+        1.0,
+        0.006,
+        0.086
+      ],
+      [
+        0.0229,
+        0.006,
+        1.0,
+        -0.0223
+      ],
+      [
+        0.052,
+        0.086,
+        -0.0223,
+        1.0
+      ]
+    ],
+    "mean_correlation": 0.0314,
+    "max_correlation": 0.086
+  },
+  "diversification": {
+    "naive_effective_holdings": 3.54,
+    "mean_correlation": 0.0314,
+    "correlation_adjusted": 3.28,
+    "note": "Holdings in different Dubai communities still move together, so the correlation adjusted figure is the honest count of independent positions."
+  },
+  "disclaimer": "A projection under stated assumptions. Not advice.",
+  "sql": {
+    "area_monthly": "select area_key, date_trunc('month', ts) as month, median(price_per_sqm) as ppsqm, count(*) as n from transactions where price_per_sqm is not null group by 1, 2 having count(*) >= 3 order by 1, 2"
+  },
+  "example_basket": [
+    {
+      "area_key": "emirates hills third",
+      "value": 1769440,
+      "annual_rent": 124218
+    },
+    {
+      "area_key": "muhaisanah fourth",
+      "value": 5457551,
+      "annual_rent": 301188
+    },
+    {
+      "area_key": "al karama",
+      "value": 5391686,
+      "annual_rent": 434493
+    },
+    {
+      "area_key": "al rigga",
+      "value": 4012119,
+      "annual_rent": 189781
+    }
+  ]
+}
