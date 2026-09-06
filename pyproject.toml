@@ -52,6 +52,14 @@ markers = [
     "network: needs outbound network (skipped in the dev sandbox)",
     "llm: needs a real LLM provider key",
 ]
+filterwarnings = [
+    # Deprecations inside Starlette's own test client and anyio are not ours to fix, and they
+    # drown the signal when a real warning appears.
+    "ignore::DeprecationWarning:starlette.*",
+    "ignore::DeprecationWarning:anyio.*",
+    "ignore:.*StarletteDeprecationWarning.*",
+    "ignore::UserWarning:sklearn.*",
+]
 
 [dependency-groups]
 dev = [
