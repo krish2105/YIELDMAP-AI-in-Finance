@@ -1,55 +1,20 @@
 {
-  "generated_at": "2026-09-06T15:47:25+00:00",
+  "generated_at": "2026-09-06T15:52:57+00:00",
   "n_resources": 1,
+  "skipped_hosts": [
+    "gateway.dubailand.gov.ae",
+    "www.centralbank.ae",
+    "www.dubaipulse.gov.ae"
+  ],
   "strategies": {
     "catalogue": 0,
     "html": 2
   },
   "pages_visited": [
     "https://dubailand.gov.ae/",
-    "https://dubailand.gov.ae/en/open-data/real-estate-data/",
-    "https://gateway.dubailand.gov.ae/",
-    "https://www.dubaipulse.gov.ae/",
-    "https://www.dubaipulse.gov.ae/dataset/dld_rent_contracts",
-    "https://www.dubaipulse.gov.ae/dataset/dld_transactions"
+    "https://dubailand.gov.ae/en/open-data/real-estate-data/"
   ],
-  "errors": [
-    {
-      "key": "pulse_ckan_package_list",
-      "strategy": "catalogue",
-      "error": "ConnectTimeout: timed out"
-    },
-    {
-      "key": "pulse_ckan_search_dld",
-      "strategy": "catalogue",
-      "error": "ConnectTimeout: timed out"
-    },
-    {
-      "key": "pulse_ckan_transactions",
-      "strategy": "catalogue",
-      "error": "ConnectTimeout: timed out"
-    },
-    {
-      "key": "https://www.dubaipulse.gov.ae/",
-      "strategy": "html",
-      "error": "ConnectTimeout: timed out"
-    },
-    {
-      "key": "https://www.dubaipulse.gov.ae/dataset/dld_transactions",
-      "strategy": "html",
-      "error": "ConnectTimeout: timed out"
-    },
-    {
-      "key": "https://www.dubaipulse.gov.ae/dataset/dld_rent_contracts",
-      "strategy": "html",
-      "error": "ConnectTimeout: timed out"
-    },
-    {
-      "key": "https://gateway.dubailand.gov.ae/",
-      "strategy": "html",
-      "error": "HTTPStatusError: Client error '404 Not Found' for url 'https://gateway.dubailand.gov.ae/'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404"
-    }
-  ],
+  "errors": [],
   "wanted": {
     "transactions": [],
     "rent_contracts": [],

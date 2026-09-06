@@ -1,6 +1,34 @@
 {
-  "generated_at": "2026-09-06T15:49:19+00:00",
+  "generated_at": "2026-09-06T15:54:04+00:00",
   "n_pages": 2,
+  "endpoints": [
+    {
+      "url": "https://dubailand.gov.ae/mydld/dashboard/property_services",
+      "path": "/mydld/dashboard/property_services",
+      "found_in": "https://dubailand.gov.ae/static/js/main.f4f84a5d.chunk.js"
+    },
+    {
+      "url": "https://dubailand.gov.ae/mydld/mollak_service_charges/",
+      "path": "/mydld/mollak_service_charges/",
+      "found_in": "https://dubailand.gov.ae/static/js/main.f4f84a5d.chunk.js"
+    },
+    {
+      "url": "https://mobile.dubailand.gov.ae/PrivateSaleApi/TermsandConditions/TermsAndConditions.pdf",
+      "path": "https://mobile.dubailand.gov.ae/PrivateSaleApi/TermsandConditions/TermsAndConditions.pdf",
+      "found_in": "https://dubailand.gov.ae/static/js/main.f4f84a5d.chunk.js"
+    },
+    {
+      "url": "https://vimeo.com/api/v2/video/",
+      "path": "//vimeo.com/api/v2/video/",
+      "found_in": "https://dubailand.gov.ae/scripts/UI/plugins/owl.carousel.min.js"
+    },
+    {
+      "url": "https://vzaar.com/api/videos/",
+      "path": "//vzaar.com/api/videos/",
+      "found_in": "https://dubailand.gov.ae/scripts/UI/plugins/owl.carousel.min.js"
+    }
+  ],
+  "n_endpoints": 5,
   "n_data_links": 0,
   "n_api_requests": 15,
   "pages": [
@@ -44,8 +72,561 @@
           "url": "https://api.userway.org/api/a11y-data/v0/page/https%3A%2F%2Fdubailand.gov.ae%2Fen%2Fopen-data%2Freal-estate-data%2F%23%2F/DESKTOP/WIDGET_ON/status"
         }
       ],
-      "links": [],
-      "error": "TimeoutError: Page.goto: Timeout 45000ms exceeded.\nCall log:\n  - navigating to \"https://dubailand.gov.ae/en/open-data/real-estate-data/\", waiting until \"networkidle\"\n",
+      "links": [
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/#skipcontent",
+          "text": "Skip to main content"
+        },
+        {
+          "href": "https://tec.gov.ae/en/web/tec/home",
+          "text": ""
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/",
+          "text": ""
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/",
+          "text": "Home (current)"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/#",
+          "text": "About Us"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/#",
+          "text": "Dubai Land Department"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/about-dubai-land-department/about-dubai-land-department/",
+          "text": "About Dubai Land Department"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/about-dubai-land-department/customer-happiness-charter/",
+          "text": "Customer Happiness Charter"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/about-dubai-land-department/organization-chart/",
+          "text": "Organization Chart"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/about-dubai-land-department/regional-and-international-relation/",
+          "text": "Regional & International Relations"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/about-dubai-land-department/strategic-map/",
+          "text": "Strategic Map"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/about-dubai-land-department/annual-report-2024/",
+          "text": "Dubai Land Department Annual Report 2024"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/about-dubai-land-department/cyber-security-awareness/",
+          "text": "Cyber Security Awareness"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/about-dubai-land-department/management-s-message/",
+          "text": "Management’s Message"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/about-dubai-land-department/partnership/",
+          "text": "Partnership"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/about-dubai-land-department/policies/",
+          "text": "Policies"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/about-dubai-land-department/rules-regulations/",
+          "text": "Rules & Regulations"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/eservices/all-services?id=19503",
+          "text": "Services"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/#",
+          "text": "Information"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/eservices/stakeholders?id=17760",
+          "text": "Owner"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/eservices/stakeholders?id=17766",
+          "text": "Tenant"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/eservices/stakeholders?id=17769",
+          "text": "Developer"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/eservices/stakeholders?id=17776",
+          "text": "Real Estate Companies"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/eservices/stakeholders?id=17772",
+          "text": "Financial Institutions"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/#",
+          "text": "Open Data"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/developer-book/",
+          "text": "Development Handbook"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/research/",
+          "text": "Research"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/indexes-home/",
+          "text": "Indexes"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/",
+          "text": "Real Estate Data"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/news-events/",
+          "text": "News & Media"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/user-guide/",
+          "text": "User Guide"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/downloads/",
+          "text": "Downloads"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/contact-us/",
+          "text": "Support"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/#",
+          "text": "Noqodi Payment Support"
+        },
+        {
+          "href": "https://dubailand.gov.ae/ar/open-data/real-estate-data/",
+          "text": "العربية"
+        },
+        {
+          "href": "https://trakheesi.dubailand.gov.ae/dubaibrokers/",
+          "text": "Login to Dubai Broker application"
+        },
+        {
+          "href": "https://tec.gov.ae/en/web/tec/home",
+          "text": ""
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/MyDLD/#/login/owner/",
+          "text": ""
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/",
+          "text": ""
+        },
+        {
+          "href": "https://dubailand.gov.ae/ar/open-data/real-estate-data/",
+          "text": "العربية"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/all-notifications/",
+          "text": "View All Notifications"
+        },
+        {
+          "href": "https://trakheesi.dubailand.gov.ae/dubaibrokers/",
+          "text": "Login to Dubai Broker application"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/",
+          "text": "Home"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/",
+          "text": "Open Data"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/#transaction",
+          "text": "Transactions"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/#rent",
+          "text": "Rents"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/#project",
+          "text": "Project"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/#valuation",
+          "text": "Valuations"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/#land",
+          "text": "Land"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/#building",
+          "text": "Building"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/#unit",
+          "text": "Unit"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/#broker",
+          "text": "Broker"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/#developer",
+          "text": "Developer"
+        },
+        {
+          "href": "https://www.dubaipulse.gov.ae/organisation/dld",
+          "text": "Dubai Pulse"
+        },
+        {
+          "href": "https://www.dubaipulse.gov.ae/organisation/dld",
+          "text": "Dubai Pulse"
+        },
+        {
+          "href": "https://www.dubaipulse.gov.ae/organisation/dld",
+          "text": "Dubai Pulse"
+        },
+        {
+          "href": "https://www.dubaipulse.gov.ae/organisation/dld",
+          "text": "Dubai Pulse"
+        },
+        {
+          "href": "https://www.dubaipulse.gov.ae/organisation/dld",
+          "text": "Dubai Pulse"
+        },
+        {
+          "href": "https://www.dubaipulse.gov.ae/organisation/dld",
+          "text": "Dubai Pulse"
+        },
+        {
+          "href": "https://www.dubaipulse.gov.ae/organisation/dld",
+          "text": "Dubai Pulse"
+        },
+        {
+          "href": "https://www.dubaipulse.gov.ae/organisation/dld",
+          "text": "Dubai Pulse"
+        },
+        {
+          "href": "https://www.dubaipulse.gov.ae/organisation/dld",
+          "text": "Dubai Pulse"
+        },
+        {
+          "href": "https://dubaicareers.ae/en/Pages/default.aspx",
+          "text": ""
+        },
+        {
+          "href": "https://www.dubaipulse.gov.ae/organisation/dld",
+          "text": ""
+        },
+        {
+          "href": "https://www.facebook.com/DubaiLandDepartment",
+          "text": "Facebook"
+        },
+        {
+          "href": "https://www.linkedin.com/company/dubai-land-department",
+          "text": "Linkedin"
+        },
+        {
+          "href": "https://www.instagram.com/land_department/?hl=en",
+          "text": "Instagram"
+        },
+        {
+          "href": "https://twitter.com/Land_Department",
+          "text": "Twitter"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/about-dubai-land-department/about-dubai-land-department/",
+          "text": "About Us"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/contact-us",
+          "text": "Support"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/eservices/complaint/",
+          "text": "Complaint"
+        },
+        {
+          "href": "https://goo.gl/maps/uMBjX4iJ2vbZ2kkp6",
+          "text": "Direction"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/faq/",
+          "text": "Frequently Asked Questions"
+        },
+        {
+          "href": "https://dubailand.gov.ae/media/tptiyzst/customer_happiness_charter_en_page-0001.jpg",
+          "text": "Customer Happiness Charter"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/terms-conditions/",
+          "text": "Terms and Conditions"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/privacy-policy/",
+          "text": "Privacy Policy"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/accessibility/",
+          "text": "Accessibility"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/sitemap/",
+          "text": "Sitemap"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/eservices/name-of-services/",
+          "text": "Service Name Updates"
+        },
+        {
+          "href": "javascript:;",
+          "text": "Happiness Meter"
+        },
+        {
+          "href": "javascript:;",
+          "text": ""
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/eservices/all-services?id=19503",
+          "text": "Services"
+        },
+        {
+          "href": "javascript:;",
+          "text": "Payment Support"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/#collapseftrfloating",
+          "text": "menu option"
+        },
+        {
+          "href": "https://www.google.com/maps?ll=25.261949,55.315626&z=16&t=m&hl=en-US&gl=US&mapclient=embed&cid=12975627542441620643",
+          "text": "Location"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/news-events/",
+          "text": "Newsroom"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/contact-us/",
+          "text": "Support"
+        },
+        {
+          "href": "https://dubai.ae/en",
+          "text": ""
+        },
+        {
+          "href": "javascript:;",
+          "text": ""
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/#",
+          "text": "Live Chat"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/#",
+          "text": "Chat"
+        },
+        {
+          "href": "https://www.facebook.com/DubaiLandDepartment",
+          "text": "Facebook"
+        },
+        {
+          "href": "https://www.linkedin.com/company/dubai-land-department",
+          "text": "Linkedin"
+        },
+        {
+          "href": "https://www.instagram.com/land_department/?hl=en",
+          "text": "Instagram"
+        },
+        {
+          "href": "https://twitter.com/Land_Department",
+          "text": "Twitter"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/#",
+          "text": "Malik"
+        },
+        {
+          "href": "https://www.noqodi.com/en/support",
+          "text": "Submit  Support Request"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/#",
+          "text": "1"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/#",
+          "text": "2"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/#",
+          "text": "3"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/#",
+          "text": "4"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/#",
+          "text": "5"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/#",
+          "text": "6"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/#",
+          "text": "7"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/#",
+          "text": "8"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/#",
+          "text": "9"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/#",
+          "text": "10"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/#",
+          "text": "11"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/#",
+          "text": "12"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/#",
+          "text": "13"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/#",
+          "text": "14"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/#",
+          "text": "15"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/#",
+          "text": "16"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/#",
+          "text": "17"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/#",
+          "text": "18"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/#",
+          "text": "19"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/#",
+          "text": "20"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/#",
+          "text": "21"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/#",
+          "text": "22"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/#",
+          "text": "23"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/#",
+          "text": "24"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/#",
+          "text": "25"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/#",
+          "text": "26"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/#",
+          "text": "27"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/#",
+          "text": "28"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/#",
+          "text": "29"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/#",
+          "text": "30"
+        }
+      ],
+      "error": null,
+      "scripts": [
+        "https://dubailand.gov.ae/scripts/polyfill.js",
+        "https://dubailand.gov.ae/scripts/api/boot-1.0.4.js",
+        "https://dubailand.gov.ae/scripts/jquery-4.0.0.min.js",
+        "https://dubailand.gov.ae/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js",
+        "https://dubailand.gov.ae/scripts/UI/js/popper.min.js",
+        "https://dubailand.gov.ae/scripts/UI/plugins/bootstrap/js/bootstrap.min.js",
+        "https://dubailand.gov.ae/scripts/UI/js/swiper.min.js",
+        "https://dubailand.gov.ae/scripts/UI/plugins/highcharts/highcharts.js",
+        "https://dubailand.gov.ae/scripts/UI/plugins/highcharts/highcharts-3d.js",
+        "https://dubailand.gov.ae/scripts/UI/plugins/highcharts/variable-pie.js",
+        "https://dubailand.gov.ae/scripts/UI/plugins/highcharts/exporting.js",
+        "https://dubailand.gov.ae/scripts/UI/plugins/highcharts/export-data.js",
+        "https://dubailand.gov.ae/scripts/UI/plugins/highcharts/accessibility.js",
+        "https://dubailand.gov.ae/scripts/UI/js/moment.min.js",
+        "https://dubailand.gov.ae/scripts/UI/plugins/bootstrap-daterangepicker/daterangepicker.js",
+        "https://dubailand.gov.ae/scripts/UI/plugins/slider-popup-lightbox/js/jquery.popup.lightbox.min.js",
+        "https://dubailand.gov.ae/scripts/UI/plugins/owl.carousel.min.js",
+        "https://dubailand.gov.ae/scripts/UI/plugins/jquery.autocomplete.min.js",
+        "https://dubailand.gov.ae/scripts/happiness-meter-1.0.1.js",
+        "https://dubailand.gov.ae/scripts/UI/plugins/chosen/chosen.jquery.min.js",
+        "https://dubailand.gov.ae/scripts/jquery/plugins/validate/jquery.validate.min.js",
+        "https://dubailand.gov.ae/scripts/UI/plugins/jquery.inputmask.bundle.min.js",
+        "https://dubailand.gov.ae/scripts/plugins/fancybox/jquery.fancybox.js",
+        "https://dubailand.gov.ae/scripts/lazysizes.min.js",
+        "https://dubailand.gov.ae/scripts/jquery-ui.min.js",
+        "https://dubailand.gov.ae/scripts/UI/plugins/datatables.min.js",
+        "https://dubailand.gov.ae/scripts/api/OpenDataApi.js",
+        "https://dubailand.gov.ae/scripts/TabsJS.js",
+        "https://dubailand.gov.ae/static/js/5.0f5e651e.chunk.js",
+        "https://dubailand.gov.ae/static/js/main.f4f84a5d.chunk.js",
+        "https://dubailand.gov.ae/scripts/firebasejs/firebase-app.js",
+        "https://dubailand.gov.ae/scripts/firebasejs/firebase-messaging.js",
+        "https://dubailand.gov.ae/scripts/firebasejs/firebase-analytics.js",
+        "https://dubailand.gov.ae/scripts/favourites.js",
+        "https://dubailand.gov.ae/scripts/jquery/jquery.cookie.js",
+        "https://dubailand.gov.ae/scripts/Feedback/feedbackApi.js",
+        "https://dubailand.gov.ae/scripts/Feedback/feedback.js",
+        "https://dubailand.gov.ae/scripts/genesys-en-widget.js",
+        "https://dubailand.gov.ae/static/js/16.fade446b.chunk.js",
+        "https://dubailand.gov.ae/static/js/17.92b37b00.chunk.js"
+      ],
+      "title": "Dubai Land Department - Real Estate Data",
+      "html_len": 251288,
       "data_links": []
     },
     {
@@ -76,8 +657,357 @@
           "url": "https://api.userway.org/api/a11y-data/v0/page/https%3A%2F%2Fdubailand.gov.ae%2Fen%2Fopen-data%2F%23%2F/DESKTOP/WIDGET_ON/status"
         }
       ],
-      "links": [],
-      "error": "TimeoutError: Page.goto: Timeout 45000ms exceeded.\nCall log:\n  - navigating to \"https://dubailand.gov.ae/en/open-data/\", waiting until \"networkidle\"\n",
+      "links": [
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/#skipcontent",
+          "text": "Skip to main content"
+        },
+        {
+          "href": "https://tec.gov.ae/en/web/tec/home",
+          "text": ""
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/",
+          "text": ""
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/",
+          "text": "Home (current)"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/#",
+          "text": "About Us"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/#",
+          "text": "Dubai Land Department"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/about-dubai-land-department/about-dubai-land-department/",
+          "text": "About Dubai Land Department"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/about-dubai-land-department/customer-happiness-charter/",
+          "text": "Customer Happiness Charter"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/about-dubai-land-department/organization-chart/",
+          "text": "Organization Chart"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/about-dubai-land-department/regional-and-international-relation/",
+          "text": "Regional & International Relations"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/about-dubai-land-department/strategic-map/",
+          "text": "Strategic Map"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/about-dubai-land-department/annual-report-2024/",
+          "text": "Dubai Land Department Annual Report 2024"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/about-dubai-land-department/cyber-security-awareness/",
+          "text": "Cyber Security Awareness"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/about-dubai-land-department/management-s-message/",
+          "text": "Management’s Message"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/about-dubai-land-department/partnership/",
+          "text": "Partnership"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/about-dubai-land-department/policies/",
+          "text": "Policies"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/about-dubai-land-department/rules-regulations/",
+          "text": "Rules & Regulations"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/eservices/all-services?id=19503",
+          "text": "Services"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/#",
+          "text": "Information"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/eservices/stakeholders?id=17760",
+          "text": "Owner"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/eservices/stakeholders?id=17766",
+          "text": "Tenant"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/eservices/stakeholders?id=17769",
+          "text": "Developer"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/eservices/stakeholders?id=17776",
+          "text": "Real Estate Companies"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/eservices/stakeholders?id=17772",
+          "text": "Financial Institutions"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/#",
+          "text": "Open Data"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/developer-book/",
+          "text": "Development Handbook"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/research/",
+          "text": "Research"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/indexes-home/",
+          "text": "Indexes"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/real-estate-data/",
+          "text": "Real Estate Data"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/news-events/",
+          "text": "News & Media"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/user-guide/",
+          "text": "User Guide"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/downloads/",
+          "text": "Downloads"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/contact-us/",
+          "text": "Support"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/#",
+          "text": "Noqodi Payment Support"
+        },
+        {
+          "href": "https://dubailand.gov.ae/ar/open-data/",
+          "text": "العربية"
+        },
+        {
+          "href": "https://trakheesi.dubailand.gov.ae/dubaibrokers/",
+          "text": "Login to Dubai Broker application"
+        },
+        {
+          "href": "https://tec.gov.ae/en/web/tec/home",
+          "text": ""
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/MyDLD/#/login/owner/",
+          "text": ""
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/",
+          "text": ""
+        },
+        {
+          "href": "https://dubailand.gov.ae/ar/open-data/",
+          "text": "العربية"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/all-notifications/",
+          "text": "View All Notifications"
+        },
+        {
+          "href": "https://trakheesi.dubailand.gov.ae/dubaibrokers/",
+          "text": "Login to Dubai Broker application"
+        },
+        {
+          "href": "https://dubaicareers.ae/en/Pages/default.aspx",
+          "text": ""
+        },
+        {
+          "href": "https://www.dubaipulse.gov.ae/organisation/dld",
+          "text": ""
+        },
+        {
+          "href": "https://www.facebook.com/DubaiLandDepartment",
+          "text": "Facebook"
+        },
+        {
+          "href": "https://www.linkedin.com/company/dubai-land-department",
+          "text": "Linkedin"
+        },
+        {
+          "href": "https://www.instagram.com/land_department/?hl=en",
+          "text": "Instagram"
+        },
+        {
+          "href": "https://twitter.com/Land_Department",
+          "text": "Twitter"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/about-dubai-land-department/about-dubai-land-department/",
+          "text": "About Us"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/contact-us",
+          "text": "Support"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/eservices/complaint/",
+          "text": "Complaint"
+        },
+        {
+          "href": "https://goo.gl/maps/uMBjX4iJ2vbZ2kkp6",
+          "text": "Direction"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/faq/",
+          "text": "Frequently Asked Questions"
+        },
+        {
+          "href": "https://dubailand.gov.ae/media/tptiyzst/customer_happiness_charter_en_page-0001.jpg",
+          "text": "Customer Happiness Charter"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/terms-conditions/",
+          "text": "Terms and Conditions"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/privacy-policy/",
+          "text": "Privacy Policy"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/accessibility/",
+          "text": "Accessibility"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/sitemap/",
+          "text": "Sitemap"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/eservices/name-of-services/",
+          "text": "Service Name Updates"
+        },
+        {
+          "href": "javascript:;",
+          "text": "Happiness Meter"
+        },
+        {
+          "href": "javascript:;",
+          "text": ""
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/eservices/all-services?id=19503",
+          "text": "Services"
+        },
+        {
+          "href": "javascript:;",
+          "text": "Payment Support"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/#collapseftrfloating",
+          "text": "menu option"
+        },
+        {
+          "href": "https://www.google.com/maps?ll=25.261949,55.315626&z=16&t=m&hl=en-US&gl=US&mapclient=embed&cid=12975627542441620643",
+          "text": "Location"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/news-events/",
+          "text": "Newsroom"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/contact-us/",
+          "text": "Support"
+        },
+        {
+          "href": "https://dubai.ae/en",
+          "text": ""
+        },
+        {
+          "href": "javascript:;",
+          "text": ""
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/#",
+          "text": "Live Chat"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/#",
+          "text": "Chat"
+        },
+        {
+          "href": "https://www.facebook.com/DubaiLandDepartment",
+          "text": "Facebook"
+        },
+        {
+          "href": "https://www.linkedin.com/company/dubai-land-department",
+          "text": "Linkedin"
+        },
+        {
+          "href": "https://www.instagram.com/land_department/?hl=en",
+          "text": "Instagram"
+        },
+        {
+          "href": "https://twitter.com/Land_Department",
+          "text": "Twitter"
+        },
+        {
+          "href": "https://dubailand.gov.ae/en/open-data/#",
+          "text": "Malik"
+        },
+        {
+          "href": "https://www.noqodi.com/en/support",
+          "text": "Submit  Support Request"
+        }
+      ],
+      "error": null,
+      "scripts": [
+        "https://dubailand.gov.ae/scripts/polyfill.js",
+        "https://dubailand.gov.ae/scripts/api/boot-1.0.4.js",
+        "https://dubailand.gov.ae/scripts/jquery-4.0.0.min.js",
+        "https://dubailand.gov.ae/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js",
+        "https://dubailand.gov.ae/scripts/UI/js/popper.min.js",
+        "https://dubailand.gov.ae/scripts/UI/plugins/bootstrap/js/bootstrap.min.js",
+        "https://dubailand.gov.ae/scripts/UI/js/swiper.min.js",
+        "https://dubailand.gov.ae/scripts/UI/plugins/highcharts/highcharts.js",
+        "https://dubailand.gov.ae/scripts/UI/plugins/highcharts/highcharts-3d.js",
+        "https://dubailand.gov.ae/scripts/UI/plugins/highcharts/variable-pie.js",
+        "https://dubailand.gov.ae/scripts/UI/plugins/highcharts/exporting.js",
+        "https://dubailand.gov.ae/scripts/UI/plugins/highcharts/export-data.js",
+        "https://dubailand.gov.ae/scripts/UI/plugins/highcharts/accessibility.js",
+        "https://dubailand.gov.ae/scripts/UI/js/moment.min.js",
+        "https://dubailand.gov.ae/scripts/UI/plugins/bootstrap-daterangepicker/daterangepicker.js",
+        "https://dubailand.gov.ae/scripts/UI/plugins/slider-popup-lightbox/js/jquery.popup.lightbox.min.js",
+        "https://dubailand.gov.ae/scripts/UI/plugins/owl.carousel.min.js",
+        "https://dubailand.gov.ae/scripts/UI/plugins/jquery.autocomplete.min.js",
+        "https://dubailand.gov.ae/scripts/happiness-meter-1.0.1.js",
+        "https://dubailand.gov.ae/scripts/UI/plugins/chosen/chosen.jquery.min.js",
+        "https://dubailand.gov.ae/scripts/jquery/plugins/validate/jquery.validate.min.js",
+        "https://dubailand.gov.ae/scripts/UI/plugins/jquery.inputmask.bundle.min.js",
+        "https://dubailand.gov.ae/scripts/plugins/fancybox/jquery.fancybox.js",
+        "https://dubailand.gov.ae/scripts/lazysizes.min.js",
+        "https://dubailand.gov.ae/static/js/5.0f5e651e.chunk.js",
+        "https://dubailand.gov.ae/static/js/main.f4f84a5d.chunk.js",
+        "https://dubailand.gov.ae/scripts/firebasejs/firebase-app.js",
+        "https://dubailand.gov.ae/scripts/firebasejs/firebase-messaging.js",
+        "https://dubailand.gov.ae/scripts/firebasejs/firebase-analytics.js",
+        "https://dubailand.gov.ae/scripts/favourites.js",
+        "https://dubailand.gov.ae/scripts/jquery/jquery.cookie.js",
+        "https://dubailand.gov.ae/scripts/Feedback/feedbackApi.js",
+        "https://dubailand.gov.ae/scripts/Feedback/feedback.js",
+        "https://dubailand.gov.ae/scripts/genesys-en-widget.js",
+        "https://dubailand.gov.ae/static/js/16.fade446b.chunk.js",
+        "https://dubailand.gov.ae/static/js/17.92b37b00.chunk.js"
+      ],
+      "title": "Dubai Land Department - Open Data",
+      "html_len": 110791,
       "data_links": []
     }
   ]
