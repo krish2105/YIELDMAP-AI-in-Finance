@@ -1,0 +1,644 @@
+{
+  "generated_at": "2026-09-06T16:27:23+00:00",
+  "provenance": "SYNTHETIC",
+  "raw_dir": "/home/user/YIELDMAP-AI-in-Finance/data/raw",
+  "n_datasets": 2,
+  "total_rows": 210346,
+  "errors": [],
+  "manifest": null,
+  "datasets": [
+    {
+      "name": "rent_contracts",
+      "rows": 90000,
+      "columns": 12,
+      "column_names": [
+        "contract_id",
+        "contract_start_date",
+        "contract_end_date",
+        "area_name_en",
+        "building_name_en",
+        "project_name_en",
+        "ejari_property_type_en",
+        "ejari_property_sub_type_en",
+        "rooms_en",
+        "actual_area",
+        "annual_amount",
+        "version_en"
+      ],
+      "fields": [
+        {
+          "name": "contract_id",
+          "dtype": "String",
+          "nulls": 0,
+          "blanks": 0,
+          "null_rate": 0.0,
+          "n_distinct": 200,
+          "distinct_capped": true,
+          "top_values": [
+            {
+              "value": "R00081539",
+              "count": 1
+            },
+            {
+              "value": "R00061303",
+              "count": 1
+            },
+            {
+              "value": "R00088515",
+              "count": 1
+            },
+            {
+              "value": "R00022185",
+              "count": 1
+            },
+            {
+              "value": "R00040016",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "name": "contract_start_date",
+          "dtype": "String",
+          "nulls": 0,
+          "blanks": 0,
+          "null_rate": 0.0,
+          "n_distinct": 200,
+          "distinct_capped": true,
+          "date_min": "2014-01-01",
+          "date_max": "2025-12-30",
+          "date_parsed_rate": 1.0
+        },
+        {
+          "name": "contract_end_date",
+          "dtype": "String",
+          "nulls": 0,
+          "blanks": 0,
+          "null_rate": 0.0,
+          "n_distinct": 200,
+          "distinct_capped": true,
+          "date_min": "2015-01-01",
+          "date_max": "2026-12-30",
+          "date_parsed_rate": 1.0
+        },
+        {
+          "name": "area_name_en",
+          "dtype": "String",
+          "nulls": 0,
+          "blanks": 0,
+          "null_rate": 0.0,
+          "n_distinct": 86,
+          "distinct_capped": false,
+          "top_values": [
+            {
+              "value": "Madinat Al Mataar",
+              "count": 1660
+            },
+            {
+              "value": "Al Goze Industrial Fourth",
+              "count": 1649
+            },
+            {
+              "value": "Al Hebiah Third",
+              "count": 1628
+            },
+            {
+              "value": "Muhaisanah Fourth",
+              "count": 1626
+            },
+            {
+              "value": "Hor Al Anz East",
+              "count": 1617
+            }
+          ]
+        },
+        {
+          "name": "building_name_en",
+          "dtype": "String",
+          "nulls": 0,
+          "blanks": 0,
+          "null_rate": 0.0,
+          "n_distinct": 200,
+          "distinct_capped": true,
+          "top_values": [
+            {
+              "value": "Al Tower 15",
+              "count": 710
+            },
+            {
+              "value": "Al Tower 30",
+              "count": 709
+            },
+            {
+              "value": "Al Tower 54",
+              "count": 697
+            },
+            {
+              "value": "Al Tower 4",
+              "count": 696
+            },
+            {
+              "value": "Al Tower 53",
+              "count": 695
+            }
+          ]
+        },
+        {
+          "name": "project_name_en",
+          "dtype": "String",
+          "nulls": 0,
+          "blanks": 0,
+          "null_rate": 0.0,
+          "n_distinct": 200,
+          "distinct_capped": true,
+          "top_values": [
+            {
+              "value": "Project 164",
+              "count": 467
+            },
+            {
+              "value": "Project 115",
+              "count": 467
+            },
+            {
+              "value": "Project 53",
+              "count": 461
+            },
+            {
+              "value": "Project 104",
+              "count": 458
+            },
+            {
+              "value": "Project 125",
+              "count": 457
+            }
+          ]
+        },
+        {
+          "name": "ejari_property_type_en",
+          "dtype": "String",
+          "nulls": 0,
+          "blanks": 0,
+          "null_rate": 0.0,
+          "n_distinct": 1,
+          "distinct_capped": false,
+          "top_values": [
+            {
+              "value": "Unit",
+              "count": 90000
+            }
+          ]
+        },
+        {
+          "name": "ejari_property_sub_type_en",
+          "dtype": "String",
+          "nulls": 0,
+          "blanks": 0,
+          "null_rate": 0.0,
+          "n_distinct": 1,
+          "distinct_capped": false,
+          "top_values": [
+            {
+              "value": "Flat",
+              "count": 90000
+            }
+          ]
+        },
+        {
+          "name": "rooms_en",
+          "dtype": "String",
+          "nulls": 0,
+          "blanks": 0,
+          "null_rate": 0.0,
+          "n_distinct": 6,
+          "distinct_capped": false,
+          "top_values": [
+            {
+              "value": "1 B/R",
+              "count": 30331
+            },
+            {
+              "value": "2 B/R",
+              "count": 25294
+            },
+            {
+              "value": "Studio",
+              "count": 14549
+            },
+            {
+              "value": "3 B/R",
+              "count": 13489
+            },
+            {
+              "value": "4 B/R",
+              "count": 4537
+            }
+          ]
+        },
+        {
+          "name": "actual_area",
+          "dtype": "Float64",
+          "nulls": 0,
+          "blanks": 0,
+          "null_rate": 0.0,
+          "n_distinct": 200,
+          "distinct_capped": true,
+          "min": 32.0,
+          "max": 408.88,
+          "mean": 140.9259351111111,
+          "median": 127.38
+        },
+        {
+          "name": "annual_amount",
+          "dtype": "Float64",
+          "nulls": 0,
+          "blanks": 0,
+          "null_rate": 0.0,
+          "n_distinct": 200,
+          "distinct_capped": true,
+          "min": 10415.46,
+          "max": 1672769.69,
+          "mean": 222707.7182897778,
+          "median": 183910.565
+        },
+        {
+          "name": "version_en",
+          "dtype": "String",
+          "nulls": 0,
+          "blanks": 0,
+          "null_rate": 0.0,
+          "n_distinct": 2,
+          "distinct_capped": false,
+          "top_values": [
+            {
+              "value": "Renewed",
+              "count": 49381
+            },
+            {
+              "value": "New",
+              "count": 40619
+            }
+          ]
+        }
+      ],
+      "path": "data/raw/rent_contracts.csv",
+      "bytes": 10166596,
+      "rows_profiled": 90000,
+      "sampled": false
+    },
+    {
+      "name": "transactions",
+      "rows": 120346,
+      "columns": 15,
+      "column_names": [
+        "transaction_id",
+        "instance_date",
+        "trans_group_en",
+        "procedure_name_en",
+        "reg_type_en",
+        "area_name_en",
+        "building_name_en",
+        "project_name_en",
+        "property_type_en",
+        "property_sub_type_en",
+        "rooms_en",
+        "has_parking",
+        "procedure_area",
+        "actual_worth",
+        "meter_sale_price"
+      ],
+      "fields": [
+        {
+          "name": "transaction_id",
+          "dtype": "String",
+          "nulls": 0,
+          "blanks": 0,
+          "null_rate": 0.0,
+          "n_distinct": 200,
+          "distinct_capped": true,
+          "top_values": [
+            {
+              "value": "S00046224",
+              "count": 1
+            },
+            {
+              "value": "S00070479",
+              "count": 1
+            },
+            {
+              "value": "S00097268",
+              "count": 1
+            },
+            {
+              "value": "S00091304",
+              "count": 1
+            },
+            {
+              "value": "S00110933",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "name": "instance_date",
+          "dtype": "String",
+          "nulls": 0,
+          "blanks": 0,
+          "null_rate": 0.0,
+          "n_distinct": 200,
+          "distinct_capped": true,
+          "date_min": "2014-01-01",
+          "date_max": "2025-12-30",
+          "date_parsed_rate": 1.0
+        },
+        {
+          "name": "trans_group_en",
+          "dtype": "String",
+          "nulls": 0,
+          "blanks": 0,
+          "null_rate": 0.0,
+          "n_distinct": 1,
+          "distinct_capped": false,
+          "top_values": [
+            {
+              "value": "Sales",
+              "count": 120346
+            }
+          ]
+        },
+        {
+          "name": "procedure_name_en",
+          "dtype": "String",
+          "nulls": 0,
+          "blanks": 0,
+          "null_rate": 0.0,
+          "n_distinct": 2,
+          "distinct_capped": false,
+          "top_values": [
+            {
+              "value": "Sell",
+              "count": 74723
+            },
+            {
+              "value": "Sell Pre-Registration",
+              "count": 45623
+            }
+          ]
+        },
+        {
+          "name": "reg_type_en",
+          "dtype": "String",
+          "nulls": 0,
+          "blanks": 0,
+          "null_rate": 0.0,
+          "n_distinct": 2,
+          "distinct_capped": false,
+          "top_values": [
+            {
+              "value": "Existing Properties",
+              "count": 74723
+            },
+            {
+              "value": "Off-Plan Properties",
+              "count": 45623
+            }
+          ]
+        },
+        {
+          "name": "area_name_en",
+          "dtype": "String",
+          "nulls": 0,
+          "blanks": 0,
+          "null_rate": 0.0,
+          "n_distinct": 86,
+          "distinct_capped": false,
+          "top_values": [
+            {
+              "value": "Hor Al Anz East",
+              "count": 2280
+            },
+            {
+              "value": "Al Kifaf",
+              "count": 2272
+            },
+            {
+              "value": "Al Hebiah Third",
+              "count": 2226
+            },
+            {
+              "value": "Muhaisanah Fourth",
+              "count": 2213
+            },
+            {
+              "value": "Emirates Hills Third",
+              "count": 2198
+            }
+          ]
+        },
+        {
+          "name": "building_name_en",
+          "dtype": "String",
+          "nulls": 0,
+          "blanks": 0,
+          "null_rate": 0.0,
+          "n_distinct": 200,
+          "distinct_capped": true,
+          "top_values": [
+            {
+              "value": "Al Tower 36",
+              "count": 952
+            },
+            {
+              "value": "Al Tower 1",
+              "count": 944
+            },
+            {
+              "value": "Al Tower 28",
+              "count": 942
+            },
+            {
+              "value": "Al Tower 34",
+              "count": 941
+            },
+            {
+              "value": "Al Tower 10",
+              "count": 929
+            }
+          ]
+        },
+        {
+          "name": "project_name_en",
+          "dtype": "String",
+          "nulls": 0,
+          "blanks": 0,
+          "null_rate": 0.0,
+          "n_distinct": 200,
+          "distinct_capped": true,
+          "top_values": [
+            {
+              "value": "Project 20",
+              "count": 604
+            },
+            {
+              "value": "Project 164",
+              "count": 599
+            },
+            {
+              "value": "Project 45",
+              "count": 595
+            },
+            {
+              "value": "Project 79",
+              "count": 594
+            },
+            {
+              "value": "Project 109",
+              "count": 593
+            }
+          ]
+        },
+        {
+          "name": "property_type_en",
+          "dtype": "String",
+          "nulls": 0,
+          "blanks": 0,
+          "null_rate": 0.0,
+          "n_distinct": 4,
+          "distinct_capped": false,
+          "top_values": [
+            {
+              "value": "Unit",
+              "count": 93946
+            },
+            {
+              "value": "Villa",
+              "count": 15558
+            },
+            {
+              "value": "Land",
+              "count": 6045
+            },
+            {
+              "value": "Building",
+              "count": 4797
+            }
+          ]
+        },
+        {
+          "name": "property_sub_type_en",
+          "dtype": "String",
+          "nulls": 0,
+          "blanks": 0,
+          "null_rate": 0.0,
+          "n_distinct": 4,
+          "distinct_capped": false,
+          "top_values": [
+            {
+              "value": "Flat",
+              "count": 93946
+            },
+            {
+              "value": "Villa",
+              "count": 15558
+            },
+            {
+              "value": "Land",
+              "count": 6045
+            },
+            {
+              "value": "Building",
+              "count": 4797
+            }
+          ]
+        },
+        {
+          "name": "rooms_en",
+          "dtype": "String",
+          "nulls": 26400,
+          "blanks": 0,
+          "null_rate": 0.219367,
+          "n_distinct": 7,
+          "distinct_capped": false,
+          "top_values": [
+            {
+              "value": "1 B/R",
+              "count": 32012
+            },
+            {
+              "value": "2 B/R",
+              "count": 26354
+            },
+            {
+              "value": "Studio",
+              "count": 15088
+            },
+            {
+              "value": "3 B/R",
+              "count": 13918
+            },
+            {
+              "value": "4 B/R",
+              "count": 4729
+            }
+          ]
+        },
+        {
+          "name": "has_parking",
+          "dtype": "Int64",
+          "nulls": 0,
+          "blanks": 0,
+          "null_rate": 0.0,
+          "n_distinct": 2,
+          "distinct_capped": false,
+          "min": 0.0,
+          "max": 1.0,
+          "mean": 0.6984278663187808,
+          "median": 1.0
+        },
+        {
+          "name": "procedure_area",
+          "dtype": "Float64",
+          "nulls": 0,
+          "blanks": 0,
+          "null_rate": 0.0,
+          "n_distinct": 200,
+          "distinct_capped": true,
+          "min": 32.0,
+          "max": 7999.67,
+          "mean": 410.5356619247834,
+          "median": 160.92
+        },
+        {
+          "name": "actual_worth",
+          "dtype": "Float64",
+          "nulls": 0,
+          "blanks": 0,
+          "null_rate": 0.0,
+          "n_distinct": 200,
+          "distinct_capped": true,
+          "min": 70541.93,
+          "max": 875198453.82,
+          "mean": 7751078.566038506,
+          "median": 3322302.13
+        },
+        {
+          "name": "meter_sale_price",
+          "dtype": "Float64",
+          "nulls": 0,
+          "blanks": 0,
+          "null_rate": 0.0,
+          "n_distinct": 200,
+          "distinct_capped": true,
+          "min": 515.36,
+          "max": 270989.67,
+          "mean": 21864.799330015125,
+          "median": 20806.72
+        }
+      ],
+      "path": "data/raw/transactions.csv",
+      "bytes": 17428639,
+      "rows_profiled": 120346,
+      "sampled": false
+    }
+  ]
+}

@@ -50,7 +50,13 @@ def db_provenance(db_path: Path) -> dict[str, dict[str, int]]:
 
 
 def results_provenance(results_dir: Path) -> list[str]:
-    """Result files that were produced from synthetic data."""
+    """Result files that are not demonstrably real.
+
+    The check is that a file *declares* provenance REAL, not that it avoids saying SYNTHETIC.
+    Inferring from the absence of a word is a weak test: it passed a profile of generated data
+    simply because that file happened not to contain the string. Requiring a declaration means a
+    model that forgets to stamp its output is caught rather than quietly trusted.
+    """
     flagged: list[str] = []
     if not results_dir.exists():
         return flagged
@@ -58,11 +64,17 @@ def results_provenance(results_dir: Path) -> list[str]:
         if path.name in EXEMPT_RESULT_FILES:
             continue
         try:
-            text = path.read_text()
-        except OSError:
+            body = json.loads(path.read_text())
+        except (OSError, json.JSONDecodeError):
+            flagged.append(f"{path.name} (unreadable, so its provenance cannot be established)")
             continue
-        if '"SYNTHETIC"' in text or '"provenance": "SYNTHETIC"' in text:
-            flagged.append(path.name)
+        declared = body.get("provenance") if isinstance(body, dict) else None
+        if declared == "REAL":
+            continue
+        if declared is None:
+            flagged.append(f"{path.name} (declares no provenance)")
+        else:
+            flagged.append(f"{path.name} (declares provenance {declared})")
     return flagged
 
 
@@ -79,7 +91,7 @@ def check(db_path: Path, results_dir: Path) -> tuple[bool, list[str]]:
             )
 
     for name in results_provenance(results_dir):
-        reasons.append(f"{results_dir.name}/{name} was produced from synthetic data")
+        reasons.append(f"{results_dir.name}/{name} is not established as real")
 
     return (not reasons), reasons
 

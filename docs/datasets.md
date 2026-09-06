@@ -74,8 +74,14 @@ Row counts, column lists, date ranges and null rates are measured rather than as
 file by the ingest job, so it cannot drift from the data.
 
 <!-- profile:start -->
-No profile has been produced yet. Run the ingest workflow (`.github/workflows/ingest.yml`); it
-writes `docs/results/profile.json` and regenerates this table.
+> **These figures describe generated data, not the Dubai registry.** The pipeline is running on the labelled stand-in described above. They are here so the shape of the pipeline is visible, and must not be cited as facts about Dubai.
+
+Measured on 2026-09-06T16:27:23+00:00 from `/home/user/YIELDMAP-AI-in-Finance/data/raw` (provenance: SYNTHETIC).
+
+| Dataset | Rows | Columns | Date range | Worst null rate | Size |
+|---|---:|---:|---|---:|---:|
+| `rent_contracts` | 90,000 | 12 | 2014-01-01 to 2026-12-30 | 0.0% (`contract_id`) | 9.7 MB |
+| `transactions` | 120,346 | 15 | 2014-01-01 to 2025-12-30 | 21.9% (`rooms_en`) | 16.6 MB |
 <!-- profile:end -->
 
 ## Reference documents (RAG corpus)

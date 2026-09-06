@@ -19,6 +19,8 @@ from typing import Any
 
 import polars as pl
 
+from etl.results import result_path
+
 ROOT = Path(__file__).resolve().parent.parent
 
 # Cap the distinct-value count: knowing a column has "more than this many" distinct values is
@@ -156,6 +158,16 @@ def profile_file(path: Path, *, sample_rows: int | None = None) -> dict[str, Any
     return prof
 
 
+def drop_provenance(raw_dir: Path) -> str:
+    """Whether this drop came from the publisher or from the generator.
+
+    etl.synthetic leaves a marker file beside the data it writes, so a profile of generated data
+    can route itself away from the real results directory rather than relying on someone
+    remembering to pass a flag.
+    """
+    return "SYNTHETIC" if (raw_dir / "SYNTHETIC").exists() else "REAL"
+
+
 def profile_dir(raw_dir: Path, *, sample_rows: int | None = None) -> dict[str, Any]:
     """Profile every tabular file in a drop directory."""
     files = sorted(p for p in raw_dir.glob("*") if p.suffix.lower() in {".csv", ".parquet", ".txt"})
@@ -174,6 +186,7 @@ def profile_dir(raw_dir: Path, *, sample_rows: int | None = None) -> dict[str, A
 
     return {
         "generated_at": _now(),
+        "provenance": drop_provenance(raw_dir),
         "raw_dir": str(raw_dir),
         "n_datasets": len(datasets),
         "total_rows": sum(d["rows"] for d in datasets),
@@ -199,8 +212,17 @@ def render_markdown(report: dict[str, Any]) -> str:
             "regenerates this table."
         )
 
+    provenance = report.get("provenance", "REAL")
+    banner = (
+        "> **These figures describe generated data, not the Dubai registry.** The pipeline is "
+        "running on the labelled stand-in described above. They are here so the shape of the "
+        "pipeline is visible, and must not be cited as facts about Dubai.\n"
+        if provenance == "SYNTHETIC"
+        else ""
+    )
     lines = [
-        f"Measured on {report['generated_at']} from `{report['raw_dir']}`.",
+        banner,
+        f"Measured on {report['generated_at']} from `{report['raw_dir']}` (provenance: {provenance}).",
         "",
         "| Dataset | Rows | Columns | Date range | Worst null rate | Size |",
         "|---|---:|---:|---|---:|---:|",
@@ -255,7 +277,12 @@ def update_datasets_doc(report: dict[str, Any], doc: Path) -> bool:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--raw", type=Path, default=ROOT / "data" / "raw")
-    parser.add_argument("--out", type=Path, default=ROOT / "docs" / "results" / "profile.json")
+    parser.add_argument(
+        "--out",
+        type=Path,
+        default=None,
+        help="defaults to docs/results/profile.json, or docs/results/synthetic/ for a generated drop",
+    )
     parser.add_argument("--doc", type=Path, default=ROOT / "docs" / "datasets.md")
     parser.add_argument(
         "--sample-rows",
@@ -270,9 +297,13 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     report = profile_dir(args.raw, sample_rows=args.sample_rows)
-    args.out.parent.mkdir(parents=True, exist_ok=True)
-    args.out.write_text(json.dumps(report, indent=2, ensure_ascii=False, default=str))
-    print(f"wrote {args.out}: {report['n_datasets']} datasets, {report['total_rows']:,} rows")
+    out = args.out or result_path("profile.json", report["provenance"])
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(report, indent=2, ensure_ascii=False, default=str))
+    print(
+        f"wrote {out}: {report['n_datasets']} datasets, "
+        f"{report['total_rows']:,} rows, provenance {report['provenance']}"
+    )
 
     if update_datasets_doc(report, args.doc):
         print(f"updated {args.doc}")

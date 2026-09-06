@@ -186,14 +186,26 @@ class TestProvenanceGuard:
         results = tmp_path / "results"
         results.mkdir()
         (results / "hedonic.json").write_text(json.dumps({"provenance": "SYNTHETIC", "mape": 0.1}))
-        assert results_provenance(results) == ["hedonic.json"]
+        assert results_provenance(results) == ["hedonic.json (declares provenance SYNTHETIC)"]
 
-    def test_does_not_flag_a_retrieval_report_for_mentioning_provenance(self, tmp_path):
-        """Probe reports legitimately discuss provenance; flagging them would cry wolf."""
+    def test_a_result_that_declares_nothing_is_not_trusted(self, tmp_path):
+        """Inferring realness from the absence of a word let a generated profile through once."""
         results = tmp_path / "results"
         results.mkdir()
-        (results / "source_probe.json").write_text(json.dumps({"note": "SYNTHETIC fallback"}))
+        (results / "profile.json").write_text(json.dumps({"n_datasets": 2, "total_rows": 100}))
+        assert results_provenance(results) == ["profile.json (declares no provenance)"]
+
+    def test_a_result_declaring_real_provenance_passes(self, tmp_path):
+        results = tmp_path / "results"
+        results.mkdir()
+        (results / "hedonic.json").write_text(json.dumps({"provenance": "REAL", "mape": 0.1}))
         assert results_provenance(results) == []
+
+    def test_an_unreadable_result_is_flagged_rather_than_skipped(self, tmp_path):
+        results = tmp_path / "results"
+        results.mkdir()
+        (results / "broken.json").write_text("{not json")
+        assert "broken.json" in results_provenance(results)[0]
 
     def test_does_not_scan_the_generated_results_directory(self, tmp_path):
         """Generated results are kept, in their own directory, and are not contamination."""

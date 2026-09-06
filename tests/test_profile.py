@@ -189,3 +189,29 @@ class TestMarkdownRendering:
 
     def test_does_nothing_when_the_doc_is_absent(self, tmp_path):
         assert update_datasets_doc({"datasets": []}, tmp_path / "nope.md") is False
+
+
+class TestProvenanceRouting:
+    """A profile of generated data must not land in the real results directory."""
+
+    def test_a_drop_with_a_marker_is_reported_as_generated(self, tmp_path, transactions_df):
+        transactions_df.head(20).write_csv(tmp_path / "transactions.csv")
+        (tmp_path / "SYNTHETIC").write_text("generated")
+        assert profile_dir(tmp_path)["provenance"] == "SYNTHETIC"
+
+    def test_a_drop_without_a_marker_is_reported_as_real(self, tmp_path, transactions_df):
+        transactions_df.head(20).write_csv(tmp_path / "transactions.csv")
+        assert profile_dir(tmp_path)["provenance"] == "REAL"
+
+    def test_the_generated_table_carries_a_visible_warning(self, tmp_path, transactions_df):
+        transactions_df.head(20).write_csv(tmp_path / "transactions.csv")
+        (tmp_path / "SYNTHETIC").write_text("generated")
+        md = render_markdown(profile_dir(tmp_path))
+        assert "generated data, not the Dubai registry" in md
+        assert "provenance: SYNTHETIC" in md
+
+    def test_a_real_table_carries_no_warning(self, tmp_path, transactions_df):
+        transactions_df.head(20).write_csv(tmp_path / "transactions.csv")
+        md = render_markdown(profile_dir(tmp_path))
+        assert "generated data" not in md
+        assert "provenance: REAL" in md
