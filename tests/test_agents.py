@@ -476,3 +476,112 @@ class TestRunCrew:
         result = run_crew("an area that does not exist")
         assert result.audit is not None
         assert result.status in {"succeeded", "failed"}
+
+
+class TestTheAuditorCanWithholdTheMemo:
+    """The strongest promise the crew makes: a memo whose factual sentences are not all cited is
+    rejected rather than shown. The auditor's own rule was tested; the wiring that acts on its
+    verdict was not, so a memo could have been blocked in the report and still returned.
+    """
+
+    @staticmethod
+    def _uncited(monkeypatch) -> None:
+        """Make the Advisor write a memo with a factual sentence carrying no citation."""
+
+        def compose(self, area_key, findings, disagreements):
+            return (
+                "Dubai Marina recorded a median price of 2,400,000 AED last quarter.\n\n"
+                "---\n\nThis is information, not advice.",
+                [],
+            )
+
+        monkeypatch.setattr(Advisor, "compose", compose)
+
+    def test_the_audit_blocks_and_the_memo_is_not_returned(self, monkeypatch):
+        self._uncited(monkeypatch)
+        result = run_crew("marsa dubai")
+        assert result.audit.blocked is True
+        assert result.memo is None
+
+    def test_the_status_records_that_it_was_blocked(self, monkeypatch):
+        self._uncited(monkeypatch)
+        assert run_crew("marsa dubai").status == "blocked"
+
+    def test_a_note_says_why_the_memo_is_missing(self, monkeypatch):
+        """A missing memo with no explanation reads as a bug rather than a refusal."""
+        self._uncited(monkeypatch)
+        result = run_crew("marsa dubai")
+        assert any("withheld" in note for note in result.notes)
+
+    def test_blocking_does_not_overwrite_an_earlier_failure(self, monkeypatch):
+        """A run that was already killed stays killed. The status says what went wrong first."""
+        self._uncited(monkeypatch)
+        budget = Budget()
+        budget.kill("stopped during testing")
+        assert run_crew("marsa dubai", budget=budget).status == "killed"
+
+
+class TestAFailedRunIsStillAudited:
+    """An audited failure is better than a lost run, so every exit from the crew reaches the
+    Auditor. These are the two paths that had no test: a denied tool and an unforeseen error.
+    """
+
+    def test_a_denied_tool_fails_the_run_and_records_the_denial(self, monkeypatch):
+        def denied(self, area_key, findings, disagreements):
+            raise ToolDenied("execute_purchase is not a tool the Advisor has")
+
+        monkeypatch.setattr(Advisor, "compose", denied)
+        result = run_crew("marsa dubai")
+        assert result.status == "failed"
+        assert any("tool denied" in note for note in result.notes)
+        assert result.audit is not None
+
+    def test_an_unforeseen_error_is_recorded_rather_than_raised(self, monkeypatch):
+        """The crew must not take the API down with it. The failure becomes a note and an audit."""
+
+        def boom(self, area_key, findings, disagreements):
+            raise ValueError("the model returned something unparseable")
+
+        monkeypatch.setattr(Advisor, "compose", boom)
+        result = run_crew("marsa dubai")
+        assert result.status == "failed"
+        assert any("ValueError" in note for note in result.notes)
+        assert result.memo is None
+
+    def test_the_transcript_of_a_failed_run_still_verifies(self, monkeypatch):
+        """Auditing a failure is only worth anything if its record is tamper-evident too."""
+
+        def boom(self, area_key, findings, disagreements):
+            raise ValueError("the model returned something unparseable")
+
+        monkeypatch.setattr(Advisor, "compose", boom)
+        result = run_crew("marsa dubai")
+        assert result.transcript
+        assert all("signature" in m for m in result.transcript)
+
+
+class TestTheAdvisorsOnlyRouteOutOfTheRun:
+    """`ask_corpus` is the single call the Advisor can make beyond the warehouse. It is read-only
+    and cited by construction, and it must degrade to nothing rather than fail the run.
+    """
+
+    def test_without_a_retriever_it_returns_nothing_rather_than_erroring(self, provider):
+        runtime = Runtime(db_path=DEFAULT_DB, provider=provider)
+        try:
+            assert runtime.ask_corpus("what is the transfer fee?") is None
+        finally:
+            runtime.close()
+
+    def test_an_exhausted_budget_is_a_note_rather_than_a_failure(self, provider):
+        """A lookup that cannot be afforded skips. Losing the whole memo over it would be worse
+        than composing one from the warehouse figures alone."""
+        from rag.retriever import Retriever
+
+        budget = Budget(max_steps=40, max_requests=0)
+        runtime = Runtime(db_path=DEFAULT_DB, provider=provider, budget=budget)
+        try:
+            runtime.retriever = Retriever()
+            assert runtime.ask_corpus("what is the transfer fee?") is None
+            assert any("corpus lookup skipped" in note for note in runtime.notes)
+        finally:
+            runtime.close()

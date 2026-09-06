@@ -6,6 +6,8 @@ __pycache__/
 .ruff_cache/
 *.egg-info/
 .coverage
+# The raw pytest-cov dump. The summary that ships is docs/results/coverage.json.
+coverage.json
 htmlcov/
 
 # Node

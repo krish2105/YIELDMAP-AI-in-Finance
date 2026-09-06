@@ -71,8 +71,9 @@ Every figure below is read from `docs/results/`, produced by the models in `fina
 | Retrieval | recall@5 1.00, **recall@1 0.87, MRR 0.91**, faithfulness 1.00 over 30 cases in three languages — on a 117-chunk corpus, where recall@5 is easy and the rank measures are the informative ones | gated at 0.80 / 0.70 / 0.90 |
 | Red team | 11/11 controls held against the OWASP ASI threat list | every attack fails to land |
 | Cost | $0.00/month; the free tier binds at ~100 daily users, on embeddings before generation | stays free at course scale |
-| Journey | 34 Playwright tests green on a desktop viewport and a Pixel 7 | the full journey, on a phone |
-| Python | 703 tests | — |
+| Journey | 38 Playwright tests green on a desktop viewport and a Pixel 7, run in CI | the full journey, on a phone |
+| Python | 843 tests | — |
+| Coverage | 78.7% of 5,521 statements; the nine modules that are the sole mechanism behind a rule in `CLAUDE.md` are held to 85% and sit at 87–100% | 75% overall, 85% on those |
 | Access control | writes need a token the API signed; the role is never something a caller sends | no credential, no write |
 | Frame rate | 60fps desktop, 61fps on a Pixel 7 — measured in software rasterisation, so a floor | 60 / 30 |
 | Accessibility | 0 violations across 7 pages, WCAG 2.1 AA, both viewports — was 7 serious | none serious |

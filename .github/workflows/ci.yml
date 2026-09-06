@@ -53,7 +53,20 @@ jobs:
         run: uv run python -m scripts.build_all --synthetic
 
       - name: Tests
-        run: uv run pytest -q
+        # Coverage is measured on the same run rather than a second one: the suite builds a
+        # warehouse and an index, and doing that twice to produce one number is not worth a minute.
+        run: |
+          uv run pytest -q \
+            --cov=api --cov=agents --cov=rag --cov=finance --cov=etl --cov=security --cov=scripts \
+            --cov-report=json:coverage.json --cov-report=term:skip-covered
+
+      - name: Coverage floors
+        # Two floors: one on the tree, and a higher one on the handful of modules that are the
+        # sole mechanism behind a rule in CLAUDE.md. A rename that leaves one of those unmeasured
+        # fails here rather than passing quietly. --compare-published also checks the committed
+        # figure the README quotes still describes what the suite covers, within a tolerance:
+        # this runner has a Postgres a laptop does not, so the two are never bit-identical.
+        run: uv run python -m scripts.coverage_gate --gate --compare-published
 
       - name: Retrieval eval
         # Gated: recall@5 at 0.80 and faithfulness at 0.90, across English, Hindi and Arabic.
