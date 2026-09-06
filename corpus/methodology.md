@@ -4,8 +4,8 @@ kind: community
 title: How YIELDMAP computes what it shows
 source: This project
 source_url: https://github.com/krish2105/YIELDMAP-AI-in-Finance
-status: verified
-retrieved: written as part of the project
+status: archived
+retrieved: 2026-09-06T20:11:15+00:00 · sha256 bf08688d1ea315f5 · docs/sources/methodology
 lang: en
 ---
 

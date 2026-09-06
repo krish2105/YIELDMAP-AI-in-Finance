@@ -1,0 +1,80 @@
+{
+  "provenance": "REAL",
+  "note": "Each page the corpus cites, fetched once and stored with a SHA-256 so a citation points at a fixed thing rather than at a URL that can change. A changed hash later is information, not a fault: it says the rule may have moved and the figures derived from it want re-checking.",
+  "generated_at": "2026-09-06T20:11:16+00:00",
+  "attempted": 5,
+  "archived": 4,
+  "corpus_documents_stamped": [
+    "dld_fees.md",
+    "ejari.md",
+    "methodology.md",
+    "rent_increase_rules.md"
+  ],
+  "sources": [
+    {
+      "key": "dld_fees",
+      "url": "https://dubailand.gov.ae/en/services/",
+      "ok": true,
+      "status": 200,
+      "sha256": "743c886cb6b5d3d7586f550ad110d05c54113797d876d5527594ab423c82394f",
+      "bytes": 97218,
+      "content_type": "text/html; charset=utf-8",
+      "retrieved_at": "2026-09-06T20:11:14+00:00",
+      "text_chars": 2083,
+      "error": null,
+      "notes": []
+    },
+    {
+      "key": "ejari",
+      "url": "https://dubailand.gov.ae/en/eservices/",
+      "ok": true,
+      "status": 200,
+      "sha256": "9d205b3f2e0f2239ca4d3b9fa561e8676ce059937ccf3ddcd7bba0e07b6adaab",
+      "bytes": 97232,
+      "content_type": "text/html; charset=utf-8",
+      "retrieved_at": "2026-09-06T20:11:14+00:00",
+      "text_chars": 2087,
+      "error": null,
+      "notes": []
+    },
+    {
+      "key": "methodology",
+      "url": "https://github.com/krish2105/YIELDMAP-AI-in-Finance",
+      "ok": true,
+      "status": 200,
+      "sha256": "bf08688d1ea315f5c4fdab0db1dbee279793a832c47bf9ff7942e7a4e98a8938",
+      "bytes": 349703,
+      "content_type": "text/html; charset=utf-8",
+      "retrieved_at": "2026-09-06T20:11:15+00:00",
+      "text_chars": 11267,
+      "error": null,
+      "notes": []
+    },
+    {
+      "key": "rent_increase_rules",
+      "url": "https://dubailand.gov.ae/en/eservices/rental-index/",
+      "ok": true,
+      "status": 200,
+      "sha256": "3bdba4d8c2454eb71b58539b4ae5f042a608b4ce7f9c86cf188586150a09b63f",
+      "bytes": 133516,
+      "content_type": "text/html; charset=utf-8",
+      "retrieved_at": "2026-09-06T20:11:16+00:00",
+      "text_chars": 2927,
+      "error": null,
+      "notes": []
+    },
+    {
+      "key": "service_charges",
+      "url": "https://dubailand.gov.ae/mydld/mollak_service_charges/",
+      "ok": false,
+      "status": 404,
+      "sha256": null,
+      "bytes": null,
+      "content_type": null,
+      "retrieved_at": null,
+      "text_chars": 0,
+      "error": "HTTP 404",
+      "notes": []
+    }
+  ]
+}

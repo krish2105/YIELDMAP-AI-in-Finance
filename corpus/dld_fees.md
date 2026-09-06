@@ -4,8 +4,8 @@ kind: law
 title: Transaction fees on a Dubai property purchase
 source: Dubai Land Department fee schedule
 source_url: https://dubailand.gov.ae/en/services/
-status: unverified
-retrieved: not yet archived — the ingest job could not reach the publisher
+status: archived
+retrieved: 2026-09-06T20:11:14+00:00 · sha256 743c886cb6b5d3d7 · docs/sources/dld_fees
 lang: en
 ---
 
