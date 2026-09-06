@@ -19,7 +19,15 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "vercel_should_build.sh"
 
-SKIP, BUILD = 1, 0
+# Vercel's convention, not a choice made here, and it is inverted from the shell habit of "0 means
+# success": https://vercel.com/docs/project-configuration/vercel-json says "Exiting with code 0
+# ignores the build, while code 1 continues it."
+#
+# The first version of this file had these the natural way round. The tests passed — they were
+# asserting the same wrong belief the script held — and every commit the gate judged relevant was
+# silently skipped by Vercel. Deployments came back CANCELED rather than failed, so nothing looked
+# broken. Naming the constants after the platform's meaning is what keeps the two in step.
+SKIP, BUILD = 0, 1
 
 
 def gate(changed: list[str]) -> int:
@@ -178,3 +186,27 @@ class TestTheDeploymentCanActuallyReachTheGate:
     def test_config_is_still_uploaded(self) -> None:
         """web/lib/kpi.ts reads config/kpi_thresholds.json at build time."""
         assert self._excluded("config/kpi_thresholds.json") is None
+
+
+class TestTheExitCodesAreVercelsNotOurs:
+    """The gate's whole contract is two integers, and they are the platform's, backwards from the
+    shell convention. This pins them so an "obvious" cleanup cannot quietly invert the gate again.
+    """
+
+    def test_skip_is_zero_and_build_is_one(self) -> None:
+        # https://vercel.com/docs/project-configuration/vercel-json:
+        # "Exiting with code 0 ignores the build, while code 1 continues it."
+        assert (SKIP, BUILD) == (0, 1)
+
+    def test_the_script_documents_the_convention_it_implements(self) -> None:
+        """A reader who checks this file against the shell habit will conclude it is a bug and
+        "fix" it. The reason has to be in the script, not only here."""
+        text = SCRIPT.read_text()
+        assert "exit 0" in text and "IGNORE" in text
+        assert "vercel.com/docs" in text
+
+    def test_a_relevant_change_exits_one_so_vercel_proceeds(self) -> None:
+        assert gate(["web/app/page.tsx"]) == 1
+
+    def test_an_irrelevant_change_exits_zero_so_vercel_stops(self) -> None:
+        assert gate(["docs/limits.md"]) == 0
