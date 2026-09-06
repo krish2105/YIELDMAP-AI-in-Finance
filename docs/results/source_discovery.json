@@ -1,0 +1,75 @@
+{
+  "generated_at": "2026-09-06T15:39:53+00:00",
+  "n_resources": 1,
+  "strategies": {
+    "catalogue": 0,
+    "html": 2
+  },
+  "pages_visited": [
+    "https://dubailand.gov.ae/",
+    "https://dubailand.gov.ae/en/open-data/real-estate-data/",
+    "https://gateway.dubailand.gov.ae/",
+    "https://www.dubaipulse.gov.ae/",
+    "https://www.dubaipulse.gov.ae/dataset/dld_rent_contracts",
+    "https://www.dubaipulse.gov.ae/dataset/dld_transactions"
+  ],
+  "errors": [
+    {
+      "key": "pulse_ckan_package_list",
+      "strategy": "catalogue",
+      "error": "ConnectTimeout: timed out"
+    },
+    {
+      "key": "pulse_ckan_search_dld",
+      "strategy": "catalogue",
+      "error": "ConnectTimeout: timed out"
+    },
+    {
+      "key": "pulse_ckan_transactions",
+      "strategy": "catalogue",
+      "error": "ConnectTimeout: timed out"
+    },
+    {
+      "key": "https://www.dubaipulse.gov.ae/",
+      "strategy": "html",
+      "error": "ConnectTimeout: timed out"
+    },
+    {
+      "key": "https://www.dubaipulse.gov.ae/dataset/dld_transactions",
+      "strategy": "html",
+      "error": "ConnectTimeout: timed out"
+    },
+    {
+      "key": "https://www.dubaipulse.gov.ae/dataset/dld_rent_contracts",
+      "strategy": "html",
+      "error": "ConnectTimeout: timed out"
+    },
+    {
+      "key": "https://gateway.dubailand.gov.ae/",
+      "strategy": "html",
+      "error": "HTTPStatusError: Client error '404 Not Found' for url 'https://gateway.dubailand.gov.ae/'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404"
+    }
+  ],
+  "wanted": {
+    "transactions": [],
+    "rent_contracts": [],
+    "valuation": [],
+    "projects": [],
+    "buildings": [],
+    "units": []
+  },
+  "resources": [
+    {
+      "dataset_id": "dubailand.gov.ae",
+      "dataset_title": "https://dubailand.gov.ae/",
+      "resource_id": null,
+      "name": "site.webmanifest.json",
+      "format": "JSON",
+      "url": "https://dubailand.gov.ae/assets/img/favicon/site.webmanifest.json",
+      "size": null,
+      "last_modified": null,
+      "matches": [],
+      "via": "html"
+    }
+  ]
+}
