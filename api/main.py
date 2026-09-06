@@ -15,7 +15,7 @@ from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from api.routes import market, simulate
+from api.routes import ask, market, simulate
 
 VERSION = "0.1.0"
 
@@ -73,6 +73,7 @@ def create_app() -> FastAPI:
 
     app.include_router(market.router)
     app.include_router(simulate.router)
+    app.include_router(ask.router)
 
     @app.get("/", tags=["meta"])
     def root() -> dict[str, Any]:
