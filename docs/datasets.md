@@ -11,6 +11,34 @@ policy blocks the government domains (see `CLAUDE.md` for the measured evidence)
 `.github/workflows/ingest.yml` fetches each source, records an SHA-256 and a retrieval timestamp,
 and publishes the result as a GitHub Release asset that the rest of the pipeline consumes.
 
+### What the archived sources establish, and what they do not
+
+`etl/archive_sources.py` fetches each page the corpus cites, stores the bytes, and records a
+SHA-256 and the moment it was taken. Four of five answered; the fifth, the Mollak service-charge
+guidance, returned 404 at the path that was cited, which is itself worth recording — a citation
+had been pointing at nothing.
+
+**A hash proves a URL served those bytes at that time. It proves nothing about what they say.**
+The Land Department's pages are client-rendered: a plain fetch returns the navigation, the cookie
+notice and the footer, and none of the substance. `docs/sources/dld_fees.txt` does not contain
+"4%" or "transfer fee" anywhere.
+
+So each corpus document now declares `expect_terms` — the phrases its citation actually rests on —
+and the archiver checks the extracted text for them. The status it writes says which of the two
+things happened:
+
+| Status | What it means |
+|---|---|
+| `archived and corroborated` | the page was fetched **and** contains the terms the claim depends on |
+| `archived, but the page does not contain the cited terms` | fetched, hashed, and the substance is not in the HTML |
+| `unverified` | not fetched at all |
+
+All four archived pages are currently in the middle state. That is not a failure of the archive —
+it is the archive doing its job, which is to stop a hash from being mistaken for corroboration.
+The figures those documents state are still drawn from published rules; what is missing is a
+machine-checkable snapshot proving it, and saying so is more useful than a green tick that means
+less than it looks like.
+
 ### What the retrieval attempts established
 
 Measured from a GitHub Actions runner on 2026-09-06, recorded in `docs/results/source_probe.json`

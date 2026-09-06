@@ -33,6 +33,7 @@ def corpus(tmp_path):
         "source_url: https://dubailand.gov.ae/en/services/\n"
         "status: unverified\n"
         "retrieved: not yet archived\n"
+        "expect_terms: 4%, transfer fee\n"
         "lang: en\n"
         "---\n\n# Fees\n\nThe transfer fee is 4%.\n"
     )
@@ -44,15 +45,15 @@ def corpus(tmp_path):
 class TestReadingTheCorpus:
     def test_it_finds_documents_that_name_a_source(self, corpus) -> None:
         assert archive.cited_sources(corpus) == [
-            ("dld_fees", "https://dubailand.gov.ae/en/services/")
+            ("dld_fees", "https://dubailand.gov.ae/en/services/", ["4%", "transfer fee"])
         ]
 
     def test_the_readme_is_not_a_document(self, corpus) -> None:
-        assert all(key != "README" for key, _ in archive.cited_sources(corpus))
+        assert all(key != "README" for key, _, _ in archive.cited_sources(corpus))
 
     def test_a_document_with_no_source_url_is_skipped(self, corpus) -> None:
         """Not every document cites a page; the methodology describes this project."""
-        assert all(key != "local" for key, _ in archive.cited_sources(corpus))
+        assert all(key != "local" for key, _, _ in archive.cited_sources(corpus))
 
 
 class TestExtraction:
@@ -167,3 +168,71 @@ def test_the_manifest_declares_its_provenance(tmp_path, corpus, monkeypatch) -> 
     # REAL: this describes what a publisher served, whatever the property data happens to be.
     assert body["provenance"] == "REAL"
     assert body["archived"] == 1
+
+
+class TestCorroborationIsNotRetrieval:
+    """A hash proves a URL served bytes. It proves nothing about what those bytes say.
+
+    The publisher's pages are client-rendered, so a plain fetch returns the navigation and none of
+    the substance — `dld_fees.txt` came back without "4%" or "transfer fee" in it. Stamping that
+    "archived" beside a citation would be evidence that looks like corroboration and is not, which
+    is the exact failure this project exists to avoid.
+    """
+
+    def _client(self, monkeypatch, body: bytes):
+        transport = httpx.MockTransport(
+            lambda r: httpx.Response(200, content=body, headers={"content-type": "text/html"})
+        )
+        original = httpx.Client
+        monkeypatch.setattr(
+            httpx, "Client", lambda **kw: original(**{**kw, "transport": transport})
+        )
+
+    def test_a_page_containing_the_terms_is_corroborated(self, tmp_path, monkeypatch) -> None:
+        self._client(monkeypatch, PAGE)
+        result = archive.fetch(
+            "dld_fees", "https://x.test", expect_terms=["4%", "transfer fee"], archive=tmp_path
+        )
+        assert result.corroborated is True
+        assert result.missing_terms == []
+
+    def test_a_navigation_shell_is_archived_but_not_corroborated(
+        self, tmp_path, monkeypatch
+    ) -> None:
+        """The real case: the page loads, and its substance is not in the HTML."""
+        self._client(monkeypatch, b"<html><body><nav>Home About Contact</nav></body></html>")
+        result = archive.fetch(
+            "dld_fees", "https://x.test", expect_terms=["4%", "transfer fee"], archive=tmp_path
+        )
+        assert result.ok is True, "the fetch itself succeeded"
+        assert result.corroborated is False
+        assert set(result.missing_terms) == {"4%", "transfer fee"}
+        assert any("client-rendered" in n for n in result.notes)
+
+    def test_the_front_matter_says_which_it_was(self, corpus) -> None:
+        uncorroborated = archive.Archived(
+            key="dld_fees",
+            url="x",
+            ok=True,
+            sha256="b" * 64,
+            retrieved_at="2026-09-06T20:00:00+00:00",
+            corroborated=False,
+            missing_terms=["4%"],
+        )
+        archive.stamp_corpus([uncorroborated], corpus)
+        head = (corpus / "dld_fees.md").read_text()
+        assert "does not contain the cited terms" in head
+        # It must not read as a clean tick.
+        assert "status: archived and corroborated" not in head
+
+    def test_a_corroborated_page_says_so(self, corpus) -> None:
+        good = archive.Archived(
+            key="dld_fees",
+            url="x",
+            ok=True,
+            sha256="c" * 64,
+            retrieved_at="2026-09-06T20:00:00+00:00",
+            corroborated=True,
+        )
+        archive.stamp_corpus([good], corpus)
+        assert "status: archived and corroborated" in (corpus / "dld_fees.md").read_text()

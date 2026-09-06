@@ -3,9 +3,10 @@ id: service_charges
 kind: service_charge
 title: Service charges and the Mollak system
 source: Dubai Land Department guidance on Mollak
-source_url: https://dubailand.gov.ae/mydld/mollak_service_charges/
+source_url: https://dubailand.gov.ae/en/eservices/mollak/
 status: unverified
-retrieved: not yet archived — the ingest job could not reach the publisher
+retrieved: not yet archived — the previously cited /mydld/ path returned 404 on 2026-09-06
+expect_terms: Mollak, service charge
 lang: en
 ---
 

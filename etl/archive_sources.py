@@ -64,6 +64,10 @@ class Archived:
     content_type: str | None = None
     retrieved_at: str | None = None
     text_chars: int = 0
+    # Whether the archived text contains the phrases the citation rests on. None when the
+    # document declared none to look for.
+    corroborated: bool | None = None
+    missing_terms: list[str] = field(default_factory=list)
     error: str | None = None
     notes: list[str] = field(default_factory=list)
 
@@ -93,21 +97,45 @@ def readable(html: str) -> str:
     return BLANK_LINES.sub("\n\n", body).strip()
 
 
-def cited_sources(corpus: Path = CORPUS) -> list[tuple[str, str]]:
-    """The (id, source_url) of every corpus document that names one."""
-    out: list[tuple[str, str]] = []
+def cited_sources(corpus: Path = CORPUS) -> list[tuple[str, str, list[str]]]:
+    """The (id, source_url, expected terms) of every corpus document that names a source.
+
+    `expect_terms` is what the citation actually depends on — "4%", "transfer fee" — and it is the
+    difference between two claims that look alike:
+
+        this URL served these bytes at this time      (a hash proves it)
+        this page says what the document says it says (a hash proves nothing about it)
+
+    The publisher's pages are client-rendered, so a plain fetch returns the navigation and none of
+    the substance. Archiving that and calling it verified would be the exact failure this project
+    exists not to commit: evidence that looks like corroboration and is not.
+    """
+    out: list[tuple[str, str, list[str]]] = []
     for path in sorted(corpus.glob("*.md")):
         if path.name == "README.md":
             continue
-        head = path.read_text()[:1200]
+        head = path.read_text()[:2000]
         doc_id = re.search(r"^id:\s*(\S+)", head, re.M)
         url = re.search(r"^source_url:\s*(\S+)", head, re.M)
+        terms_line = re.search(r"^expect_terms:\s*(.+)$", head, re.M)
+        terms = (
+            [t.strip().strip("\"'") for t in terms_line.group(1).split(",") if t.strip()]
+            if terms_line
+            else []
+        )
         if doc_id and url and url.group(1).startswith("http"):
-            out.append((doc_id.group(1), url.group(1)))
+            out.append((doc_id.group(1), url.group(1), terms))
     return out
 
 
-def fetch(key: str, url: str, *, timeout: float = 30.0, archive: Path = ARCHIVE) -> Archived:
+def fetch(
+    key: str,
+    url: str,
+    *,
+    expect_terms: list[str] | None = None,
+    timeout: float = 30.0,
+    archive: Path = ARCHIVE,
+) -> Archived:
     archive.mkdir(parents=True, exist_ok=True)
     try:
         with httpx.Client(
@@ -137,6 +165,22 @@ def fetch(key: str, url: str, *, timeout: float = 30.0, archive: Path = ARCHIVE)
         text = readable(payload.decode(response.encoding or "utf-8", errors="replace"))
         (archive / f"{key}.txt").write_text(text)
 
+    missing: list[str] = []
+    corroborated: bool | None = None
+    if expect_terms and text:
+        haystack = text.lower()
+        missing = [t for t in expect_terms if t.lower() not in haystack]
+        corroborated = not missing
+
+    notes: list[str] = []
+    if "pdf" in content_type:
+        notes.append("binary archived; text not extracted")
+    if corroborated is False:
+        notes.append(
+            "the page was archived but does not contain the terms this citation rests on — it is "
+            "client-rendered, so a fetch returns the navigation and none of the substance"
+        )
+
     return Archived(
         key=key,
         url=url,
@@ -147,7 +191,9 @@ def fetch(key: str, url: str, *, timeout: float = 30.0, archive: Path = ARCHIVE)
         content_type=content_type,
         retrieved_at=datetime.now(UTC).isoformat(timespec="seconds"),
         text_chars=len(text),
-        notes=["binary archived; text not extracted"] if "pdf" in content_type else [],
+        corroborated=corroborated,
+        missing_terms=missing,
+        notes=notes,
     )
 
 
@@ -166,7 +212,13 @@ def stamp_corpus(results: list[Archived], corpus: Path = CORPUS) -> list[str]:
             continue
         record = by_key[doc_id.group(1)]
         body = head
-        body = re.sub(r"^status:.*$", "status: archived", body, count=1, flags=re.M)
+        # "archived" alone would read as "checked", and for a client-rendered page it is not.
+        status = {
+            True: "status: archived and corroborated",
+            False: "status: archived, but the page does not contain the cited terms",
+            None: "status: archived",
+        }[record.corroborated]
+        body = re.sub(r"^status:.*$", status, body, count=1, flags=re.M)
         replacement = (
             f"retrieved: {record.retrieved_at} · sha256 {record.sha256[:16]} · "
             f"docs/sources/{record.key}"
@@ -198,7 +250,9 @@ def main(argv: list[str] | None = None) -> int:
         print("no corpus document names a source_url")
         return 1
 
-    results = [fetch(key, url, archive=args.archive) for key, url in sources]
+    results = [
+        fetch(key, url, expect_terms=terms, archive=args.archive) for key, url, terms in sources
+    ]
     reached = [r for r in results if r.ok]
 
     updated = stamp_corpus(results, args.corpus) if args.stamp else []
@@ -217,6 +271,10 @@ def main(argv: list[str] | None = None) -> int:
                 "generated_at": datetime.now(UTC).isoformat(timespec="seconds"),
                 "attempted": len(results),
                 "archived": len(reached),
+                "corroborated": sum(1 for r in reached if r.corroborated),
+                "archived_without_corroboration": sum(
+                    1 for r in reached if r.corroborated is False
+                ),
                 "corpus_documents_stamped": updated,
                 "sources": [r.as_dict() for r in results],
             },
@@ -226,7 +284,13 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     for r in results:
-        mark = f"{r.sha256[:12]}  {r.bytes:>8,}b" if r.ok else f"FAILED  {r.error}"
+        if not r.ok:
+            mark = f"FAILED  {r.error}"
+        else:
+            verdict = {True: "corroborated", False: "NOT corroborated", None: "no terms declared"}[
+                r.corroborated
+            ]
+            mark = f"{r.sha256[:12]}  {r.bytes:>8,}b  {verdict}"
         print(f"{r.key:24} {mark}")
     print(f"\n{len(reached)}/{len(results)} archived → {args.out}")
     return 0
