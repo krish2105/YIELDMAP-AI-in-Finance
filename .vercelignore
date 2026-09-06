@@ -1,28 +1,31 @@
-# Vercel builds the Next workspace in web/. Everything below is the Python half of this
-# repository or local state, and uploading it only slows the build and inflates the bundle that
-# gets traced into the serverless function.
-.venv/
-data/
-docs/
-tests/
-etl/
-finance/
-rag/
-agents/
-api/
-security/
-scripts/
-db/
-e2e/
-notebooks/
+# Vercel builds the Next workspace in web/. Everything below is the Python half of this repository
+# or local state; uploading it slows the build and inflates the bundle traced into the function.
+#
+# Every path is anchored with a leading slash. Without one these are gitignore-style patterns that
+# match a directory of that name at ANY depth — and `api/` then also matches `web/app/api/`, which
+# silently dropped the API proxy route from the deployment and turned every data request into a
+# 404. The leading slash is load-bearing.
+/.venv/
+/data/
+/docs/
+/tests/
+/etl/
+/finance/
+/rag/
+/agents/
+/api/
+/security/
+/scripts/
+/db/
+/e2e/
+/playwright.config.ts
+/pyproject.toml
+/uv.lock
 *.duckdb
 *.parquet
 __pycache__/
 .pytest_cache/
 .ruff_cache/
-uv.lock
-pyproject.toml
-playwright.config.ts
 
-# The web app reads config/kpi_thresholds.json at build time, so config/ is deliberately not
-# ignored: both halves of this project read the same thresholds file, which is the point of it.
+# config/ is deliberately not ignored: web/lib/kpi.ts reads config/kpi_thresholds.json at build
+# time, and both halves of the project reading one thresholds file is the point of it.
