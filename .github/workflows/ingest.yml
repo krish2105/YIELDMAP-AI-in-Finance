@@ -237,6 +237,37 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
+      # ------------------------------------------------------- archive the cited pages
+      - name: Archive the documents the corpus cites
+        # Every corpus document names a source_url, and until this ran every one also said
+        # "not yet archived" — a citation the reader had to take on trust, pointing at a page that
+        # can change without notice. The runner can reach dubailand.gov.ae where the sandbox
+        # cannot, so this is where the evidence gets taken.
+        continue-on-error: true
+        run: uv run python -m etl.archive_sources --stamp
+
+      - name: Commit the archive
+        continue-on-error: true
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f docs/sources docs/results/source_archive.json corpus/*.md 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "nothing new to archive"
+            exit 0
+          fi
+          git commit -m "chore(corpus): archive the cited pages from run ${GITHUB_RUN_ID}
+
+          Each page the corpus cites, with a SHA-256 and the moment it was taken, so a citation
+          points at a fixed thing rather than a live URL.
+
+          Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
+          for attempt in 1 2 3 4; do
+            git pull --rebase origin "${GITHUB_REF_NAME}" && git push origin "HEAD:${GITHUB_REF_NAME}" && exit 0
+            sleep $((2 ** attempt))
+          done
+          echo "could not push the archive"
+
       # ------------------------------------------------------- redeploy on real data
       - name: Redeploy the API when the drop is real
         # The deployed service rebuilds its warehouse during its own build, so it only picks up a
