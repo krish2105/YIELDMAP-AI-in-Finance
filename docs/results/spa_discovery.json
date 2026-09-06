@@ -1,0 +1,84 @@
+{
+  "generated_at": "2026-09-06T15:49:19+00:00",
+  "n_pages": 2,
+  "n_data_links": 0,
+  "n_api_requests": 15,
+  "pages": [
+    {
+      "url": "https://dubailand.gov.ae/en/open-data/real-estate-data/",
+      "requests": [
+        {
+          "method": "GET",
+          "url": "https://dubailand.gov.ae/Umbraco/Api/Utils/ConfigJs"
+        },
+        {
+          "method": "GET",
+          "url": "https://dubailand.gov.ae/scripts/api/boot-1.0.4.js"
+        },
+        {
+          "method": "GET",
+          "url": "https://dubailand.gov.ae/scripts/api/OpenDataApi.js"
+        },
+        {
+          "method": "GET",
+          "url": "https://cdn.datatables.net/plug-ins/1.10.20/i18n/English.json"
+        },
+        {
+          "method": "POST",
+          "url": "https://api.userway.org/api/v1/tunings/zbZ3pCdtha"
+        },
+        {
+          "method": "GET",
+          "url": "https://cdn.userway.org/widgetapp/2026-09-01-10-22-26/locales/en-US.json"
+        },
+        {
+          "method": "GET",
+          "url": "https://cdn.userway.org/remediations/consolidated/353524/tj8n2LDUe6hOgqa1.json"
+        },
+        {
+          "method": "GET",
+          "url": "https://cdn.userway.org/remediations/consolidated/353524/tj8n2LDUe6hOgqa1.json"
+        },
+        {
+          "method": "GET",
+          "url": "https://api.userway.org/api/a11y-data/v0/page/https%3A%2F%2Fdubailand.gov.ae%2Fen%2Fopen-data%2Freal-estate-data%2F%23%2F/DESKTOP/WIDGET_ON/status"
+        }
+      ],
+      "links": [],
+      "error": "TimeoutError: Page.goto: Timeout 45000ms exceeded.\nCall log:\n  - navigating to \"https://dubailand.gov.ae/en/open-data/real-estate-data/\", waiting until \"networkidle\"\n",
+      "data_links": []
+    },
+    {
+      "url": "https://dubailand.gov.ae/en/open-data/",
+      "requests": [
+        {
+          "method": "GET",
+          "url": "https://dubailand.gov.ae/Umbraco/Api/Utils/ConfigJs"
+        },
+        {
+          "method": "GET",
+          "url": "https://dubailand.gov.ae/scripts/api/boot-1.0.4.js"
+        },
+        {
+          "method": "POST",
+          "url": "https://api.userway.org/api/v1/tunings/zbZ3pCdtha"
+        },
+        {
+          "method": "GET",
+          "url": "https://cdn.userway.org/remediations/consolidated/353524/tj8n2LDUe6hOgqa1.json"
+        },
+        {
+          "method": "GET",
+          "url": "https://cdn.userway.org/remediations/consolidated/353524/tj8n2LDUe6hOgqa1.json"
+        },
+        {
+          "method": "GET",
+          "url": "https://api.userway.org/api/a11y-data/v0/page/https%3A%2F%2Fdubailand.gov.ae%2Fen%2Fopen-data%2F%23%2F/DESKTOP/WIDGET_ON/status"
+        }
+      ],
+      "links": [],
+      "error": "TimeoutError: Page.goto: Timeout 45000ms exceeded.\nCall log:\n  - navigating to \"https://dubailand.gov.ae/en/open-data/\", waiting until \"networkidle\"\n",
+      "data_links": []
+    }
+  ]
+}
