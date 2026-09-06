@@ -27,10 +27,25 @@ The DLD open-data page returns almost no HTML: its dataset list and download lin
 client-side by the site's own `scripts/api/OpenDataApi.js`, so a plain fetch finds nothing. The
 ingest job therefore drives a real browser and harvests the endpoints out of that script.
 
-The practical consequence is that the bulk CSVs published through Dubai Pulse cannot currently be
-downloaded by an automated client, while DLD's own site is reachable. A person browsing from an
-ordinary connection is not affected, which makes the operator upload below a fast and legitimate
-path to the same published files.
+Driving the page in a browser resolved the question fully. It renders 127 links across nine dataset
+tabs — transactions, rents, projects, valuations, land, buildings, units, brokers, developers — and
+each tab fetches its rows through the site's own API rather than offering a file. For **bulk
+downloads the page links out to Dubai Pulse** (`dubaipulse.gov.ae/organisation/dld`), which is the
+host that refuses automated clients.
+
+So the position is settled and is not a matter of finding the right URL: the bulk CSVs exist, are
+open, and are published only on a host that will not serve them to a datacenter address. A person
+browsing from an ordinary connection is unaffected, which makes the operator upload below the
+correct route to exactly the same published files, rather than a workaround.
+
+### Uploading the files (rung 2)
+
+1. Open `https://www.dubaipulse.gov.ae/organisation/dld` in an ordinary browser.
+2. Download the transactions and rent-contracts CSVs. A single recent year is enough to start.
+3. In this repository: **Releases → Draft a new release**, tag it `data-YYYY-MM`, attach the files,
+   and publish.
+4. The ingest job reads release assets, so the next run picks them up, rebuilds the database and
+   recomputes every model against real numbers.
 
 The retrieval ladder, in order:
 
