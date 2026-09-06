@@ -1,6 +1,6 @@
 "use client";
 
-import { DataTable } from "@/components/Charts";
+import { DataTable } from "@/components/DataTable";
 import { Card, ErrorState, Loading, PageHeader, Section } from "@/components/Page";
 import { useShell } from "@/components/Providers";
 import { useResult } from "@/lib/hooks";

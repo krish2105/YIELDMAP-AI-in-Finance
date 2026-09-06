@@ -76,6 +76,7 @@ Every figure below is read from `docs/results/`, produced by the models in `fina
 | Access control | writes need a token the API signed; the role is never something a caller sends | no credential, no write |
 | Frame rate | 60fps desktop, 61fps on a Pixel 7 — measured in software rasterisation, so a floor | 60 / 30 |
 | Accessibility | 0 violations across 7 pages, WCAG 2.1 AA, both viewports — was 7 serious | none serious |
+| Page weight | 205–209 KB of JavaScript brotli-compressed on most routes, 290 KB on a chart page; three.js on none of them | — |
 
 ## Running it
 

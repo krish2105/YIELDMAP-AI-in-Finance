@@ -15,7 +15,8 @@
     "e2e": "playwright test",
     "e2e:desktop": "playwright test --project=desktop",
     "e2e:measure": "playwright test e2e/measure.spec.ts",
-    "palette": "node scripts/check_palette.mjs"
+    "palette": "node scripts/check_palette.mjs",
+    "bundle": "node scripts/measure_bundle.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",

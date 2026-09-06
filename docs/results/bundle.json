@@ -1,0 +1,44 @@
+{
+  "provenance": "REAL",
+  "note": "JavaScript referenced by each page's initial HTML, compressed as the CDN serves it. three.js is absent from every entry: the 3D city is a dynamic import, so the map costs nothing on the nineteen routes that do not draw one.",
+  "measured_at": "2026-09-06T20:11:16.611Z",
+  "heaviest_page": "/forecast",
+  "heaviest_brotli_kb": 290,
+  "pages": [
+    {
+      "page": "/",
+      "chunks": 10,
+      "raw_bytes": 784432,
+      "brotli_bytes": 213639,
+      "gzip_bytes": 245767
+    },
+    {
+      "page": "/security",
+      "chunks": 10,
+      "raw_bytes": 772511,
+      "brotli_bytes": 210157,
+      "gzip_bytes": 241924
+    },
+    {
+      "page": "/forecast",
+      "chunks": 11,
+      "raw_bytes": 1182465,
+      "brotli_bytes": 296880,
+      "gzip_bytes": 347440
+    },
+    {
+      "page": "/screener",
+      "chunks": 10,
+      "raw_bytes": 777499,
+      "brotli_bytes": 211289,
+      "gzip_bytes": 243181
+    },
+    {
+      "page": "/ask",
+      "chunks": 10,
+      "raw_bytes": 777226,
+      "brotli_bytes": 211180,
+      "gzip_bytes": 243121
+    }
+  ]
+}

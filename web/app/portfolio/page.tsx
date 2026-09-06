@@ -3,7 +3,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 
-import { DataTable } from "@/components/Charts";
+import { DataTable } from "@/components/DataTable";
 import { AdviceNotice } from "@/components/Notices";
 import { Card, ErrorState, PageHeader, Section } from "@/components/Page";
 import { useShell } from "@/components/Providers";
