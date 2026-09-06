@@ -42,9 +42,24 @@ Click any KPI tile and the query is right there. Cells with too few transactions
 | API | Render | from Phase C |
 | Web | Vercel | from Phase D |
 
-Phase A is data only, so there is no site to visit yet. What is checkable now is the ingest run's
-job summary, which prints the reachability table for every candidate source, and the reports it
-commits back into `docs/results/`.
+There is no site to visit yet — the web layer is Phase D. What is checkable now is the ingest
+run's job summary, which prints the reachability table for every candidate source, and
+[`docs/term4_yieldmap.ipynb`](docs/term4_yieldmap.ipynb), which GitHub renders with its charts.
+
+## Measured so far
+
+Every figure below is read from `docs/results/`, produced by the models in `finance/`.
+**They currently describe the labelled stand-in, not the Dubai registry** — see
+[`docs/datasets.md`](docs/datasets.md) for why, and for how to load the real files.
+
+| Model | Measured | Target |
+|---|---|---|
+| Hedonic valuation | 18.9% MAPE on a time-split holdout, against a 36.4% baseline — +48% skill, at the 19.4% noise floor | 12% MAPE, on real data |
+| Repeat-sales index | 5,079 pairs over 144 months, 0 periods dropped as disconnected | reproduces direction of travel |
+| Yield | median gross 7.12%, net 3.43%, gap 3.59%; 115 of 463 cells suppressed as too thin | net below gross always |
+| Mortgage and DCF | 20% deposit case exact; levered 8.61% vs unlevered 5.75% at 3% growth | IRR matches a hand-computed case |
+| Forecast | beats seasonal naive on 77/86 areas (90%), 10.1% vs 15.2% error | 60% of areas |
+| Risk and anomalies | 1,737 of 120,346 flagged (1.44%); 86 areas scored | score in [0,100], monotone |
 
 ## Development
 
