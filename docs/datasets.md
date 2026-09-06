@@ -11,6 +11,27 @@ policy blocks the government domains (see `CLAUDE.md` for the measured evidence)
 `.github/workflows/ingest.yml` fetches each source, records an SHA-256 and a retrieval timestamp,
 and publishes the result as a GitHub Release asset that the rest of the pipeline consumes.
 
+### What the retrieval attempts established
+
+Measured from a GitHub Actions runner on 2026-09-06, recorded in `docs/results/source_probe.json`
+and `docs/results/spa_discovery.json`:
+
+| Host | Result |
+|---|---|
+| `dubailand.gov.ae` | reachable — the open-data, services and rental-index pages all return 200 |
+| `www.dubaipulse.gov.ae` | every address times out at connect, which reads as a block on datacenter addresses rather than a wrong path |
+| `gateway.dubailand.gov.ae` | reachable, answers as a JSON API (404 at the root) |
+| `centralbank.ae` | 403 to an automated client |
+
+The DLD open-data page returns almost no HTML: its dataset list and download links are built
+client-side by the site's own `scripts/api/OpenDataApi.js`, so a plain fetch finds nothing. The
+ingest job therefore drives a real browser and harvests the endpoints out of that script.
+
+The practical consequence is that the bulk CSVs published through Dubai Pulse cannot currently be
+downloaded by an automated client, while DLD's own site is reachable. A person browsing from an
+ordinary connection is not affected, which makes the operator upload below a fast and legitimate
+path to the same published files.
+
 The retrieval ladder, in order:
 
 1. **Actions download** direct from the publisher.

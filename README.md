@@ -34,7 +34,17 @@ Click any KPI tile and the query is right there. Cells with too few transactions
 
 ## Live
 
-Deployment links are published here at the end of each phase.
+| What | Where | Status |
+|---|---|---|
+| Ingest job | [Actions → Ingest DLD open data](https://github.com/krish2105/YIELDMAP-AI-in-Finance/actions/workflows/ingest.yml) | running; probe and discovery reports land in `docs/results/` |
+| Continuous integration | [Actions → CI](https://github.com/krish2105/YIELDMAP-AI-in-Finance/actions/workflows/ci.yml) | green |
+| Work in progress | [pull request #1](https://github.com/krish2105/YIELDMAP-AI-in-Finance/pull/1) | draft |
+| API | Render | from Phase C |
+| Web | Vercel | from Phase D |
+
+Phase A is data only, so there is no site to visit yet. What is checkable now is the ingest run's
+job summary, which prints the reachability table for every candidate source, and the reports it
+commits back into `docs/results/`.
 
 ## Development
 
