@@ -1,0 +1,96 @@
+# Yield assumptions.
+#
+# Every figure a net yield depends on is here, named, valued and sourced. None of them is hidden
+# in code. The interface reads this file to build the editable assumption panel, so a reader who
+# disagrees with a number can change it and watch the yield move rather than having to trust it.
+#
+# `status` is honest about provenance:
+#   verified   — checked against the cited source on `verified_on`
+#   estimate   — a defensible market figure, not from a primary source
+#   unverified — carried from general knowledge and awaiting a primary source
+#
+# The ingest job archives the primary sources it can reach and flips fields to verified. Anything
+# still marked estimate or unverified is shown in the interface as an assumption, not as a fact.
+
+version: 1
+
+vacancy:
+  value: 0.08
+  unit: fraction of the year
+  label: Vacancy allowance
+  description: >
+    Share of the year a unit is expected to sit empty between tenancies. Applied to rent, not to
+    price, because an empty unit still costs its owner the service charge.
+  status: estimate
+  source: Assumption. Ejari records contracts, not the gaps between them, so vacancy cannot be
+    measured from the open data and has to be assumed.
+
+service_charge_per_sqm:
+  value: 160.0
+  unit: AED per square metre per year
+  label: Service charge
+  description: >
+    Annual owners-association charge. Varies widely by building; DLD publishes actual per-building
+    figures through the Mollak system, which would replace this estimate.
+  status: estimate
+  source: Assumption pending a Mollak per-building feed.
+
+management_fee:
+  value: 0.05
+  unit: fraction of annual rent
+  label: Property management
+  description: Agency fee for managing a let, where the owner does not self-manage.
+  status: estimate
+  source: Assumption.
+
+maintenance:
+  value: 0.01
+  unit: fraction of property value per year
+  label: Maintenance and repairs
+  description: Owner-borne upkeep beyond the service charge.
+  status: estimate
+  source: Assumption.
+
+dld_transfer_fee:
+  value: 0.04
+  unit: fraction of purchase price
+  label: DLD transfer fee
+  description: >
+    Paid once on purchase. Conventionally split with the seller in practice, but the buyer
+    customarily bears it in full, which is the assumption used here.
+  status: unverified
+  source: Dubai Land Department fee schedule
+  source_url: https://dubailand.gov.ae/en/services/
+  verified_on: null
+
+agent_commission:
+  value: 0.02
+  unit: fraction of purchase price
+  label: Agent commission
+  description: Buyer-side commission on a purchase.
+  status: estimate
+  source: Assumption.
+
+registration_fee:
+  value: 4200.0
+  unit: AED, flat
+  label: Registration and trustee fees
+  description: Title registration and trustee office charges on transfer.
+  status: unverified
+  source: Dubai Land Department fee schedule
+  source_url: https://dubailand.gov.ae/en/services/
+  verified_on: null
+
+amortisation_years:
+  value: 7
+  unit: years
+  label: Holding period for amortising purchase costs
+  description: >
+    One-off purchase costs are spread over an assumed holding period so they can be charged
+    against an annual yield. A shorter hold makes those costs bite harder each year.
+  status: estimate
+  source: Assumption.
+
+# A cell with fewer observations than this is not published as a yield; it is shown as
+# insufficient data. Kept here rather than in code because it is a judgement, not a constant.
+min_observations: 5
