@@ -181,6 +181,9 @@ export default function Shell({ children }: { children: React.ReactNode }) {
                     <li key={item.href}>
                       <Link
                         href={item.href}
+                        // On a phone the nav is a disclosure, and following a link inside it left
+                        // it open: the page you asked for rendered below a full screen of menu.
+                        onClick={() => setNavOpen(false)}
                         aria-current={active ? "page" : undefined}
                         className={`block rounded-lg px-2 py-1.5 text-sm transition-colors ${
                           active

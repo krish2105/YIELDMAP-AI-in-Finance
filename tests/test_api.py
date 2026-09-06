@@ -7,11 +7,16 @@ worth asserting at the boundary rather than trusting each route to remember.
 
 from __future__ import annotations
 
+import re
+from pathlib import Path
+
 import pytest
 from fastapi.testclient import TestClient
 
 from api.kpi import sql_hash
 from api.main import create_app
+
+ROOT = Path(__file__).resolve().parents[1]
 
 
 @pytest.fixture(scope="module")
@@ -282,3 +287,29 @@ class TestSimulate:
 
     def test_an_empty_portfolio_is_refused(self, client):
         assert client.post("/simulate/portfolio", json={"holdings": []}).status_code == 422
+
+
+class TestBoundsAgreeWithTheInterface:
+    """A limit declared in two languages drifts. These read both and compare."""
+
+    def test_the_screener_input_is_clamped_to_the_bound_the_api_enforces(self) -> None:
+        """The UI must not let someone send a value the API will reject with a 422.
+
+        The number input's `max` attribute is advisory — browsers allow typing past it — so the
+        page clamps in its change handler. This checks the constant it clamps to is the same
+        number the endpoint declares, because the failure is silent otherwise: a plausible entry
+        becomes a validation error rather than an empty result.
+        """
+        route_src = (ROOT / "api" / "routes" / "market.py").read_text()
+        match = re.search(r"min_sales: Annotated\[int, Query\(ge=(\d+), le=(\d+)\)\]", route_src)
+        assert match, "the /screener min_sales bound is no longer declared where this test looks"
+        api_floor, api_ceiling = int(match.group(1)), int(match.group(2))
+
+        page_src = (ROOT / "web" / "app" / "screener" / "page.tsx").read_text()
+        ui_floor = int(re.search(r"const MIN_SALES_FLOOR = (\d+);", page_src).group(1))
+        ui_ceiling = int(re.search(r"const MIN_SALES_CEILING = (\d+);", page_src).group(1))
+
+        assert (ui_floor, ui_ceiling) == (api_floor, api_ceiling), (
+            f"the screener page clamps to [{ui_floor}, {ui_ceiling}] but the API accepts "
+            f"[{api_floor}, {api_ceiling}]"
+        )

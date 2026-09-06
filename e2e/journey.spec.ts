@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { type Page, expect, test } from "@playwright/test";
 
 /**
  * The journey the plan asks for, end to end:
@@ -6,7 +6,19 @@ import { expect, test } from "@playwright/test";
  *
  * Plus the properties that matter more than any single page: that a thin cell refuses to show a
  * number, that every figure carries its query, and that the advice notice is never absent.
+ *
+ * The same specs run on a desktop viewport and on a Pixel 7, which is the point: the phone is
+ * where this gets shown. On a phone the navigation is a disclosure, so a test that reaches a
+ * control inside it has to open it first — exactly as a person would.
  */
+
+/** Open the mobile navigation if this viewport has one. A no-op on desktop. */
+async function openNav(page: Page) {
+  const menu = page.getByRole("button", { name: "Menu" });
+  if (await menu.isVisible()) {
+    if ((await menu.getAttribute("aria-expanded")) !== "true") await menu.click();
+  }
+}
 
 test.describe("the journey", () => {
   test("city page shows headline figures and the map", async ({ page }) => {
@@ -41,8 +53,9 @@ test.describe("the journey", () => {
     await expect(page.getByRole("heading", { name: /screener/i, level: 1 })).toBeVisible();
 
     // Raising the floor to something no cell can meet must empty the table rather than
-    // fabricate rows.
-    await page.getByLabel("Minimum sales").fill("100000");
+    // fabricate rows. 1000 is the ceiling the API declares on this parameter; asking for more
+    // is a validation error, which would test the wrong thing.
+    await page.getByLabel("Minimum sales").fill("1000");
     await expect(page.getByText(/0 cells match/)).toBeVisible({ timeout: 20_000 });
   });
 
@@ -81,7 +94,7 @@ test.describe("the journey", () => {
 
   test("ask answers with citations", async ({ page }) => {
     await page.goto("/ask");
-    await page.getByRole("button", { name: /what is a service charge/i }).click();
+    await page.getByRole("button", { name: /why do service charges differ/i }).click();
     await expect(page.getByRole("heading", { name: /^answer$/i })).toBeVisible({ timeout: 30_000 });
     await expect(page.getByRole("heading", { name: /^sources$/i })).toBeVisible();
     await expect(page.getByText(/citations on \d+% of factual sentences/)).toBeVisible();
@@ -93,6 +106,7 @@ test.describe("the journey", () => {
     // Writing a memo needs the analyst role, and the interface says so rather than failing.
     await expect(page.getByText(/needs the analyst role/i)).toBeVisible();
 
+    await openNav(page);
     await page.getByLabel("Role").selectOption("analyst");
     await page.getByLabel("Community").selectOption({ index: 1 });
     await page.getByRole("button", { name: /run the crew/i }).click();
@@ -135,6 +149,7 @@ test.describe("things that must always hold", () => {
 
   test("arabic flips the document direction", async ({ page }) => {
     await page.goto("/");
+    await openNav(page);
     await page.getByLabel("Language").selectOption("ar");
     await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
     await expect(page.locator("html")).toHaveAttribute("lang", "ar");
@@ -142,6 +157,7 @@ test.describe("things that must always hold", () => {
 
   test("the theme toggle switches and sticks", async ({ page }) => {
     await page.goto("/");
+    await openNav(page);
     await page.getByRole("button", { name: /switch theme/i }).click();
     await expect(page.locator("html")).toHaveAttribute("data-theme", /light|dark/);
     await page.reload();

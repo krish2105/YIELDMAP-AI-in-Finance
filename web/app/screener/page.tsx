@@ -13,6 +13,11 @@ import { CONFIDENCE } from "@/lib/theme";
 
 type SortKey = "n" | "median_price" | "median_ppsqm" | "offplan_share";
 
+// The bounds the API declares on /screener's min_sales (Query(ge=1, le=1000)). They live here as
+// named constants so the input cannot drift away from what the endpoint will accept.
+const MIN_SALES_FLOOR = 1;
+const MIN_SALES_CEILING = 1000;
+
 export default function ScreenerPage() {
   const { t } = useShell();
   const [minSales, setMinSales] = useState(5);
@@ -78,10 +83,21 @@ export default function ScreenerPage() {
             <span className="mb-1 block text-ink-muted">Minimum sales</span>
             <input
               type="number"
-              min={1}
-              max={500}
+              min={MIN_SALES_FLOOR}
+              max={MIN_SALES_CEILING}
               value={minSales}
-              onChange={(event) => setMinSales(Math.max(1, Number(event.target.value) || 1))}
+              // Clamped at both ends, not just the bottom. The `max` attribute is advisory —
+              // a browser will happily let someone type past it — and the API rejects an
+              // out-of-range value with a 422, so without this the UI turns a plausible number
+              // into a validation error instead of an empty result.
+              onChange={(event) =>
+                setMinSales(
+                  Math.min(
+                    MIN_SALES_CEILING,
+                    Math.max(MIN_SALES_FLOOR, Number(event.target.value) || MIN_SALES_FLOOR),
+                  ),
+                )
+              }
               className="w-24 rounded border border-line bg-bg px-2 py-1 text-ink"
             />
           </label>
