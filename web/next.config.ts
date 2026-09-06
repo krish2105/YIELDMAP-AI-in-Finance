@@ -50,7 +50,7 @@ const config: NextConfig = {
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "X-Frame-Options", value: "DENY" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-          // Content-Security-Policy is set in middleware.ts, where a per-request nonce can be
+          // Content-Security-Policy is set in proxy.ts, where a per-request nonce can be
           // minted. A static header here cannot carry one, and without a nonce the policy either
           // blocks Next's own bootstrap or has to allow all inline script.
         ],

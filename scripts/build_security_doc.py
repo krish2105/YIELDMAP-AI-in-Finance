@@ -65,7 +65,7 @@ should be visible and fixed, not turn an unrelated pull request red.
 
 ## Transport and browser policy
 
-- A Content-Security-Policy is set per request in `web/middleware.ts` with a fresh nonce, so
+- A Content-Security-Policy is set per request in `web/proxy.ts` with a fresh nonce, so
   Next's own bootstrap runs and an injected inline script does not. Every route is rendered per
   request because a prerendered page has no request to take a nonce from.
 - The browser only ever calls the app's own origin. `web/app/api/[...path]/route.ts` proxies to

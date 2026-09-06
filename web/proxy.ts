@@ -3,6 +3,9 @@ import { type NextRequest, NextResponse } from "next/server";
 /**
  * Content-Security-Policy with a per-request nonce.
  *
+ * This is Next 16's `proxy` convention, which replaces `middleware`. The old name still works
+ * and prints a deprecation warning on every build.
+ *
  * Next.js emits a small inline script to hand hydration data to the client. A policy of
  * `script-src 'self'` blocks it, and the whole application silently degrades to static HTML — the
  * navigation renders, nothing is interactive, and no error reaches the user. The lazy fix is
@@ -12,7 +15,7 @@ import { type NextRequest, NextResponse } from "next/server";
  * so exactly those execute and an injected one does not. The cost is that pages become
  * dynamically rendered, which is a fair price for a policy that actually holds.
  */
-export function middleware(request: NextRequest) {
+export default function proxy(request: NextRequest) {
   const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
 
   const csp = [
