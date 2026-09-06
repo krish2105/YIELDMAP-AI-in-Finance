@@ -36,7 +36,7 @@ Click any KPI tile and the query is right there. Cells with too few transactions
 
 | What | Where | Status |
 |---|---|---|
-| **Web app** | https://yieldmap.vercel.app | twenty tabs, live |
+| **Web app** | https://yieldmap-git-claude-yiel-5130d2-krishnamathur008-1499s-projects.vercel.app | twenty tabs, live. Open it on a phone — the layout is built for one |
 | **Analytics API** | https://yieldmap-api.onrender.com | free tier: sleeps after 15 minutes idle, so the first request takes about 50 seconds |
 | API health | https://yieldmap-api.onrender.com/health | says which database is loaded and whether it is real or generated |
 | Ingest job | [Actions → Ingest DLD open data](https://github.com/krish2105/YIELDMAP-AI-in-Finance/actions/workflows/ingest.yml) | nightly; probe and discovery reports land in `docs/results/` |
