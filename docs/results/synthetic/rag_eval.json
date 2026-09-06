@@ -3,33 +3,48 @@
   "n_cases": 30,
   "k": 5,
   "recall_at_k": 1.0,
+  "recall_at_1": 0.8667,
+  "mrr": 0.9094,
+  "answer_rate": 1.0,
   "faithfulness": 1.0,
   "recall_target": 0.8,
   "faithfulness_target": 0.9,
+  "recall_at_1_target": 0.7,
   "recall_met": true,
+  "recall_at_1_met": true,
   "faithfulness_met": true,
   "passed": true,
+  "corpus": {
+    "chunks": 117,
+    "documents": 5,
+    "facts": 86,
+    "note": "A small corpus makes recall@5 easy and rank-sensitive measures the informative ones. These figures describe retrieval over this corpus, not retrieval in general."
+  },
   "by_language": {
     "ar": {
       "cases": 4,
       "recall": 1.0,
-      "faithfulness": 1.0
+      "faithfulness": 1.0,
+      "answer_rate": 1.0
     },
     "en": {
       "cases": 23,
       "recall": 1.0,
-      "faithfulness": 1.0
+      "faithfulness": 1.0,
+      "answer_rate": 1.0
     },
     "hi": {
       "cases": 3,
       "recall": 1.0,
-      "faithfulness": 1.0
+      "faithfulness": 1.0,
+      "answer_rate": 1.0
     }
   },
   "retrieval_backend": "tfidf-svd",
   "degraded": true,
   "caveat": "Scored against the offline TF-IDF fallback because no embedding provider was reachable. Supplying GEMINI_API_KEY reruns the same harness against real embeddings.",
   "failures": [],
+  "refusals": [],
   "cases": [
     {
       "id": "en_rent_increase",
@@ -40,6 +55,7 @@
       "hit_rank": 1,
       "recalled": true,
       "faithful": true,
+      "answered": true,
       "factual_sentences": 0,
       "cited_sentences": 0,
       "retrieved": [
@@ -51,7 +67,8 @@
       ],
       "notes": [
         "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
-        "1 sentence(s) were removed because they stated a fact without citing a source"
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
       ]
     },
     {
@@ -63,6 +80,7 @@
       "hit_rank": 1,
       "recalled": true,
       "faithful": true,
+      "answered": true,
       "factual_sentences": 0,
       "cited_sentences": 0,
       "retrieved": [
@@ -74,7 +92,8 @@
       ],
       "notes": [
         "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
-        "1 sentence(s) were removed because they stated a fact without citing a source"
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
       ]
     },
     {
@@ -86,6 +105,7 @@
       "hit_rank": 1,
       "recalled": true,
       "faithful": true,
+      "answered": true,
       "factual_sentences": 0,
       "cited_sentences": 0,
       "retrieved": [
@@ -97,7 +117,8 @@
       ],
       "notes": [
         "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
-        "1 sentence(s) were removed because they stated a fact without citing a source"
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
       ]
     },
     {
@@ -109,6 +130,7 @@
       "hit_rank": 1,
       "recalled": true,
       "faithful": true,
+      "answered": true,
       "factual_sentences": 0,
       "cited_sentences": 0,
       "retrieved": [
@@ -120,7 +142,8 @@
       ],
       "notes": [
         "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
-        "1 sentence(s) were removed because they stated a fact without citing a source"
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
       ]
     },
     {
@@ -132,6 +155,7 @@
       "hit_rank": 1,
       "recalled": true,
       "faithful": true,
+      "answered": true,
       "factual_sentences": 0,
       "cited_sentences": 0,
       "retrieved": [
@@ -143,7 +167,8 @@
       ],
       "notes": [
         "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
-        "1 sentence(s) were removed because they stated a fact without citing a source"
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
       ]
     },
     {
@@ -155,6 +180,7 @@
       "hit_rank": 2,
       "recalled": true,
       "faithful": true,
+      "answered": true,
       "factual_sentences": 0,
       "cited_sentences": 0,
       "retrieved": [
@@ -166,7 +192,8 @@
       ],
       "notes": [
         "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
-        "1 sentence(s) were removed because they stated a fact without citing a source"
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
       ]
     },
     {
@@ -178,6 +205,7 @@
       "hit_rank": 1,
       "recalled": true,
       "faithful": true,
+      "answered": true,
       "factual_sentences": 0,
       "cited_sentences": 0,
       "retrieved": [
@@ -189,7 +217,8 @@
       ],
       "notes": [
         "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
-        "1 sentence(s) were removed because they stated a fact without citing a source"
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
       ]
     },
     {
@@ -201,6 +230,7 @@
       "hit_rank": 1,
       "recalled": true,
       "faithful": true,
+      "answered": true,
       "factual_sentences": 0,
       "cited_sentences": 0,
       "retrieved": [
@@ -212,7 +242,8 @@
       ],
       "notes": [
         "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
-        "1 sentence(s) were removed because they stated a fact without citing a source"
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
       ]
     },
     {
@@ -224,6 +255,7 @@
       "hit_rank": 1,
       "recalled": true,
       "faithful": true,
+      "answered": true,
       "factual_sentences": 0,
       "cited_sentences": 0,
       "retrieved": [
@@ -235,7 +267,8 @@
       ],
       "notes": [
         "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
-        "1 sentence(s) were removed because they stated a fact without citing a source"
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
       ]
     },
     {
@@ -247,6 +280,7 @@
       "hit_rank": 1,
       "recalled": true,
       "faithful": true,
+      "answered": true,
       "factual_sentences": 0,
       "cited_sentences": 0,
       "retrieved": [
@@ -258,7 +292,8 @@
       ],
       "notes": [
         "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
-        "1 sentence(s) were removed because they stated a fact without citing a source"
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
       ]
     },
     {
@@ -270,6 +305,7 @@
       "hit_rank": 1,
       "recalled": true,
       "faithful": true,
+      "answered": true,
       "factual_sentences": 0,
       "cited_sentences": 0,
       "retrieved": [
@@ -281,7 +317,8 @@
       ],
       "notes": [
         "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
-        "1 sentence(s) were removed because they stated a fact without citing a source"
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
       ]
     },
     {
@@ -293,6 +330,7 @@
       "hit_rank": 1,
       "recalled": true,
       "faithful": true,
+      "answered": true,
       "factual_sentences": 0,
       "cited_sentences": 0,
       "retrieved": [
@@ -304,7 +342,8 @@
       ],
       "notes": [
         "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
-        "1 sentence(s) were removed because they stated a fact without citing a source"
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
       ]
     },
     {
@@ -316,18 +355,20 @@
       "hit_rank": 3,
       "recalled": true,
       "faithful": true,
+      "answered": true,
       "factual_sentences": 0,
       "cited_sentences": 0,
       "retrieved": [
         "dld_fees",
-        "al yelayiss 1",
+        "al raffa",
         "methodology",
-        "al thanyah fifth",
+        "al barsha south fourth",
         "methodology"
       ],
       "notes": [
         "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
-        "1 sentence(s) were removed because they stated a fact without citing a source"
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
       ]
     },
     {
@@ -339,6 +380,7 @@
       "hit_rank": 5,
       "recalled": true,
       "faithful": true,
+      "answered": true,
       "factual_sentences": 0,
       "cited_sentences": 0,
       "retrieved": [
@@ -350,7 +392,8 @@
       ],
       "notes": [
         "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
-        "1 sentence(s) were removed because they stated a fact without citing a source"
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
       ]
     },
     {
@@ -362,6 +405,7 @@
       "hit_rank": 1,
       "recalled": true,
       "faithful": true,
+      "answered": true,
       "factual_sentences": 0,
       "cited_sentences": 0,
       "retrieved": [
@@ -373,7 +417,8 @@
       ],
       "notes": [
         "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
-        "1 sentence(s) were removed because they stated a fact without citing a source"
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
       ]
     },
     {
@@ -385,6 +430,7 @@
       "hit_rank": 1,
       "recalled": true,
       "faithful": true,
+      "answered": true,
       "factual_sentences": 0,
       "cited_sentences": 0,
       "retrieved": [
@@ -397,7 +443,8 @@
       "notes": [
         "the question names Jumeirah Village Circle, so that area's recorded figures were included",
         "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
-        "1 sentence(s) were removed because they stated a fact without citing a source"
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
       ]
     },
     {
@@ -409,6 +456,7 @@
       "hit_rank": 1,
       "recalled": true,
       "faithful": true,
+      "answered": true,
       "factual_sentences": 0,
       "cited_sentences": 0,
       "retrieved": [
@@ -421,7 +469,8 @@
       "notes": [
         "the question names Dubai Marina, so that area's recorded figures were included",
         "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
-        "1 sentence(s) were removed because they stated a fact without citing a source"
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
       ]
     },
     {
@@ -433,6 +482,7 @@
       "hit_rank": 1,
       "recalled": true,
       "faithful": true,
+      "answered": true,
       "factual_sentences": 0,
       "cited_sentences": 0,
       "retrieved": [
@@ -445,7 +495,8 @@
       "notes": [
         "the question names Downtown Dubai, so that area's recorded figures were included",
         "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
-        "1 sentence(s) were removed because they stated a fact without citing a source"
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
       ]
     },
     {
@@ -457,6 +508,7 @@
       "hit_rank": 1,
       "recalled": true,
       "faithful": true,
+      "answered": true,
       "factual_sentences": 0,
       "cited_sentences": 0,
       "retrieved": [
@@ -469,7 +521,8 @@
       "notes": [
         "the question names Business Bay, so that area's recorded figures were included",
         "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
-        "1 sentence(s) were removed because they stated a fact without citing a source"
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
       ]
     },
     {
@@ -481,6 +534,7 @@
       "hit_rank": 1,
       "recalled": true,
       "faithful": true,
+      "answered": true,
       "factual_sentences": 0,
       "cited_sentences": 0,
       "retrieved": [
@@ -493,7 +547,8 @@
       "notes": [
         "the question names Jumeirah Lake Towers, so that area's recorded figures were included",
         "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
-        "1 sentence(s) were removed because they stated a fact without citing a source"
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
       ]
     },
     {
@@ -505,6 +560,7 @@
       "hit_rank": 1,
       "recalled": true,
       "faithful": true,
+      "answered": true,
       "factual_sentences": 0,
       "cited_sentences": 0,
       "retrieved": [
@@ -517,7 +573,8 @@
       "notes": [
         "the question names Dubai Silicon Oasis, so that area's recorded figures were included",
         "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
-        "1 sentence(s) were removed because they stated a fact without citing a source"
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
       ]
     },
     {
@@ -526,22 +583,24 @@
       "question": "What does property go for on Palm Jumeirah?",
       "expected": "palm jumeirah",
       "expected_kind": "area",
-      "hit_rank": 1,
+      "hit_rank": 4,
       "recalled": true,
       "faithful": true,
+      "answered": true,
       "factual_sentences": 0,
       "cited_sentences": 0,
       "retrieved": [
-        "palm jumeirah",
-        "ejari",
         "nakhlat jumeirah",
-        "jumeirah first",
+        "jumeirah third",
+        "ejari",
+        "palm jumeirah",
         "rent_increase_rules"
       ],
       "notes": [
         "the question names Palm Jumeirah, Jumeirah, so that area's recorded figures were included",
         "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
-        "1 sentence(s) were removed because they stated a fact without citing a source"
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
       ]
     },
     {
@@ -553,6 +612,7 @@
       "hit_rank": 1,
       "recalled": true,
       "faithful": true,
+      "answered": true,
       "factual_sentences": 0,
       "cited_sentences": 0,
       "retrieved": [
@@ -565,7 +625,8 @@
       "notes": [
         "the question names Arjan and Dubai Science Park, so that area's recorded figures were included",
         "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
-        "1 sentence(s) were removed because they stated a fact without citing a source"
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
       ]
     },
     {
@@ -577,6 +638,7 @@
       "hit_rank": 1,
       "recalled": true,
       "faithful": true,
+      "answered": true,
       "factual_sentences": 0,
       "cited_sentences": 0,
       "retrieved": [
@@ -588,7 +650,8 @@
       ],
       "notes": [
         "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
-        "1 sentence(s) were removed because they stated a fact without citing a source"
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
       ]
     },
     {
@@ -600,6 +663,7 @@
       "hit_rank": 1,
       "recalled": true,
       "faithful": true,
+      "answered": true,
       "factual_sentences": 0,
       "cited_sentences": 0,
       "retrieved": [
@@ -611,7 +675,8 @@
       ],
       "notes": [
         "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
-        "1 sentence(s) were removed because they stated a fact without citing a source"
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
       ]
     },
     {
@@ -623,6 +688,7 @@
       "hit_rank": 1,
       "recalled": true,
       "faithful": true,
+      "answered": true,
       "factual_sentences": 0,
       "cited_sentences": 0,
       "retrieved": [
@@ -634,7 +700,8 @@
       ],
       "notes": [
         "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
-        "1 sentence(s) were removed because they stated a fact without citing a source"
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
       ]
     },
     {
@@ -646,6 +713,7 @@
       "hit_rank": 1,
       "recalled": true,
       "faithful": true,
+      "answered": true,
       "factual_sentences": 0,
       "cited_sentences": 0,
       "retrieved": [
@@ -658,7 +726,8 @@
       "notes": [
         "the question names Dubai Marina, so that area's recorded figures were included",
         "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
-        "1 sentence(s) were removed because they stated a fact without citing a source"
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
       ]
     },
     {
@@ -670,6 +739,7 @@
       "hit_rank": 1,
       "recalled": true,
       "faithful": true,
+      "answered": true,
       "factual_sentences": 0,
       "cited_sentences": 0,
       "retrieved": [
@@ -681,7 +751,8 @@
       ],
       "notes": [
         "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
-        "1 sentence(s) were removed because they stated a fact without citing a source"
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
       ]
     },
     {
@@ -693,6 +764,7 @@
       "hit_rank": 1,
       "recalled": true,
       "faithful": true,
+      "answered": true,
       "factual_sentences": 0,
       "cited_sentences": 0,
       "retrieved": [
@@ -704,7 +776,8 @@
       ],
       "notes": [
         "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
-        "1 sentence(s) were removed because they stated a fact without citing a source"
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
       ]
     },
     {
@@ -716,6 +789,7 @@
       "hit_rank": 1,
       "recalled": true,
       "faithful": true,
+      "answered": true,
       "factual_sentences": 0,
       "cited_sentences": 0,
       "retrieved": [
@@ -728,7 +802,8 @@
       "notes": [
         "the question names Jumeirah Village Circle, so that area's recorded figures were included",
         "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
-        "1 sentence(s) were removed because they stated a fact without citing a source"
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
       ]
     }
   ]

@@ -1,6 +1,6 @@
 {
   "provenance": "REAL",
-  "generated_at": "2026-09-06T19:27:16+00:00",
+  "generated_at": "2026-09-06T19:50:40+00:00",
   "note": "Red-team outcomes are measurements of this code, not of the data it reads, so they are REAL whatever the warehouse holds.",
   "attacks_run": 11,
   "controls_held": 11,
@@ -59,7 +59,7 @@
           "remaining": {
             "requests": 1,
             "steps": 0,
-            "seconds": 29.757931043999633
+            "seconds": 29.75552344300013
           }
         },
         "killed_status": "killed",

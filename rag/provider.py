@@ -61,6 +61,12 @@ class Embedding:
 class Backend(ABC):
     name: str = "base"
 
+    # Whether this backend's requests count against a daily allowance. Quotas exist to protect
+    # free *API* tiers from being spent; a backend that makes no network call has nothing to
+    # protect, and metering one means a long session or a CI run silently degrades every answer
+    # to a refusal once an imaginary limit is reached. That is exactly what happened.
+    metered: bool = True
+
     @abstractmethod
     def available(self) -> tuple[bool, str]:
         """Whether this backend can be used, and why not when it cannot."""
@@ -78,6 +84,7 @@ class OllamaBackend(Backend):
     """A local model. Free, private and usually absent from a cloud sandbox."""
 
     name = "ollama"
+    metered = False
 
     def __init__(self) -> None:
         self.host = os.environ.get("OLLAMA_HOST", "http://127.0.0.1:11434")
@@ -249,6 +256,7 @@ class FakeBackend(Backend):
     """
 
     name = "fake"
+    metered = False
 
     def __init__(self, fixture_dir: Path = FIXTURE_DIR) -> None:
         self.fixture_dir = fixture_dir
@@ -344,7 +352,12 @@ class LLMProvider:
                     "available": ok,
                     "reason": reason,
                     "requests_today": self.ledger.used(name),
-                    "requests_remaining": self.ledger.remaining(name),
+                    # None rather than a number: an unmetered backend has no allowance to have
+                    # left, and showing one invites the reader to believe it can run out.
+                    "requests_remaining": (
+                        self.ledger.remaining(name) if backend.metered else None
+                    ),
+                    "metered": backend.metered,
                 }
             )
         return out
@@ -357,7 +370,7 @@ class LLMProvider:
             if not ok:
                 attempts.append({"backend": name, "outcome": "skipped", "reason": reason})
                 continue
-            if self.ledger.would_exceed(name):
+            if backend.metered and self.ledger.would_exceed(name):
                 attempts.append(
                     {"backend": name, "outcome": "skipped", "reason": "daily request budget spent"}
                 )

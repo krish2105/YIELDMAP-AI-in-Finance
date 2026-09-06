@@ -25,7 +25,7 @@ from typing import Any
 import yaml
 
 from etl.results import result_path
-from rag.ask import CITATION, is_factual, split_sentences
+from rag.ask import CITATION, is_factual, is_refusal, split_sentences
 from rag.ask import ask as run_ask
 from rag.indexer import build_index, load_index
 from rag.provider import LLMProvider
@@ -36,6 +36,7 @@ CASES_PATH = Path(__file__).resolve().parent / "cases.yaml"
 
 # The gates from the plan. Recall is the harder one and the one that matters more.
 RECALL_TARGET = 0.80
+RECALL_AT_1_TARGET = 0.70
 FAITHFULNESS_TARGET = 0.90
 
 
@@ -50,6 +51,7 @@ class CaseResult:
     hit_rank: int | None
     recalled: bool
     faithful: bool
+    answered: bool
     n_factual: int
     n_cited: int
     notes: list[str] = field(default_factory=list)
@@ -64,6 +66,7 @@ class CaseResult:
             "hit_rank": self.hit_rank,
             "recalled": self.recalled,
             "faithful": self.faithful,
+            "answered": self.answered,
             "factual_sentences": self.n_factual,
             "cited_sentences": self.n_cited,
             "retrieved": self.retrieved[:5],
@@ -99,10 +102,14 @@ def score_case(
     # A case with no expectation is a refusal case: retrieving nothing relevant is correct.
     recalled = hit_rank is not None if expected is not None else not answer.found_material
 
+    # A refusal is not an answer, and it is not a false one either. Separating the two is the
+    # point: faithfulness asks whether what was asserted was cited, and answer rate asks whether
+    # anything was asserted at all. Conflating them scored an honest refusal as a lie, which is
+    # how the Arabic cases read 0.0 while the system was behaving correctly.
+    refused = is_refusal(answer.text) or not answer.found_material
     sentences = split_sentences(answer.text)
-    factual = [s for s in sentences if is_factual(s)]
+    factual = [] if refused else [s for s in sentences if is_factual(s)]
     cited = [s for s in factual if CITATION.search(s)]
-    # An honest refusal is faithful: it asserts nothing.
     faithful = (len(cited) == len(factual)) if factual else True
 
     return CaseResult(
@@ -115,6 +122,7 @@ def score_case(
         hit_rank=hit_rank,
         recalled=recalled,
         faithful=faithful,
+        answered=not refused,
         n_factual=len(factual),
         n_cited=len(cited),
         notes=answer.notes,
@@ -136,6 +144,20 @@ def run(*, k: int = 5, out: Path | None = None) -> dict[str, Any]:
     recall = sum(1 for r in results if r.recalled) / len(results)
     faithfulness = sum(1 for r in results if r.faithful) / len(results)
 
+    # Recall@5 over a corpus this size is close to free: with 117 chunks and five slots, a
+    # retriever that is merely not broken scores well. Rank-sensitive measures are what separate
+    # "the answer was somewhere in the list" from "the answer was first", and they are the ones
+    # worth watching as the corpus grows. Ranked cases only — a refusal case has no rank.
+    # Cases that expected an answer and got one. Reported rather than gated: on the offline
+    # fixture backend a non-English question legitimately cannot be answered well, and hiding that
+    # behind a passing faithfulness score would be the dishonest reading of these numbers.
+    expecting = [r for r in results if r.expected is not None]
+    answer_rate = sum(1 for r in expecting if r.answered) / len(expecting) if expecting else 0.0
+
+    ranked = [r for r in results if r.expected is not None]
+    precision_at_1 = sum(1 for r in ranked if r.hit_rank == 1) / len(ranked) if ranked else 0.0
+    mrr = sum(1 / r.hit_rank for r in ranked if r.hit_rank) / len(ranked) if ranked else 0.0
+
     by_lang: dict[str, dict[str, Any]] = {}
     for lang in sorted({r.lang for r in results}):
         subset = [r for r in results if r.lang == lang]
@@ -143,6 +165,11 @@ def run(*, k: int = 5, out: Path | None = None) -> dict[str, Any]:
             "cases": len(subset),
             "recall": sum(1 for r in subset if r.recalled) / len(subset),
             "faithfulness": sum(1 for r in subset if r.faithful) / len(subset),
+            "answer_rate": round(
+                sum(1 for r in subset if r.answered and r.expected is not None)
+                / max(sum(1 for r in subset if r.expected is not None), 1),
+                4,
+            ),
         }
 
     semantic_backend = retriever.semantic.backend
@@ -155,12 +182,33 @@ def run(*, k: int = 5, out: Path | None = None) -> dict[str, Any]:
         "n_cases": len(results),
         "k": k,
         "recall_at_k": round(recall, 4),
+        "recall_at_1": round(precision_at_1, 4),
+        "mrr": round(mrr, 4),
+        "answer_rate": round(answer_rate, 4),
         "faithfulness": round(faithfulness, 4),
         "recall_target": RECALL_TARGET,
         "faithfulness_target": FAITHFULNESS_TARGET,
+        "recall_at_1_target": RECALL_AT_1_TARGET,
         "recall_met": recall >= RECALL_TARGET,
+        "recall_at_1_met": precision_at_1 >= RECALL_AT_1_TARGET,
         "faithfulness_met": faithfulness >= FAITHFULNESS_TARGET,
-        "passed": recall >= RECALL_TARGET and faithfulness >= FAITHFULNESS_TARGET,
+        "passed": (
+            recall >= RECALL_TARGET
+            and precision_at_1 >= RECALL_AT_1_TARGET
+            and faithfulness >= FAITHFULNESS_TARGET
+        ),
+        # Stated with the scores, because a recall figure means nothing without knowing how many
+        # chunks it was chosen from. Five slots out of a hundred is a different claim from five
+        # out of a hundred thousand, and only the second is evidence of a good retriever.
+        "corpus": {
+            "chunks": len(chunks),
+            "documents": len({c.doc_id for c in chunks if c.doc_id}),
+            "facts": sum(1 for c in chunks if c.kind == "fact"),
+            "note": (
+                "A small corpus makes recall@5 easy and rank-sensitive measures the informative "
+                "ones. These figures describe retrieval over this corpus, not retrieval in general."
+            ),
+        },
         "by_language": by_lang,
         "retrieval_backend": semantic_backend,
         "degraded": retriever.semantic.degraded,
@@ -171,6 +219,7 @@ def run(*, k: int = 5, out: Path | None = None) -> dict[str, Any]:
             else None
         ),
         "failures": [r.as_dict() for r in results if not (r.recalled and r.faithful)],
+        "refusals": [r.as_dict() for r in results if not r.answered and r.expected],
         "cases": [r.as_dict() for r in results],
     }
 

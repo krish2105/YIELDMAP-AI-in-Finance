@@ -126,7 +126,11 @@ class TestFallthrough:
         rows = {d["backend"]: d for d in LLMProvider(ledger=ledger).describe()}
         assert rows["gemini"]["available"] is False
         assert rows["fake"]["available"] is True
-        assert rows["fake"]["requests_remaining"] == 5
+        # None, not a count: the fixture backend spends no allowance, so it has none left to
+        # report, and a number here would invite the reader to believe it can run out.
+        assert rows["fake"]["requests_remaining"] is None
+        assert rows["fake"]["metered"] is False
+        assert rows["gemini"]["metered"] is True
 
     def test_raises_only_when_nothing_at_all_can_answer(self, clean_env, ledger):
         provider = LLMProvider(chain=("gemini", "groq"), ledger=ledger)
@@ -208,12 +212,28 @@ class TestQuota:
         assert QuotaLedger(path=path).used("gemini") == 0
 
     def test_a_spent_budget_makes_the_chain_move_on_rather_than_fail(self, clean_env, tmp_path):
+        """A metered backend, because those are the ones an allowance protects."""
+        ledger = QuotaLedger(path=tmp_path / "q.json", daily_limit=1)
+        for _ in range(2):
+            ledger.record("gemini")
+        provider = LLMProvider(chain=("gemini", "groq"), ledger=ledger)
+        with pytest.raises(ProviderUnavailable):
+            provider.generate("anything")
+        assert any(h["backend"] == "gemini" and h["outcome"] == "skipped" for h in provider.hops)
+
+    def test_a_spent_budget_does_not_stop_a_backend_that_spends_nothing(self, clean_env, tmp_path):
+        """The regression.
+
+        The fixture backend used to be metered like the others, so after enough requests in one
+        session it was skipped for "daily request budget spent", the chain fell through to
+        nothing, and every answer became a refusal — the system looked like it had stopped
+        knowing anything, offline, with no allowance in play at all.
+        """
         ledger = QuotaLedger(path=tmp_path / "q.json", daily_limit=1)
         provider = LLMProvider(chain=("fake",), ledger=ledger)
         provider.generate("first")
-        with pytest.raises(ProviderUnavailable):
-            provider.generate("second")
-        assert any(h["outcome"] == "skipped" and "budget" in h["reason"] for h in provider.hops)
+        assert provider.generate("second").text.strip()
+        assert provider.generate("third").text.strip()
 
     def test_the_report_states_the_cost(self, ledger):
         ledger.record("gemini")

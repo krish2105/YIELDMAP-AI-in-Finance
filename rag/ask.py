@@ -188,6 +188,18 @@ NO_MATERIAL = {
 }
 
 
+def is_refusal(text: str) -> bool:
+    """Whether an answer is the system declining to answer, in any of its languages.
+
+    Recognised by content rather than by which branch produced it, because there are three: no
+    hits at all, no provider, and every sentence stripped for want of a citation. All three mean
+    the same thing to a reader, and the eval was scoring the third as an uncited claim — marking
+    the system dishonest for the one behaviour that proves it is not.
+    """
+    stripped = text.strip()
+    return any(stripped == refusal.strip() for refusal in NO_MATERIAL.values())
+
+
 def ask(
     question: str,
     *,
@@ -228,7 +240,7 @@ def ask(
             text=NO_MATERIAL[language],
             citations=[h.chunk.citation for h in retrieval.hits],
             used_sources=[],
-            found_material=True,
+            found_material=False,
             degraded=True,
             notes=retrieval.notes + [f"no model could answer: {exc}"],
             provenance=provenance,
@@ -244,8 +256,18 @@ def ask(
     if completion.degraded:
         notes.append(completion.note or "answered by a degraded backend")
 
+    # Everything the model said was stripped for want of a citation, so nothing survives to
+    # answer with. That is a refusal, and it has to be reported as one: saying `found_material`
+    # while showing the refusal text put "5 sources" beside "I found nothing" in the interface,
+    # and made the eval score an honest refusal as an uncited claim.
     if not cleaned.strip():
         cleaned = NO_MATERIAL[language]
+        notes.append(
+            "every sentence was removed for want of a citation, so nothing could be asserted"
+        )
+    # Checked on the final text, so a backend that returns the refusal verbatim is classified the
+    # same way as one that was stripped down to it.
+    answered = not is_refusal(cleaned)
 
     return Answer(
         question=question,
@@ -253,7 +275,7 @@ def ask(
         text=cleaned,
         citations=[{"n": n, **hit.chunk.citation} for n, hit in enumerate(retrieval.hits, start=1)],
         used_sources=used,
-        found_material=True,
+        found_material=answered,
         degraded=retrieval.degraded or completion.degraded,
         backend=completion.backend,
         notes=notes,

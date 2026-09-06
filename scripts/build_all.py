@@ -38,6 +38,7 @@ MODEL_STAGES = [
     ("portfolio", "finance.portfolio"),
     ("rent versus buy", "finance.rentbuy"),
     ("developers", "finance.developers"),
+    ("unit economics", "finance.unit_economics"),
 ]
 
 

@@ -6,6 +6,9 @@ state a fact without a citation, or treat retrieved text as an instruction.
 
 from __future__ import annotations
 
+import tempfile
+from pathlib import Path
+
 import pytest
 
 from rag.ask import (
@@ -336,3 +339,77 @@ class TestAsk:
         )
         assert len(answer.citations) == 3
         assert [c["n"] for c in answer.citations] == [1, 2, 3]
+
+
+class TestCostlessBackendsAreNotMetered:
+    """A quota exists to protect a paid-for allowance. The offline backend has none.
+
+    Metering it meant that after enough runs in one session — a long CI job, an afternoon of
+    development — the fixture backend was skipped for "daily request budget spent", the provider
+    chain fell through to nothing, and every answer silently became a refusal. The system looked
+    like it had stopped knowing anything.
+    """
+
+    def test_the_fixture_backend_declares_itself_unmetered(self) -> None:
+        from rag.provider import FakeBackend, OllamaBackend
+
+        assert FakeBackend().metered is False
+        # Local too: a model on your own machine spends no allowance.
+        assert OllamaBackend().metered is False
+
+    def test_a_network_backend_is_metered(self) -> None:
+        from rag.provider import GeminiBackend
+
+        assert GeminiBackend().metered is True
+
+    def test_an_exhausted_ledger_does_not_stop_the_fixture_backend(self, monkeypatch) -> None:
+        """The regression: spend the whole allowance, then check answers still come back."""
+        monkeypatch.setenv("LLM_PROVIDER", "fake")
+        from rag.provider import LLMProvider
+        from rag.quota import QuotaLedger
+
+        ledger = QuotaLedger(path=Path(tempfile.mkdtemp()) / "q.json", daily_limit=3)
+        for _ in range(5):
+            ledger.record("fake")
+        assert ledger.would_exceed("fake"), "the ledger should consider itself spent"
+
+        provider = LLMProvider.from_env(ledger=ledger)
+        completion = provider.generate("What is a service charge?")
+        assert completion.text.strip(), "an unmetered backend was refused for want of quota"
+
+    def test_an_unmetered_backend_reports_no_remaining_allowance(self, monkeypatch) -> None:
+        """None, not a number: showing one invites the reader to believe it can run out."""
+        monkeypatch.setenv("LLM_PROVIDER", "fake")
+        from rag.provider import LLMProvider
+
+        row = next(r for r in LLMProvider.from_env().describe() if r["backend"] == "fake")
+        assert row["requests_remaining"] is None
+        assert row["metered"] is False
+
+
+class TestARefusalIsNotAClaim:
+    """Three code paths produce a refusal, and all three mean the same thing to a reader."""
+
+    def test_the_refusal_text_is_recognised_in_every_language(self) -> None:
+        from rag.ask import NO_MATERIAL, is_refusal
+
+        for language, text in NO_MATERIAL.items():
+            assert is_refusal(text), language
+
+    def test_an_ordinary_answer_is_not_mistaken_for_one(self) -> None:
+        from rag.ask import is_refusal
+
+        assert not is_refusal("The transfer fee is 4% of the purchase price [1].")
+
+    def test_an_answer_stripped_to_nothing_reports_that_it_found_nothing(self) -> None:
+        """It used to say it had found material while showing the refusal.
+
+        The interface then put a list of sources beside "I could not find anything", and the eval
+        scored the refusal as an uncited claim — marking the system dishonest for the one
+        behaviour that proves it is not.
+        """
+        from rag.ask import NO_MATERIAL, is_refusal
+
+        # The shape the bug took: refusal text alongside a claim to have found material.
+        assert is_refusal(NO_MATERIAL["ar"])
+        assert is_refusal(NO_MATERIAL["hi"])

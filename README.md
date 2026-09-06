@@ -68,9 +68,11 @@ Every figure below is read from `docs/results/`, produced by the models in `fina
 | Mortgage and DCF | 20% deposit case exact; levered 8.61% vs unlevered 5.75% at 3% growth | IRR matches a hand-computed case |
 | Forecast | beats seasonal naive on 77/86 areas (90%), 10.1% vs 15.2% error | 60% of areas |
 | Risk and anomalies | 1,737 of 120,346 flagged (1.44%); 86 areas scored | score in [0,100], monotone |
-| Retrieval | recall@5 and faithfulness gated in CI at 0.80 and 0.90, over 30 cases in English, Hindi and Arabic | above both gates |
+| Retrieval | recall@5 1.00, **recall@1 0.87, MRR 0.91**, faithfulness 1.00 over 30 cases in three languages — on a 117-chunk corpus, where recall@5 is easy and the rank measures are the informative ones | gated at 0.80 / 0.70 / 0.90 |
 | Red team | 11/11 controls held against the OWASP ASI threat list | every attack fails to land |
+| Cost | $0.00/month; the free tier binds at ~100 daily users, on embeddings before generation | stays free at course scale |
 | Journey | 34 Playwright tests green on a desktop viewport and a Pixel 7 | the full journey, on a phone |
+| Python | 703 tests | — |
 | Access control | writes need a token the API signed; the role is never something a caller sends | no credential, no write |
 
 ## Running it
@@ -99,6 +101,8 @@ loses on restart), and `SENTRY_DSN` for error tracking. Neither is required to r
 | [`docs/viva_qa.md`](docs/viva_qa.md) | Fifteen likely questions, answered from what the code says, each naming the file that backs it |
 | [`docs/demo_script.md`](docs/demo_script.md) | A timed three-minute run-through, with what to click and what to say |
 | [`docs/pitch.md`](docs/pitch.md) | The one-page version |
+| [`docs/loading_real_data.md`](docs/loading_real_data.md) | How to replace the stand-in with the published files — one command, ten minutes |
+| [`docs/limits.md`](docs/limits.md) | What it costs, where the free tier stops, and what breaks first |
 | [`docs/security.md`](docs/security.md) | The OWASP ASI mapping and the red-team results, generated from the register and the last measured run |
 | [`docs/term4_yieldmap.ipynb`](docs/term4_yieldmap.ipynb) | Every model, with its plots and the tables the report cites |
 

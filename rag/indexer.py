@@ -19,6 +19,7 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
 
+import regex
 import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -113,6 +114,33 @@ def split_sections(body: str) -> list[tuple[str | None, str]]:
     return sections
 
 
+# Scripts, not languages: a script is decidable from the characters, a language is not, and the
+# distinction that matters for retrieval here is exactly the one a script tells you. Latin text is
+# left as whatever the document declared, since English and a transliteration share an alphabet.
+_SCRIPTS: tuple[tuple[str, str], ...] = (
+    ("ar", r"\p{Arabic}"),
+    ("hi", r"\p{Devanagari}"),
+)
+
+
+def detect_lang(text: str, declared: str = "en") -> str:
+    """The language of one chunk, from its own characters.
+
+    The front matter declares a language per *document*, and the documents here carry an English
+    body with Arabic and Hindi summaries inside it. Taking the document's value gave every chunk
+    `en`, including the ones written in Arabic — so a language-aware filter would have hidden
+    exactly the chunks it was meant to find, and the multilingual eval passed only because nothing
+    filtered on the field.
+    """
+    for code, pattern in _SCRIPTS:
+        matches = regex.findall(pattern, text)
+        # A threshold rather than any match, so one Arabic place name in an English sentence does
+        # not relabel the sentence.
+        if len(matches) >= 12:
+            return code
+    return declared
+
+
 def index_documents(corpus_dir: Path = CORPUS_DIR) -> list[Chunk]:
     """Chunk every document in the corpus."""
     chunks: list[Chunk] = []
@@ -136,7 +164,7 @@ def index_documents(corpus_dir: Path = CORPUS_DIR) -> list[Chunk]:
                     source=str(meta.get("source", path.name)),
                     source_url=meta.get("source_url"),
                     doc_id=str(meta.get("id", path.stem)),
-                    lang=str(meta.get("lang", "en")),
+                    lang=detect_lang(text, str(meta.get("lang", "en"))),
                     status=str(meta.get("status", "unverified")),
                 )
             )
