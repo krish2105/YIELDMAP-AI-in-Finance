@@ -42,7 +42,15 @@ export default defineConfig({
       url: "http://127.0.0.1:8100/health",
       reuseExistingServer: !process.env.CI,
       timeout: 120_000,
-      env: { LLM_PROVIDER: "fake" },
+      env: {
+        LLM_PROVIDER: "fake",
+        // The journey signs in for real, so the API under test needs an account and a signing
+        // key. Both are fixtures for this suite: the hash is of "e2e-analyst-password", which is
+        // in the spec next to the sign-in it performs.
+        AUTH_SECRET: "playwright-signing-key-not-used-anywhere-else",
+        YIELDMAP_USERS:
+          "analyst@yieldmap.test:analyst:$argon2id$v=19$m=65536,t=3,p=4$ZnNEohTwLtspPOcos2+m2w$/IOeKroPWaFI8y8Y2QwXtqvB5KiwFZdjNcVfyN+IJ/k",
+      },
     },
     {
       command: "npm --workspace @yieldmap/web run start -- --port 3100",

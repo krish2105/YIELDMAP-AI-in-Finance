@@ -35,6 +35,32 @@ first and tested separately:
 - The Advisor — the agent that writes the recommendation — is granted the empty set of tools.
 - Queries run on a read-only connection and are refused before that if they are not plain selects.
 
+## Authentication
+
+Reads are public: the Land Department data is published, and requiring a login to look at open
+data would be security theatre pointing the wrong way. What is protected is the surface that
+*spends* something — creating a memo runs the agent crew, which costs model quota and CPU.
+
+A caller proves identity at `POST /auth/token` and receives a token this service signed. The role
+lives in the token's claims, so it is a statement the service made rather than one the caller
+made. `api/auth.py` has the detail; the decoder pins one algorithm, checks the issuer, and
+requires an expiry.
+
+**This replaced a hole rather than filling a gap.** The role used to arrive in an
+`X-Yieldmap-Role` header that the interface set from a dropdown, and the API believed it: a
+stranger with curl could send `X-Yieldmap-Role: analyst` and write. The red-team attack meant to
+catch that tested malformed role values instead, confirmed they degraded to viewer, and reported
+the control held — a green tick on an open door. `rbac_bypass` now tries the bypass that worked,
+and `tests/test_redteam.py` puts the old behaviour back to prove the attack would fail against it.
+
+## Rate limits
+
+Budgets bound one agent run. Rate limits bound how many a caller can start, which is a different
+control: two hundred well-behaved runs spend a day's free-tier quota as completely as one runaway
+loop. A token bucket per caller — keyed on the account when there is one, the client address
+otherwise — allows 120 reads a minute, 12 questions a minute, and 6 memos an hour. Buckets live in
+the process, which is exact on one instance and would need a shared counter on two.
+
 ## Threat register
 
 The OWASP Agentic Security Initiative list, mapped onto this system. Every row that claims a

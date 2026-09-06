@@ -48,7 +48,6 @@ export default function RentPage() {
           rent_growth: growth / 100,
           investment_return: investment / 100,
         },
-        "viewer",
       ),
   });
 

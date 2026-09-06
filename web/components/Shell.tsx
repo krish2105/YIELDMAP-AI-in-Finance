@@ -1,12 +1,12 @@
 "use client";
 
+import SignIn from "@/components/SignIn";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useEffect, useState } from "react";
 
 import { LOCALES, LOCALE_NAMES } from "@/lib/i18n";
-import type { Role } from "@/lib/api";
 import { useShell } from "./Providers";
 
 /** The twenty tabs, grouped so the rail stays readable. */
@@ -114,7 +114,7 @@ function CommandPalette({ onClose }: { onClose: () => void }) {
 }
 
 export default function Shell({ children }: { children: React.ReactNode }) {
-  const { t, locale, setLocale, theme, setTheme, role, setRole } = useShell();
+  const { t, locale, setLocale, theme, setTheme } = useShell();
   const pathname = usePathname();
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [navOpen, setNavOpen] = useState(false);
@@ -202,18 +202,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
         </div>
 
         <div className="mt-7 space-y-3 border-t border-line pt-4 text-xs">
-          <label className="block">
-            <span className="mb-1 block text-ink-muted">{t("role.label")}</span>
-            <select
-              value={role}
-              onChange={(event) => setRole(event.target.value as Role)}
-              className="w-full rounded border border-line bg-bg px-2 py-1 text-ink"
-            >
-              <option value="viewer">Viewer</option>
-              <option value="analyst">Analyst</option>
-              <option value="admin">Admin</option>
-            </select>
-          </label>
+          <SignIn />
 
           <label className="block">
             <span className="mb-1 block text-ink-muted">Language</span>

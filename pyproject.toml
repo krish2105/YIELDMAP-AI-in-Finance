@@ -21,6 +21,15 @@ dependencies = [
     "python-dotenv>=1.0",
     "rank-bm25>=0.2.2",
     "regex>=2026.9.3",
+    # Authentication: signed tokens and password hashing. Argon2id is the current recommendation
+    # and needs no tuning to be safe by default, unlike bcrypt's cost parameter.
+    "pyjwt>=2.9",
+    "argon2-cffi>=23.1",
+    # Durable storage, when DATABASE_URL is set. Optional at runtime: the API falls back to the
+    # file store, which is documented as ephemeral.
+    "psycopg[binary,pool]>=3.2",
+    # Error tracking, active only when SENTRY_DSN is set.
+    "sentry-sdk[fastapi]>=2.17",
 ]
 
 [project.optional-dependencies]

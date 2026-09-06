@@ -49,7 +49,6 @@ export default function PortfolioPage() {
       api.post<PortfolioResult>(
         "/simulate/portfolio",
         { holdings: holdings.filter((h) => h.area_key) },
-        "viewer",
       ),
   });
 

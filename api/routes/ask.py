@@ -7,6 +7,7 @@ from typing import Annotated, Any
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
 
+from api.limits import ASK, limit
 from rag.ask import ask as run_ask
 from rag.indexer import build_index, load_index
 from rag.provider import LLMProvider
@@ -40,7 +41,7 @@ class AskRequest(BaseModel):
     k: Annotated[int, Field(ge=1, le=12)] = 5
 
 
-@router.post("/ask")
+@router.post("/ask", dependencies=[limit("ask", ASK)])
 def ask_endpoint(req: AskRequest) -> dict[str, Any]:
     """Answer a question from the corpus, with a citation on every factual sentence."""
     retriever = _retriever()

@@ -17,6 +17,24 @@ env:
 jobs:
   python:
     runs-on: ubuntu-latest
+    # A real Postgres, not a mock. The durable store is the one a deployment uses, so testing it
+    # against a stand-in would leave the path that matters unexercised. Service containers are
+    # free on a public repository.
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: yieldmap_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+        ports:
+          - 5432:5432
+    env:
+      TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/yieldmap_test
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5

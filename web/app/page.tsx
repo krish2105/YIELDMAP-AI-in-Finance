@@ -3,13 +3,36 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
-import City3D, { type CityDatum } from "@/components/City3D";
+import dynamic from "next/dynamic";
+
+import type { CityDatum } from "@/components/City3D";
 import KpiTile from "@/components/KpiTile";
 import { AdviceNotice, ProvenanceNotice } from "@/components/Notices";
 import { Card, ErrorState, Loading, PageHeader, Section } from "@/components/Page";
 import { useShell } from "@/components/Providers";
 import { useAreas, useMarket, useResult } from "@/lib/hooks";
 import { compactAed } from "@/lib/format";
+
+/**
+ * The 3D city, loaded only when this page is.
+ *
+ * three.js and its React bindings are roughly 840KB of the bundle — a third of all the JavaScript
+ * this application ships — and they are used on exactly one route. Imported directly they landed
+ * in the shared chunk, so every page paid for the map, including the ones a phone user reaches
+ * first. WebGL also cannot render on the server, so there was never anything to gain from
+ * including it there.
+ */
+const City3D = dynamic(() => import("@/components/City3D"), {
+  ssr: false,
+  loading: () => (
+    <div
+      className="flex h-[420px] items-center justify-center rounded-xl border border-line bg-sunken text-sm text-ink-muted"
+      aria-live="polite"
+    >
+      Loading the map…
+    </div>
+  ),
+});
 
 type Metric = "ppsqm" | "volume" | "yield" | "risk";
 

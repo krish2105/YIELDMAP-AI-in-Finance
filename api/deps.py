@@ -1,4 +1,8 @@
-"""Shared dependencies: the warehouse, the results cache and role-based access."""
+"""Shared dependencies: the warehouse and the results cache.
+
+Access control moved to api/auth.py when the role stopped being something a client could
+simply assert in a header.
+"""
 
 from __future__ import annotations
 
@@ -6,15 +10,24 @@ import json
 import os
 from functools import lru_cache
 from pathlib import Path
-from typing import Annotated, Any, Literal
+from typing import Annotated, Any
 
-from fastapi import Depends, Header, HTTPException, status
+from fastapi import Depends, HTTPException, status
 
+# Roles and access control live in api/auth.py, re-exported here so the modules that already
+# import from api.deps keep working. They are not redefined: two role tables would eventually
+# disagree, and a disagreement about who may do what is a security bug.
+from api.auth import (  # noqa: F401
+    ROLE_ORDER,
+    Principal,
+    PrincipalDep,
+    Role,
+    current_principal,
+    require,
+)
 from finance.base import DEFAULT_DB, Warehouse
 
 ROOT = Path(__file__).resolve().parent.parent
-Role = Literal["viewer", "analyst", "admin"]
-ROLE_ORDER: dict[str, int] = {"viewer": 0, "analyst": 1, "admin": 2}
 
 
 def db_path() -> Path:
@@ -66,31 +79,3 @@ def result(name: str, provenance: str = "REAL") -> dict[str, Any]:
             detail=f"{name} has not been produced yet; the model that writes it has not run.",
         )
     return body
-
-
-def current_role(x_yieldmap_role: Annotated[str | None, Header()] = None) -> Role:
-    """The caller's role.
-
-    A header rather than a session because this deployment has no login: the interface sets it and
-    the API enforces it. Anything unrecognised is treated as the least privileged role rather than
-    rejected, so a misconfigured client degrades to read-only instead of breaking.
-    """
-    value = (x_yieldmap_role or "viewer").strip().lower()
-    return value if value in ROLE_ORDER else "viewer"  # type: ignore[return-value]
-
-
-RoleDep = Annotated[str, Depends(current_role)]
-
-
-def require(minimum: Role):
-    """Dependency factory enforcing a minimum role."""
-
-    def _check(role: RoleDep) -> str:
-        if ROLE_ORDER[role] < ROLE_ORDER[minimum]:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail=f"this endpoint needs the {minimum} role; you have {role}",
-            )
-        return role
-
-    return Depends(_check)

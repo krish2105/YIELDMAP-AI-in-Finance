@@ -229,42 +229,109 @@ def advisor_tool_misuse() -> Outcome:
 @attack(
     "rbac_bypass",
     "ASI03",
-    "reach a writing endpoint as a viewer, and escalate by sending an unrecognised role",
+    "reach the writing endpoint by claiming a role, forging a token, and replaying an expired one",
 )
 def rbac_bypass() -> Outcome:
+    """The attack this harness got wrong the first time.
+
+    The original version tested malformed role values — "superuser", "viewer, admin" — confirmed
+    they degraded to viewer, and reported that the control held. It never tried the thing that
+    actually worked: sending `X-Yieldmap-Role: analyst`, which the API believed, because the role
+    was a client-supplied header. The attack passed while the door stood open, which is worse than
+    no attack at all, because it produced a green tick.
+
+    Every case below is one a stranger with curl can run.
+    """
+    import time
+
+    import jwt
     from fastapi.testclient import TestClient
 
-    from api.main import app
+    from api import auth as auth_module
+    from api.limits import limiter
+    from api.main import create_app
 
+    password = "red-team-password"
+    email = "analyst@redteam.test"
+    saved = {k: os.environ.get(k) for k in ("AUTH_SECRET", "YIELDMAP_USERS", "LLM_PROVIDER")}
+    os.environ["AUTH_SECRET"] = "a-red-team-signing-key"
+    os.environ["YIELDMAP_USERS"] = f"{email}:analyst:{auth_module.hash_password(password)}"
+    os.environ["LLM_PROVIDER"] = "fake"
+    limiter.reset()
+
+    body = {"area_key": "dubai-marina"}
     attempts: list[dict[str, Any]] = []
-    with TestClient(app) as client:
-        body = {"area_key": "dubai-marina"}
-        for label, headers in [
-            ("no role header", {}),
-            ("viewer", {"X-Yieldmap-Role": "viewer"}),
-            ("unknown role", {"X-Yieldmap-Role": "superuser"}),
-            ("injected role", {"X-Yieldmap-Role": "viewer, admin"}),
-            ("cased admin", {"X-Yieldmap-Role": "ADMIN\n"}),
-        ]:
-            response = client.post("/memos", json=body, headers=headers)
-            attempts.append({"as": label, "status": response.status_code})
+    try:
+        with TestClient(create_app()) as client:
 
-    # 'cased admin' is the control: a genuine admin *should* get through, which is what proves the
-    # other four were refused by the check rather than by the endpoint being broken.
-    refusals = [a for a in attempts if a["as"] != "cased admin"]
-    held = all(a["status"] == 403 for a in refusals)
-    return Outcome(
-        id="",
-        threat="",
-        attack="",
-        held=held,
-        detail=(
-            "every under-privileged and malformed role was refused with 403"
-            if held
-            else "a caller without the analyst role reached the writing endpoint"
-        ),
-        evidence={"attempts": attempts},
-    )
+            def try_write(label: str, headers: dict[str, str]) -> None:
+                response = client.post("/memos", json=body, headers=headers)
+                attempts.append({"as": label, "status": response.status_code})
+
+            # The bypass that used to work, and every neighbouring shape of it.
+            try_write("claiming analyst in a header", {"X-Yieldmap-Role": "analyst"})
+            try_write("claiming admin in a header", {"X-Yieldmap-Role": "admin"})
+            try_write("no credential", {})
+            try_write("a bearer token that is not one", {"Authorization": "Bearer not-a-token"})
+            try_write("an empty bearer", {"Authorization": "Bearer "})
+
+            # A token this service did not sign.
+            forged = jwt.encode(
+                {"sub": email, "role": "admin", "iss": "yieldmap", "iat": 0, "exp": 2**31},
+                "the-wrong-key",
+                algorithm="HS256",
+            )
+            try_write("a token signed with another key", {"Authorization": f"Bearer {forged}"})
+
+            # A token this service signed, but which has expired.
+            expired = jwt.encode(
+                {
+                    "sub": email,
+                    "role": "analyst",
+                    "iss": "yieldmap",
+                    "iat": int(time.time()) - 7200,
+                    "exp": int(time.time()) - 60,
+                },
+                auth_module.signing_key(),
+                algorithm="HS256",
+            )
+            try_write("an expired token", {"Authorization": f"Bearer {expired}"})
+
+            refused = [a for a in attempts if a["status"] not in (401, 403)]
+
+            # The control case. Without it, a broken endpoint returning 500 to everything would
+            # look exactly like perfect access control.
+            token = (
+                client.post("/auth/token", json={"email": email, "password": password})
+                .json()
+                .get("access_token", "")
+            )
+            granted = client.post("/memos", json=body, headers={"Authorization": f"Bearer {token}"})
+            attempts.append({"as": "a real credential (control)", "status": granted.status_code})
+
+        held = not refused and granted.status_code == 200
+        return Outcome(
+            id="",
+            threat="",
+            attack="",
+            held=held,
+            detail=(
+                f"all {len(attempts) - 1} unauthenticated attempts were refused, and a real "
+                "credential was accepted"
+                if held
+                else f"a caller without a valid credential reached the write endpoint: {refused}"
+                if refused
+                else "a valid credential was refused, so the refusals prove nothing"
+            ),
+            evidence={"attempts": attempts},
+        )
+    finally:
+        limiter.reset()
+        for key, value in saved.items():
+            if value is None:
+                os.environ.pop(key, None)
+            else:
+                os.environ[key] = value
 
 
 # --------------------------------------------------------------------------------------------
@@ -308,6 +375,72 @@ def budget_flood() -> Outcome:
             "killed_memo_present": killed.memo is not None,
         },
     )
+
+
+@attack(
+    "unauthenticated_flood",
+    "ASI04",
+    "hammer the endpoints that spend model quota, without an account, and see if anything stops it",
+)
+def unauthenticated_flood() -> Outcome:
+    """Budgets bound one run. Nothing bounded how many runs a stranger could start.
+
+    `budget_flood` proves a single crew run cannot exceed its allowance. That is a different
+    control from this one: a caller who starts two hundred well-behaved runs spends the day's
+    model quota just as completely, and on a free tier the quota cannot be topped up.
+    """
+    from fastapi.testclient import TestClient
+
+    from api.limits import ASK, MEMOS, READS, limiter
+    from api.main import create_app
+
+    saved = os.environ.get("LLM_PROVIDER")
+    os.environ["LLM_PROVIDER"] = "fake"
+    limiter.reset()
+    try:
+        with TestClient(create_app()) as client:
+            # /ask spends a model request per question and needs no account.
+            ask_codes = [
+                client.post("/ask", json={"question": "What is the net yield in JVC?"}).status_code
+                for _ in range(ASK.burst + 4)
+            ]
+            # The read surface, from one address.
+            limiter.reset()
+            # Overshoot by well more than the bucket refills while the loop runs. At 2 tokens a
+            # second, a burst of 120 plus five requests is inside the noise: the first version of
+            # this attack fired 125 and reported the control broken, when what it had actually
+            # measured was the limiter working as designed.
+            read_codes = [client.get("/areas").status_code for _ in range(READS.burst + 40)]
+
+        ask_stopped = 429 in ask_codes
+        reads_stopped = 429 in read_codes
+        held = ask_stopped and reads_stopped
+        return Outcome(
+            id="",
+            threat="",
+            attack="",
+            held=held,
+            detail=(
+                f"the ask surface cut off after {ask_codes.index(429)} requests and the read "
+                f"surface after {read_codes.index(429)}; sustained traffic below those rates is "
+                "allowed on purpose, since the read data is published"
+                if held
+                else "an unauthenticated caller could keep spending quota without being stopped"
+            ),
+            evidence={
+                "ask_limit": f"{ASK.burst}/{int(ASK.per_seconds)}s",
+                "ask_first_429_at": ask_codes.index(429) if ask_stopped else None,
+                "read_limit": f"{READS.burst}/{int(READS.per_seconds)}s",
+                "read_first_429_at": read_codes.index(429) if reads_stopped else None,
+                "memo_limit": f"{MEMOS.burst}/{int(MEMOS.per_seconds)}s (also behind a login)",
+            },
+        )
+    finally:
+        limiter.reset()
+        if saved is None:
+            os.environ.pop("LLM_PROVIDER", None)
+        else:
+            os.environ["LLM_PROVIDER"] = saved
 
 
 # --------------------------------------------------------------------------------------------

@@ -97,3 +97,54 @@ def test_memory_screen_would_miss_nothing_it_claims_to_catch() -> None:
         entry = memory.remember("s", text)
         assert entry.quarantined, text
     assert memory.recall("s") == []
+
+
+def test_the_rbac_attack_would_catch_the_bug_it_once_missed(monkeypatch) -> None:
+    """The first version of this attack passed while the door stood open.
+
+    It tested malformed role values, confirmed they degraded to viewer, and reported the control
+    held — never trying `X-Yieldmap-Role: analyst`, which the API believed. A green tick on an
+    open door is worse than no test.
+
+    This puts the old behaviour back and asserts the attack now fails, so the attack's value is
+    itself measured rather than assumed.
+    """
+    from typing import Annotated
+
+    from fastapi import Depends, Header
+
+    from api import auth as auth_module
+    from api.auth import ROLE_ORDER, Principal
+
+    def trusting_require(minimum):
+        """The vulnerable version: whatever role the caller sends, believed."""
+
+        def _check(x_yieldmap_role: Annotated[str | None, Header()] = None) -> Principal:
+            role = (x_yieldmap_role or "viewer").strip().lower()
+            role = role if role in ROLE_ORDER else "viewer"
+            return Principal(subject="header", role=role, authenticated=True)
+
+        return Depends(_check)
+
+    import api.deps
+    import api.routes.memos
+
+    monkeypatch.setattr(auth_module, "require", trusting_require)
+    monkeypatch.setattr(api.deps, "require", trusting_require)
+    monkeypatch.setattr(api.routes.memos, "require", trusting_require)
+
+    import importlib
+
+    importlib.reload(api.routes.memos)
+    try:
+        outcome = redteam.ATTACKS["rbac_bypass"]()
+        assert not outcome.held, (
+            "the attack passed against a deliberately vulnerable API, so it is not testing "
+            "anything: it would not notice the header bypass coming back"
+        )
+        claimed = [a["as"] for a in outcome.evidence["attempts"] if a["status"] == 200]
+        assert any("header" in c for c in claimed), claimed
+    finally:
+        # Reload once more with the real dependency restored, so later tests see the fixed app.
+        monkeypatch.undo()
+        importlib.reload(api.routes.memos)

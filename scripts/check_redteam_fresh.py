@@ -11,6 +11,7 @@ from __future__ import annotations
 import json
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -28,16 +29,18 @@ def main() -> int:
 
     published = verdicts(json.loads(PUBLISHED.read_text()))
 
-    result = subprocess.run(  # noqa: S603 - fixed argv, no shell
-        [sys.executable, "-m", "security.redteam", "--out", "/dev/stdout"],
-        cwd=ROOT,
-        capture_output=True,
-        text=True,
-        check=True,
-    )
-    # The harness prints a human summary after the JSON, so take the JSON object off the front.
-    decoder = json.JSONDecoder()
-    fresh = verdicts(decoder.raw_decode(result.stdout.lstrip())[0])
+    # A real file, not /dev/stdout. The API now logs JSON to stdout, and those lines interleave
+    # with the report, so parsing the stream means parsing whichever object arrived first.
+    with tempfile.TemporaryDirectory() as tmp:
+        out = Path(tmp) / "redteam.json"
+        subprocess.run(  # noqa: S603 - fixed argv, no shell
+            [sys.executable, "-m", "security.redteam", "--out", str(out)],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        fresh = verdicts(json.loads(out.read_text()))
 
     if missing := set(fresh) - set(published):
         print(f"attacks not in the published file: {sorted(missing)}")

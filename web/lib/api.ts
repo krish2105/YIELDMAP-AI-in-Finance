@@ -23,18 +23,34 @@ export class ApiError extends Error {
   }
 }
 
-async function request<T>(
-  path: string,
-  { role = "viewer", ...init }: RequestInit & { role?: Role } = {},
-): Promise<T> {
-  const response = await fetch(`${API_BASE}${path}`, {
-    ...init,
-    headers: {
-      "Content-Type": "application/json",
-      "X-Yieldmap-Role": role,
-      ...(init.headers ?? {}),
-    },
-  });
+/**
+ * The bearer token, held in memory for the tab's lifetime.
+ *
+ * Not localStorage: anything written there is readable by any script that reaches this origin, so
+ * a single injected script turns into a stolen session that outlives the tab. A variable is lost
+ * on reload, which is a real cost — the user signs in again — and the right trade for a token that
+ * can start work costing money. A refresh-cookie flow is the fix when this has real accounts.
+ */
+let accessToken: string | null = null;
+
+export function setAccessToken(token: string | null) {
+  accessToken = token;
+}
+
+export function hasAccessToken(): boolean {
+  return accessToken !== null;
+}
+
+async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    ...((init.headers as Record<string, string>) ?? {}),
+  };
+  // The role is never sent. It is a claim inside the token, which only the API can make, and the
+  // interface asking for one used to be the entire access-control system.
+  if (accessToken) headers.Authorization = `Bearer ${accessToken}`;
+
+  const response = await fetch(`${API_BASE}${path}`, { ...init, headers });
 
   if (!response.ok) {
     let detail: unknown;
@@ -55,9 +71,9 @@ async function request<T>(
 }
 
 export const api = {
-  get: <T>(path: string, role?: Role) => request<T>(path, { role }),
-  post: <T>(path: string, body: unknown, role: Role = "analyst") =>
-    request<T>(path, { method: "POST", body: JSON.stringify(body), role }),
+  get: <T>(path: string) => request<T>(path),
+  post: <T>(path: string, body: unknown) =>
+    request<T>(path, { method: "POST", body: JSON.stringify(body) }),
 };
 
 // --- response shapes -------------------------------------------------------

@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { type ReactNode, createContext, useContext, useEffect, useMemo, useState } from "react";
 
 import { type Locale, direction, isLocale, translator } from "@/lib/i18n";
-import type { Role } from "@/lib/api";
+import { type Role, api, setAccessToken } from "@/lib/api";
 
 type Theme = "light" | "dark" | "system";
 
@@ -14,8 +14,11 @@ interface Shell {
   t: (key: string) => string;
   theme: Theme;
   setTheme: (theme: Theme) => void;
+  /** What this browser may do, according to the API — not a preference. */
   role: Role;
-  setRole: (role: Role) => void;
+  authenticated: boolean;
+  signIn: (email: string, password: string) => Promise<void>;
+  signOut: () => void;
 }
 
 const ShellContext = createContext<Shell | null>(null);
@@ -60,7 +63,11 @@ export default function Providers({ children }: { children: ReactNode }) {
 
   const [locale, setLocaleState] = useState<Locale>("en");
   const [theme, setThemeState] = useState<Theme>("system");
+  // Anonymous until the API says otherwise. There is no stored role any more: it used to be
+  // read from localStorage and sent as a header the API believed, which meant the browser
+  // decided its own permissions.
   const [role, setRoleState] = useState<Role>("viewer");
+  const [authenticated, setAuthenticated] = useState(false);
 
   // Read preferences after mount: reading localStorage during render would make the server and
   // the client disagree about the first paint.
@@ -71,9 +78,12 @@ export default function Providers({ children }: { children: ReactNode }) {
     if (savedTheme === "light" || savedTheme === "dark" || savedTheme === "system") {
       setThemeState(savedTheme);
     }
-    const savedRole = stored("yieldmap.role", "viewer");
-    if (savedRole === "viewer" || savedRole === "analyst" || savedRole === "admin") {
-      setRoleState(savedRole);
+    // A role left over from the version that trusted the browser. Removed rather than read, so
+    // an old tab does not carry a stale idea of what it may do.
+    try {
+      window.localStorage.removeItem("yieldmap.role");
+    } catch {
+      // A browser with storage disabled has nothing to clear.
     }
   }, []);
 
@@ -103,12 +113,26 @@ export default function Providers({ children }: { children: ReactNode }) {
         remember("yieldmap.theme", next);
       },
       role,
-      setRole: (next) => {
-        setRoleState(next);
-        remember("yieldmap.role", next);
+      authenticated,
+      signIn: async (email, password) => {
+        const issued = await api.post<{ access_token: string; role: Role }>("/auth/token", {
+          email,
+          password,
+        });
+        setAccessToken(issued.access_token);
+        setRoleState(issued.role);
+        setAuthenticated(true);
+        // Anything already fetched was fetched as an anonymous viewer.
+        await client.invalidateQueries();
+      },
+      signOut: () => {
+        setAccessToken(null);
+        setRoleState("viewer");
+        setAuthenticated(false);
+        void client.invalidateQueries();
       },
     }),
-    [locale, theme, role],
+    [locale, theme, role, authenticated, client],
   );
 
   return (

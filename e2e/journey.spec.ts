@@ -106,8 +106,15 @@ test.describe("the journey", () => {
     // Writing a memo needs the analyst role, and the interface says so rather than failing.
     await expect(page.getByText(/needs the analyst role/i)).toBeVisible();
 
+    // A real sign-in, because there is no longer any other kind. Choosing a role from a dropdown
+    // used to grant it; now the browser can only ask, and the API decides.
     await openNav(page);
-    await page.getByLabel("Role").selectOption("analyst");
+    await page.getByRole("button", { name: /sign in to write memos/i }).click();
+    await page.getByLabel("Email").fill("analyst@yieldmap.test");
+    await page.getByLabel("Password").fill("e2e-analyst-password");
+    await page.getByRole("button", { name: /^sign in$/i }).click();
+    await expect(page.getByText(/signed in as/i)).toBeVisible({ timeout: 15_000 });
+
     await page.getByLabel("Community").selectOption({ index: 1 });
     await page.getByRole("button", { name: /run the crew/i }).click();
 
@@ -178,6 +185,31 @@ test.describe("things that must always hold", () => {
         () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
       );
       expect(overflow, `${path} overflows horizontally by ${overflow}px`).toBeLessThanOrEqual(2);
+    }
+  });
+});
+
+test.describe("the browser cannot grant itself permission", () => {
+  test("a memo cannot be written without signing in", async ({ request }) => {
+    // Straight at the API, past the interface entirely — which is how the old hole was reachable.
+    for (const headers of [
+      {},
+      { "X-Yieldmap-Role": "analyst" },
+      { "X-Yieldmap-Role": "admin" },
+      { Authorization: "Bearer not-a-real-token" },
+    ]) {
+      const response = await request.post("/api/memos", {
+        headers,
+        data: { area_key: "dubai-marina" },
+      });
+      expect(response.status(), `headers ${JSON.stringify(headers)} reached the write endpoint`)
+        .toBe(401);
+    }
+  });
+
+  test("reading needs no account", async ({ request }) => {
+    for (const path of ["/api/areas", "/api/market", "/api/health"]) {
+      expect((await request.get(path)).status()).toBe(200);
     }
   });
 });

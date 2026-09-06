@@ -88,10 +88,26 @@ THREATS: list[Threat] = [
             "quota, and quota is the one budget this project cannot buy more of."
         ),
         control=(
-            "Three independent budgets — requests, seconds and steps — checked before every step. "
-            "Exceeding one ends the run as `over_budget`, a recorded outcome rather than a crash."
+            "Two controls, because they fail differently. Three budgets — requests, seconds and "
+            "steps — bound a single run. Rate limits bound how many runs a caller can start: a "
+            "stranger who begins two hundred well-behaved runs spends the day's quota just as "
+            "completely as one runaway loop."
         ),
         attack_id="budget_flood",
+    ),
+    Threat(
+        id="ASI04b",
+        name="Resource overload by volume",
+        surface=(
+            "Before authentication existed, `/memos` was an unauthenticated stranger's button for "
+            "running an agent crew, and `/ask` still needs no account by design."
+        ),
+        control=(
+            "A token bucket per caller: generous on reads, tight on `/ask`, tighter on `/memos`, "
+            "which additionally requires an analyst credential. Buckets are per process, which is "
+            "exact on one instance and would need a shared counter on two."
+        ),
+        attack_id="unauthenticated_flood",
     ),
     Threat(
         id="ASI05",

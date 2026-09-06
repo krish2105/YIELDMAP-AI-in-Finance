@@ -18,12 +18,15 @@ from pydantic import BaseModel, Field
 from agents.budget import Budget
 from agents.export import to_docx, to_html, to_markdown
 from agents.runtime import run_crew
-from agents.store import MemoStore, StoredMemo, new_id
+from agents.store import StoredMemo, build_store, new_id
 from api.deps import WarehouseDep, db_path, require
+from api.limits import MEMOS, limit
 
 router = APIRouter(tags=["memos"])
 
-_store = MemoStore()
+# Built once at import: which implementation depends on DATABASE_URL, and a bad DSN
+# should stop the service rather than surface as a lost memo an hour later.
+_store = build_store()
 
 
 class MemoRequest(BaseModel):
@@ -59,7 +62,7 @@ def _run_and_store(req: MemoRequest) -> StoredMemo:
     return _store.save(memo)
 
 
-@router.post("/memos", dependencies=[require("analyst")])
+@router.post("/memos", dependencies=[require("analyst"), limit("memos", MEMOS)])
 def create_memo(req: MemoRequest, wh: WarehouseDep) -> dict[str, Any]:
     """Run the crew over an area and store the memo it produces.
 
@@ -163,7 +166,7 @@ def _events(req: MemoRequest):
     )
 
 
-@router.post("/runs/stream", dependencies=[require("analyst")])
+@router.post("/runs/stream", dependencies=[require("analyst"), limit("memos", MEMOS)])
 async def stream_run(req: MemoRequest) -> StreamingResponse:
     """Run the crew and stream its progress."""
 

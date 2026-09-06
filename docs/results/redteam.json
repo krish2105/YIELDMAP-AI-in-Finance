@@ -1,9 +1,9 @@
 {
   "provenance": "REAL",
-  "generated_at": "2026-09-06T18:01:06+00:00",
+  "generated_at": "2026-09-06T19:27:16+00:00",
   "note": "Red-team outcomes are measurements of this code, not of the data it reads, so they are REAL whatever the warehouse holds.",
-  "attacks_run": 10,
-  "controls_held": 10,
+  "attacks_run": 11,
+  "controls_held": 11,
   "controls_failed": 0,
   "outcomes": [
     {
@@ -52,14 +52,14 @@
           "requests_limit": 1,
           "steps_used": 1,
           "steps_limit": 1,
-          "seconds_used": 0.32,
+          "seconds_used": 0.24,
           "seconds_limit": 30,
           "killed": false,
           "kill_reason": null,
           "remaining": {
             "requests": 1,
             "steps": 0,
-            "seconds": 29.679269166001177
+            "seconds": 29.757931043999633
           }
         },
         "killed_status": "killed",
@@ -108,9 +108,9 @@
       "threat": "ASI-N1",
       "attack": "search every API route for a path segment that could place a transaction",
       "held": true,
-      "detail": "none of the 10 routes has a transaction verb as a path segment",
+      "detail": "none of the 11 routes has a transaction verb as a path segment",
       "evidence": {
-        "routes": 10,
+        "routes": 11,
         "offenders": []
       }
     },
@@ -146,29 +146,41 @@
     {
       "id": "rbac_bypass",
       "threat": "ASI03",
-      "attack": "reach a writing endpoint as a viewer, and escalate by sending an unrecognised role",
+      "attack": "reach the writing endpoint by claiming a role, forging a token, and replaying an expired one",
       "held": true,
-      "detail": "every under-privileged and malformed role was refused with 403",
+      "detail": "all 7 unauthenticated attempts were refused, and a real credential was accepted",
       "evidence": {
         "attempts": [
           {
-            "as": "no role header",
-            "status": 403
+            "as": "claiming analyst in a header",
+            "status": 401
           },
           {
-            "as": "viewer",
-            "status": 403
+            "as": "claiming admin in a header",
+            "status": 401
           },
           {
-            "as": "unknown role",
-            "status": 403
+            "as": "no credential",
+            "status": 401
           },
           {
-            "as": "injected role",
-            "status": 403
+            "as": "a bearer token that is not one",
+            "status": 401
           },
           {
-            "as": "cased admin",
+            "as": "an empty bearer",
+            "status": 401
+          },
+          {
+            "as": "a token signed with another key",
+            "status": 401
+          },
+          {
+            "as": "an expired token",
+            "status": 401
+          },
+          {
+            "as": "a real credential (control)",
             "status": 200
           }
         ]
@@ -186,6 +198,20 @@
         "broken": [
           0
         ]
+      }
+    },
+    {
+      "id": "unauthenticated_flood",
+      "threat": "ASI04",
+      "attack": "hammer the endpoints that spend model quota, without an account, and see if anything stops it",
+      "held": true,
+      "detail": "the ask surface cut off after 12 requests and the read surface after 125; sustained traffic below those rates is allowed on purpose, since the read data is published",
+      "evidence": {
+        "ask_limit": "12/60s",
+        "ask_first_429_at": 12,
+        "read_limit": "120/60s",
+        "read_first_429_at": 125,
+        "memo_limit": "6/3600s (also behind a login)"
       }
     },
     {
@@ -229,8 +255,16 @@
       "id": "ASI04",
       "name": "Resource overload",
       "surface": "A crew run makes model requests in a loop. An input that makes the loop longer costs quota, and quota is the one budget this project cannot buy more of.",
-      "control": "Three independent budgets \u2014 requests, seconds and steps \u2014 checked before every step. Exceeding one ends the run as `over_budget`, a recorded outcome rather than a crash.",
+      "control": "Two controls, because they fail differently. Three budgets \u2014 requests, seconds and steps \u2014 bound a single run. Rate limits bound how many runs a caller can start: a stranger who begins two hundred well-behaved runs spends the day's quota just as completely as one runaway loop.",
       "attack_id": "budget_flood",
+      "status": "tested"
+    },
+    {
+      "id": "ASI04b",
+      "name": "Resource overload by volume",
+      "surface": "Before authentication existed, `/memos` was an unauthenticated stranger's button for running an agent crew, and `/ask` still needs no account by design.",
+      "control": "A token bucket per caller: generous on reads, tight on `/ask`, tighter on `/memos`, which additionally requires an analyst credential. Buckets are per process, which is exact on one instance and would need a shared counter on two.",
+      "attack_id": "unauthenticated_flood",
       "status": "tested"
     },
     {

@@ -8,6 +8,7 @@ worse than no export, because it looks authoritative and is no longer checkable.
 from __future__ import annotations
 
 import io
+import os
 import zipfile
 
 import pytest
@@ -17,12 +18,61 @@ from agents.export import to_docx, to_html, to_markdown
 from agents.store import MemoStore, StoredMemo, new_id
 from api.main import create_app
 
-ANALYST = {"X-Yieldmap-Role": "analyst"}
+PASSWORD = "memo-test-password"
+EMAIL = "analyst@yieldmap.test"
+VIEWER_EMAIL = "viewer@yieldmap.test"
 
 
 @pytest.fixture(scope="module")
-def client() -> TestClient:
+def _account():
+    """One analyst account, for the whole module."""
+    from api import auth
+
+    previous = {k: os.environ.get(k) for k in ("AUTH_SECRET", "YIELDMAP_USERS")}
+    os.environ["AUTH_SECRET"] = "memo-test-signing-key"
+    os.environ["YIELDMAP_USERS"] = (
+        f"{EMAIL}:analyst:{auth.hash_password(PASSWORD)};"
+        f"{VIEWER_EMAIL}:viewer:{auth.hash_password(PASSWORD)}"
+    )
+    yield
+    for key, value in previous.items():
+        if value is None:
+            os.environ.pop(key, None)
+        else:
+            os.environ[key] = value
+
+
+@pytest.fixture(scope="module")
+def client(_account) -> TestClient:
     return TestClient(create_app())
+
+
+@pytest.fixture(scope="module")
+def ANALYST(client) -> dict[str, str]:
+    """A real bearer token. The role is no longer something a header can assert."""
+    token = client.post("/auth/token", json={"email": EMAIL, "password": PASSWORD}).json()[
+        "access_token"
+    ]
+    return {"Authorization": f"Bearer {token}"}
+
+
+@pytest.fixture(scope="module")
+def VIEWER(client) -> dict[str, str]:
+    """A real token for an account that is only a viewer."""
+    token = client.post("/auth/token", json={"email": VIEWER_EMAIL, "password": PASSWORD}).json()[
+        "access_token"
+    ]
+    return {"Authorization": f"Bearer {token}"}
+
+
+@pytest.fixture(autouse=True)
+def _fresh_limits():
+    """Writes are rate limited to six an hour, and this module makes more than six."""
+    from api.limits import limiter
+
+    limiter.reset()
+    yield
+    limiter.reset()
 
 
 def a_memo(**over) -> dict:
@@ -187,20 +237,28 @@ class TestExport:
 
 
 class TestEndpoints:
-    def test_a_viewer_cannot_create_a_memo(self, client):
+    def test_nobody_can_create_a_memo_without_signing_in(self, client):
         """The only write in the API, and the only thing that spends a budget."""
         r = client.post("/memos", json={"area_key": "marsa dubai"})
+        # 401, not 403: there is nobody here to refuse. The two say different things to a reader —
+        # sign in, versus this account may not do that — and the interface shows the difference.
+        assert r.status_code == 401
+        assert "sign in" in r.json()["detail"]
+
+    def test_a_signed_in_viewer_is_still_refused(self, client, VIEWER):
+        """A real credential for an account that is not an analyst. This is the role check."""
+        r = client.post("/memos", json={"area_key": "marsa dubai"}, headers=VIEWER)
         assert r.status_code == 403
         assert "analyst" in r.json()["detail"]
 
-    def test_an_analyst_can_create_a_memo(self, client):
+    def test_an_analyst_can_create_a_memo(self, client, ANALYST):
         r = client.post("/memos", json={"area_key": "marsa dubai"}, headers=ANALYST)
         assert r.status_code == 200
         body = r.json()
         assert body["citation_coverage"] == 1.0
         assert body["memo_md"]
 
-    def test_a_created_memo_can_be_read_back(self, client):
+    def test_a_created_memo_can_be_read_back(self, client, ANALYST):
         memo_id = client.post("/memos", json={"area_key": "business bay"}, headers=ANALYST).json()[
             "id"
         ]
@@ -209,7 +267,7 @@ class TestEndpoints:
     def test_an_unknown_memo_is_a_clear_404(self, client):
         assert client.get("/memos/abc123abc123").status_code == 404
 
-    def test_memos_can_be_listed(self, client):
+    def test_memos_can_be_listed(self, client, ANALYST):
         client.post("/memos", json={"area_key": "marsa dubai"}, headers=ANALYST)
         body = client.get("/memos").json()
         assert body["count"] >= 1
@@ -219,7 +277,7 @@ class TestEndpoints:
         ("fmt", "media"),
         [("md", "text/markdown"), ("html", "text/html"), ("docx", "application/vnd.openxml")],
     )
-    def test_every_export_format_works(self, client, fmt, media):
+    def test_every_export_format_works(self, client, ANALYST, fmt, media):
         memo_id = client.post("/memos", json={"area_key": "marsa dubai"}, headers=ANALYST).json()[
             "id"
         ]
@@ -229,13 +287,13 @@ class TestEndpoints:
         assert "attachment" in r.headers["content-disposition"]
         assert len(r.content) > 500
 
-    def test_an_unknown_export_format_is_refused(self, client):
+    def test_an_unknown_export_format_is_refused(self, client, ANALYST):
         memo_id = client.post("/memos", json={"area_key": "marsa dubai"}, headers=ANALYST).json()[
             "id"
         ]
         assert client.get(f"/memos/{memo_id}/export", params={"fmt": "pdf"}).status_code == 422
 
-    def test_a_run_can_be_streamed(self, client):
+    def test_a_run_can_be_streamed(self, client, ANALYST):
         with client.stream(
             "POST", "/runs/stream", json={"area_key": "marsa dubai"}, headers=ANALYST
         ) as response:
@@ -250,10 +308,16 @@ class TestEndpoints:
         assert events[-1] == "done"
         assert "finding" in events
 
-    def test_streaming_also_requires_the_analyst_role(self, client):
-        assert client.post("/runs/stream", json={"area_key": "marsa dubai"}).status_code == 403
+    def test_streaming_also_requires_the_analyst_role(self, client, VIEWER):
+        assert client.post("/runs/stream", json={"area_key": "marsa dubai"}).status_code == 401
+        assert (
+            client.post(
+                "/runs/stream", json={"area_key": "marsa dubai"}, headers=VIEWER
+            ).status_code
+            == 403
+        )
 
-    def test_an_absurd_budget_is_refused_by_the_schema(self, client):
+    def test_an_absurd_budget_is_refused_by_the_schema(self, client, ANALYST):
         r = client.post(
             "/memos", json={"area_key": "marsa dubai", "max_requests": 100_000}, headers=ANALYST
         )

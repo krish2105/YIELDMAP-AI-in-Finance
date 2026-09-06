@@ -63,7 +63,7 @@ export default function MemosPage() {
   });
 
   const create = useMutation({
-    mutationFn: (areaKey: string) => api.post<MemoDetail>("/memos", { area_key: areaKey }, "analyst"),
+    mutationFn: (areaKey: string) => api.post<MemoDetail>("/memos", { area_key: areaKey }),
     onSuccess: (memo) => {
       setOpenId(memo.id);
       client.invalidateQueries({ queryKey: ["memos"] });
@@ -87,9 +87,9 @@ export default function MemosPage() {
         <Card>
           {!canWrite ? (
             <p className="text-sm text-ink-secondary">
-              Writing a memo needs the analyst role. It is the only endpoint in the application that
-              writes anything, and the only one that spends a model budget. Change your role in the
-              sidebar to try it.
+              Writing a memo needs the analyst role. It is the only endpoint in the application
+              that writes anything, and the only one that spends a model budget, so it is the only
+              one behind a sign-in. Sign in from the sidebar to try it.
             </p>
           ) : (
             <div className="flex flex-wrap items-end gap-3">

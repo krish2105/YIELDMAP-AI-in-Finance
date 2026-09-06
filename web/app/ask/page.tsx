@@ -54,7 +54,7 @@ export default function AskPage() {
   });
 
   const ask = useMutation({
-    mutationFn: (q: string) => api.post<AskAnswer>("/ask", { question: q }, "viewer"),
+    mutationFn: (q: string) => api.post<AskAnswer>("/ask", { question: q }),
   });
 
   const submit = (q: string) => {
