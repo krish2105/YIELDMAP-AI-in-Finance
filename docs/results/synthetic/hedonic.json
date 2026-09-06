@@ -1,0 +1,82 @@
+{
+  "generated_at": "2026-09-06T15:58:39+00:00",
+  "provenance": "SYNTHETIC",
+  "method_id": "hedonic_v1",
+  "target": "log price per square metre, back-transformed with Duan smearing",
+  "holdout": "most recent 12 months, split by time rather than at random",
+  "features": [
+    "area_key",
+    "property_type",
+    "rooms",
+    "area_sqm",
+    "is_offplan",
+    "month_index"
+  ],
+  "smearing_factor": 1.0283907861398431,
+  "sql": "select ts, area_key, property_type, rooms, area_sqm, is_offplan, price_aed, price_per_sqm from transactions where price_per_sqm is not null and area_sqm is not null and price_aed is not null order by ts",
+  "metrics": {
+    "n_train": 110407,
+    "n_test": 9939,
+    "train_period": [
+      "2014-01-01",
+      "2024-12-31"
+    ],
+    "test_period": [
+      "2025-01-01",
+      "2025-12-30"
+    ],
+    "train": {
+      "mae_ppsqm": 3793.007608634689,
+      "mape": 0.19060032025418866,
+      "median_ape": 0.14949733471560037,
+      "rmse_ppsqm": 5944.332652387239,
+      "bias": 0.057890269253257846
+    },
+    "test": {
+      "mae_ppsqm": 6212.426884623532,
+      "mape": 0.18880359528657534,
+      "median_ape": 0.16159383943760533,
+      "rmse_ppsqm": 9435.686469911525,
+      "bias": -0.05444748365154372
+    },
+    "baseline": {
+      "method": "median price per sqm for the same area, type and bedroom count",
+      "mape": 0.36389371967980183,
+      "mae_ppsqm": 11831.306136343394
+    },
+    "skill_vs_baseline": 0.4811573130398958,
+    "estimated_noise_floor_mape": 0.19374696729711754,
+    "importance": [
+      {
+        "feature": "area_key",
+        "importance": 0.27082759001420753,
+        "std": 0.002546339496865366
+      },
+      {
+        "feature": "property_type",
+        "importance": 0.09212479322764662,
+        "std": 0.0017723289213625502
+      },
+      {
+        "feature": "rooms",
+        "importance": 8.184094746027659e-06,
+        "std": 1.046224471614743e-05
+      },
+      {
+        "feature": "is_offplan",
+        "importance": 8.496004586633355e-07,
+        "std": 2.51718415918357e-06
+      },
+      {
+        "feature": "month_index",
+        "importance": 0.0,
+        "std": 0.0
+      },
+      {
+        "feature": "area_sqm",
+        "importance": -6.795688433488544e-05,
+        "std": 3.7018677213907636e-05
+      }
+    ]
+  }
+}
