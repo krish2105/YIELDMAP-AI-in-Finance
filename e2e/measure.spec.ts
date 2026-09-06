@@ -23,6 +23,34 @@ function record(name: string, body: Record<string, unknown>) {
 }
 
 /**
+ * Wait until the page has stopped moving.
+ *
+ * The shell wraps page content in a Motion fade, and the server-rendered HTML ships with
+ * `opacity: 0` on that wrapper — so the settled colours only exist once the entrance animation
+ * has finished. Playwright's `toBeVisible()` does not consider opacity, so an axe run started
+ * right after the heading appears can measure text that is still fading in, and a colour part way
+ * to the background fails contrast: `--ink-muted` is 5.44:1 when settled and already 4.36:1 at
+ * 90% opacity. That produced intermittent "serious" violations naming different pages on each
+ * run — which is exactly what a race looks like, and is not a finding about the delivered UI.
+ *
+ * So this waits for every running animation to finish and for the wrapper to reach full opacity
+ * before anything is measured. It asserts settledness rather than assuming it: a page that never
+ * settles fails here, loudly, instead of producing a contrast number that depends on timing.
+ */
+async function settled(page: Page): Promise<void> {
+  await page.waitForFunction(
+    () => {
+      const running = document.getAnimations().some((a) => a.playState === "running");
+      if (running) return false;
+      const wrapper = document.querySelector("main > div");
+      return !wrapper || Number(getComputedStyle(wrapper).opacity) >= 1;
+    },
+    undefined,
+    { timeout: 15_000 },
+  );
+}
+
+/**
  * Frames rendered per second, counted in the page over a fixed window.
  *
  * `requestAnimationFrame` rather than a Playwright trace: the browser only calls it when it
@@ -99,12 +127,19 @@ test.describe("measured, not claimed", () => {
   });
 
   test("no page has a serious accessibility violation", async ({ page }, testInfo) => {
+    // Reduced motion, because the audit is about the colours a reader ends up looking at, not
+    // about the frames on the way there — and because it is the state a good number of real
+    // people browse in. `settled()` below still waits, so this is belt and braces rather than a
+    // way of avoiding the wait.
+    await page.emulateMedia({ reducedMotion: "reduce" });
+
     const paths = ["/", "/areas", "/screener", "/simulate", "/ask", "/memos", "/security"];
     const findings: Record<string, unknown>[] = [];
 
     for (const path of paths) {
       await page.goto(path);
       await expect(page.getByRole("heading", { level: 1 })).toBeVisible({ timeout: 30_000 });
+      await settled(page);
       const results = await new AxeBuilder({ page })
         .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
         .analyze();
@@ -129,9 +164,11 @@ test.describe("measured, not claimed", () => {
     record(`accessibility_${testInfo.project.name}.json`, {
       provenance: "REAL",
       note:
-        "axe-core against WCAG 2.1 A and AA on seven representative pages. Automated checks find " +
+        "axe-core against WCAG 2.1 A and AA on seven representative pages, measured after the " +
+        "entrance animation has settled and with reduced motion emulated. Automated checks find " +
         "roughly a third of real accessibility problems; passing here is a floor, not a claim of " +
         "compliance.",
+      measured_when: "after animations settle, prefers-reduced-motion: reduce",
       project: testInfo.project.name,
       pages: paths.length,
       standard: "WCAG 2.1 A + AA",
