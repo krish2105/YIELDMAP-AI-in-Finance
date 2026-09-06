@@ -1,0 +1,40 @@
+{
+  "generated_at": "2026-09-06T15:44:03+00:00",
+  "provenance": "SYNTHETIC",
+  "tables": {
+    "transactions": {
+      "source": "transactions.csv",
+      "rows_in": 120346,
+      "rows_out": 120346,
+      "unmapped_columns": [],
+      "missing_optional": [
+        "area_name_ar",
+        "master_project",
+        "property_usage",
+        "nearest_metro",
+        "nearest_landmark",
+        "nearest_mall"
+      ]
+    },
+    "rent_contracts": {
+      "source": "rent_contracts.csv",
+      "rows_in": 90000,
+      "rows_out": 90000,
+      "unmapped_columns": [],
+      "missing_optional": [
+        "usage"
+      ]
+    }
+  },
+  "counts": {
+    "transactions": 120346,
+    "rent_contracts": 90000
+  },
+  "area_coverage": {
+    "areas_in_data": 86,
+    "areas_with_centroid": 86,
+    "coverage": 1.0,
+    "missing_centroid": [],
+    "n_missing_centroid": 0
+  }
+}

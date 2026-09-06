@@ -1,0 +1,61 @@
+{
+  "generated_at": "2026-09-06T15:44:03+00:00",
+  "provenance": "SYNTHETIC",
+  "warning": "Generated data. Structure is plausible so the models can be exercised; the levels are invented and are not claims about the Dubai market. Never cite a number derived from this as a fact about Dubai.",
+  "seed": 217,
+  "params": {
+    "start_year": 2014,
+    "end_year": 2025,
+    "base_ppsqm_range": [
+      7500,
+      34000
+    ],
+    "annual_drift_by_year": {
+      "2014": 0.04,
+      "2015": -0.03,
+      "2016": -0.05,
+      "2017": -0.04,
+      "2018": -0.06,
+      "2019": -0.05,
+      "2020": -0.09,
+      "2021": 0.1,
+      "2022": 0.16,
+      "2023": 0.18,
+      "2024": 0.2,
+      "2025": 0.12
+    },
+    "seasonality_amplitude": 0.03,
+    "lognormal_sigma": 0.22,
+    "offplan_share_range": [
+      0.15,
+      0.62
+    ],
+    "gross_yield_range": [
+      0.045,
+      0.095
+    ],
+    "property_type_mix": {
+      "unit": 0.78,
+      "villa": 0.13,
+      "land": 0.05,
+      "building": 0.04
+    },
+    "rooms_mix": {
+      "0": 0.16,
+      "1": 0.34,
+      "2": 0.28,
+      "3": 0.15,
+      "4": 0.05,
+      "5": 0.02
+    },
+    "anomaly_rate": 0.004,
+    "rapid_flip_rate": 0.003
+  },
+  "n_transactions": 120346,
+  "n_rent_contracts": 90000,
+  "n_areas": 86,
+  "planted": {
+    "price_outliers": 461,
+    "rapid_flips": 346
+  }
+}
