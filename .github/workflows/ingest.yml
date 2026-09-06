@@ -99,7 +99,13 @@ jobs:
               print("No browser discovery report.")
               raise SystemExit
           r = json.loads(p.read_text())
-          print(f"{r['n_data_links']} data links, {r['n_api_requests']} api/data requests.\n")
+          print(f"{r['n_data_links']} data links, {r['n_api_requests']} api/data requests, "
+                f"{r.get('n_endpoints', 0)} endpoints harvested from the page's own scripts.\n")
+          if r.get("endpoints"):
+              print("### Endpoints found in the page scripts\n")
+              for e in r["endpoints"][:60]:
+                  print(f"- `{e['url']}`")
+              print()
           for page in r["pages"]:
               print(f"### {page['url']}")
               if page.get("error"):

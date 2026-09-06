@@ -33,6 +33,7 @@ from etl.canon import (
     PROPERTY_TYPES,
     ROOM_WORDS,
 )
+from etl.results import result_path
 from etl.schema import (
     RENT_ALIASES,
     TRANSACTION_ALIASES,
@@ -328,8 +329,14 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--db", type=Path, default=DEFAULT_DB)
     parser.add_argument("--areas", type=Path, default=ROOT / "data" / "areas.csv")
     parser.add_argument("--provenance", choices=["REAL", "SYNTHETIC"], default="REAL")
-    parser.add_argument("--out", type=Path, default=ROOT / "docs" / "results" / "clean.json")
+    parser.add_argument(
+        "--out",
+        type=Path,
+        default=None,
+        help="defaults to docs/results/clean.json, or docs/results/synthetic/ when generated",
+    )
     args = parser.parse_args(argv)
+    out = args.out or result_path("clean.json", args.provenance)
 
     report: dict[str, Any] = {"generated_at": _now(), "provenance": args.provenance, "tables": {}}
     tables: dict[str, pl.DataFrame] = {}
@@ -381,9 +388,9 @@ def main(argv: list[str] | None = None) -> int:
             args.areas, tables["transactions"]["area_key"].to_list()
         )
 
-    args.out.parent.mkdir(parents=True, exist_ok=True)
-    args.out.write_text(json.dumps(report, indent=2, ensure_ascii=False, default=str))
-    print(f"wrote {args.db} and {args.out}")
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(report, indent=2, ensure_ascii=False, default=str))
+    print(f"wrote {args.db} and {out}")
     return 0
 
 

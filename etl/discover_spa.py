@@ -12,6 +12,7 @@ Runs on a GitHub Actions runner, where Chromium and open egress are both availab
 from __future__ import annotations
 
 import argparse
+import contextlib
 import json
 import re
 from datetime import UTC, datetime
@@ -45,11 +46,18 @@ def discover_spa(urls: list[str], *, timeout_ms: int = 45_000) -> dict[str, Any]
             def on_request(req, record=record):
                 if DATA_LIKE.search(req.url) or API_LIKE.search(req.url):
                     record["requests"].append({"method": req.method, "url": req.url})
+                if req.url.endswith(".js") and _same_origin(req.url, record["url"]):
+                    record.setdefault("scripts", []).append(req.url)
 
             page.on("request", on_request)
             try:
-                page.goto(url, wait_until="networkidle", timeout=timeout_ms)
-                page.wait_for_timeout(3_000)
+                # Not networkidle: an accessibility widget on this site polls forever, so the
+                # page never goes idle and a networkidle wait times out having captured nothing.
+                page.goto(url, wait_until="domcontentloaded", timeout=timeout_ms)
+                # A chatty page is not a failed page.
+                with contextlib.suppress(Exception):
+                    page.wait_for_load_state("networkidle", timeout=15_000)
+                page.wait_for_timeout(4_000)
                 record["title"] = page.title()
                 record["links"] = page.eval_on_selector_all(
                     "a[href]",
@@ -74,13 +82,75 @@ def discover_spa(urls: list[str], *, timeout_ms: int = 45_000) -> dict[str, Any]
             pages.append(record)
         browser.close()
 
+    # The client-side API module is a better ingest path than any button the page draws, so read
+    # the scripts the page loaded and pull the endpoints out of them.
+    endpoints = harvest_endpoints(pages)
+
     return {
         "generated_at": datetime.now(UTC).isoformat(timespec="seconds"),
         "n_pages": len(pages),
+        "endpoints": endpoints,
+        "n_endpoints": len(endpoints),
         "n_data_links": sum(len(p["data_links"]) for p in pages),
         "n_api_requests": sum(len(p["requests"]) for p in pages),
         "pages": pages,
     }
+
+
+def _same_origin(url: str, other: str) -> bool:
+    from urllib.parse import urlsplit
+
+    return urlsplit(url).netloc == urlsplit(other).netloc
+
+
+# Paths a front end uses to reach data, as they appear in a bundled script.
+ENDPOINT_LITERAL = re.compile(
+    r"""["'`](/(?:[A-Za-z0-9_\-./]*?)(?:api|Api|API|opendata|OpenData|service|Service|data|Data)"""
+    r"""[A-Za-z0-9_\-./]*)["'`]"""
+)
+ABSOLUTE_ENDPOINT = re.compile(
+    r"""["'`](https?://[A-Za-z0-9_.\-]+/[A-Za-z0-9_\-./]*(?:api|Api|API|odata)[A-Za-z0-9_\-./]*)["'`]"""
+)
+
+
+def harvest_endpoints(pages: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Fetch the scripts a page loaded and pull the data endpoints out of them."""
+    import httpx
+
+    from etl.download import USER_AGENT
+
+    seen_scripts: dict[str, str] = {}
+    with httpx.Client(
+        timeout=httpx.Timeout(30.0, connect=15.0),
+        follow_redirects=True,
+        headers={"User-Agent": USER_AGENT},
+    ) as client:
+        for page in pages:
+            for src in dict.fromkeys(page.get("scripts", [])):
+                if src in seen_scripts:
+                    continue
+                try:
+                    resp = client.get(src)
+                    resp.raise_for_status()
+                    seen_scripts[src] = resp.text
+                    print(f"  read {src} ({len(resp.text):,} bytes)", flush=True)
+                except Exception as exc:  # noqa: BLE001
+                    print(f"  could not read {src}: {type(exc).__name__}", flush=True)
+
+    found: dict[str, dict[str, Any]] = {}
+    for src, body in seen_scripts.items():
+        from urllib.parse import urljoin, urlsplit
+
+        origin = f"{urlsplit(src).scheme}://{urlsplit(src).netloc}"
+        for match in ENDPOINT_LITERAL.finditer(body):
+            path = match.group(1)
+            full = urljoin(origin, path)
+            found.setdefault(full, {"url": full, "path": path, "found_in": src})
+        for match in ABSOLUTE_ENDPOINT.finditer(body):
+            full = match.group(1)
+            found.setdefault(full, {"url": full, "path": full, "found_in": src})
+
+    return sorted(found.values(), key=lambda e: e["url"])
 
 
 DEFAULT_URLS = [

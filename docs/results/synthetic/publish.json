@@ -1,0 +1,25 @@
+{
+  "generated_at": "2026-09-06T15:49:18+00:00",
+  "db": "/home/user/YIELDMAP-AI-in-Finance/data/yieldmap.duckdb",
+  "areas": 86,
+  "areas_with_location": 86,
+  "freshness": [
+    {
+      "table_name": "transactions",
+      "rows": 120346,
+      "as_of": "2025-12-30",
+      "provenance": "SYNTHETIC",
+      "source_sha256": null,
+      "refreshed_at": "2026-09-06T15:49:18+00:00"
+    },
+    {
+      "table_name": "rent_contracts",
+      "rows": 90000,
+      "as_of": "2025-12-30",
+      "provenance": "SYNTHETIC",
+      "source_sha256": null,
+      "refreshed_at": "2026-09-06T15:49:18+00:00"
+    }
+  ],
+  "provenance": "SYNTHETIC"
+}

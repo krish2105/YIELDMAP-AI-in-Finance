@@ -31,6 +31,8 @@ from typing import Any
 
 import polars as pl
 
+from etl.results import result_path
+
 ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_SEED = 217  # the course code, so the seed is memorable and stated in the report
 
@@ -268,8 +270,7 @@ def main(argv: list[str] | None = None) -> int:
     rent.write_csv(args.out / "rent_contracts.csv")
     (args.out / "SYNTHETIC").write_text(meta["warning"] + "\n")
 
-    results = ROOT / "docs" / "results" / "synthetic_params.json"
-    results.parent.mkdir(parents=True, exist_ok=True)
+    results = result_path("synthetic_params.json", "SYNTHETIC")
     results.write_text(json.dumps(meta, indent=2))
     print(f"generated {tx.height:,} transactions and {rent.height:,} rent contracts (SYNTHETIC)")
     print(f"planted: {meta['planted']}")
