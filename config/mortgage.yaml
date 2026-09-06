@@ -1,0 +1,117 @@
+# UAE mortgage parameters.
+#
+# Every field carries its source and a verification status. Nothing here is presented as fact
+# until a primary source has been archived against it, because lending caps change and a stale
+# number in an affordability calculator is worse than no calculator.
+#
+# status:
+#   verified   — checked against the archived primary source on `verified_on`
+#   unverified — widely reported figure awaiting a primary source; shown in the interface as an
+#                editable assumption, never as a rule
+#
+# The ingest job archives the Central Bank and DLD sources it can reach and flips these to
+# verified. As of the last run, centralbank.ae returned 403 to an automated client, so the
+# lending caps below remain unverified and are labelled as such wherever they are shown.
+
+version: 1
+
+ltv_caps:
+  description: >
+    Maximum loan as a fraction of property value, by buyer status and price band. Dubai's caps
+    are set by the UAE Central Bank's mortgage regulations.
+  status: unverified
+  source: UAE Central Bank mortgage loan regulations
+  source_url: https://www.centralbank.ae/en/our-operations/banking-supervision/regulations/
+  verified_on: null
+  bands:
+    - buyer: expatriate
+      first_property: true
+      max_price_aed: 5000000
+      max_ltv: 0.80
+    - buyer: expatriate
+      first_property: true
+      max_price_aed: null
+      max_ltv: 0.70
+    - buyer: expatriate
+      first_property: false
+      max_price_aed: null
+      max_ltv: 0.60
+    - buyer: national
+      first_property: true
+      max_price_aed: 5000000
+      max_ltv: 0.85
+    - buyer: national
+      first_property: true
+      max_price_aed: null
+      max_ltv: 0.75
+    - buyer: national
+      first_property: false
+      max_price_aed: null
+      max_ltv: 0.65
+
+offplan_max_ltv:
+  value: 0.50
+  unit: fraction of property value
+  label: Off-plan maximum loan to value
+  description: Lending against an off-plan purchase is capped more tightly than against a
+    completed property.
+  status: unverified
+  source: UAE Central Bank mortgage loan regulations
+  source_url: https://www.centralbank.ae/en/our-operations/banking-supervision/regulations/
+  verified_on: null
+
+debt_burden_ratio:
+  value: 0.50
+  unit: fraction of monthly income
+  label: Debt burden ratio cap
+  description: >
+    Maximum share of monthly income that total debt repayments may consume, across all borrowing
+    and not this mortgage alone.
+  status: unverified
+  source: UAE Central Bank mortgage loan regulations
+  source_url: https://www.centralbank.ae/en/our-operations/banking-supervision/regulations/
+  verified_on: null
+
+max_term_years:
+  value: 25
+  unit: years
+  label: Maximum mortgage term
+  status: unverified
+  source: UAE Central Bank mortgage loan regulations
+  source_url: https://www.centralbank.ae/en/our-operations/banking-supervision/regulations/
+  verified_on: null
+
+mortgage_registration_fee:
+  value: 0.0025
+  unit: fraction of loan amount
+  label: Mortgage registration fee
+  description: Registration of the mortgage with the Dubai Land Department, plus a small
+    administrative charge.
+  status: unverified
+  source: Dubai Land Department fee schedule
+  source_url: https://dubailand.gov.ae/en/services/
+  verified_on: null
+
+bank_arrangement_fee:
+  value: 0.01
+  unit: fraction of loan amount
+  label: Bank arrangement fee
+  status: estimate
+  source: Assumption; varies by lender.
+
+default_interest_rate:
+  value: 0.0425
+  unit: annual nominal rate
+  label: Indicative mortgage rate
+  description: >
+    Starting point for the affordability calculator only. Rates are borrower-specific and the
+    interface treats this as an input to change, not an answer.
+  status: estimate
+  source: Assumption.
+
+default_term_years:
+  value: 25
+  unit: years
+  label: Default mortgage term
+  status: estimate
+  source: Assumption.

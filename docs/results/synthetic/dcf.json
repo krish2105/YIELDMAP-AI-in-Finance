@@ -1,0 +1,500 @@
+{
+  "generated_at": "2026-09-06T16:11:21+00:00",
+  "provenance": "SYNTHETIC",
+  "method_id": "dcf_v1",
+  "anchor": {
+    "price": 3963856.07,
+    "sqm": 126.33,
+    "annual_rent": 272584.91500000004,
+    "years": 5
+  },
+  "sql": {
+    "anchor": "select median(price_aed) as price, median(area_sqm) as sqm from transactions where property_type = 'unit' and ts >= (select max(ts) from transactions) - interval '12' month",
+    "rent": "select median(annual_rent_aed) as rent from rent_contracts where start >= (select max(start) from rent_contracts) - interval '12' month"
+  },
+  "mortgage_parameters": [
+    {
+      "key": "ltv_caps",
+      "label": "ltv_caps",
+      "value": null,
+      "unit": null,
+      "status": "unverified",
+      "source": "UAE Central Bank mortgage loan regulations",
+      "source_url": "https://www.centralbank.ae/en/our-operations/banking-supervision/regulations/",
+      "verified_on": null
+    },
+    {
+      "key": "offplan_max_ltv",
+      "label": "Off-plan maximum loan to value",
+      "value": 0.5,
+      "unit": "fraction of property value",
+      "status": "unverified",
+      "source": "UAE Central Bank mortgage loan regulations",
+      "source_url": "https://www.centralbank.ae/en/our-operations/banking-supervision/regulations/",
+      "verified_on": null
+    },
+    {
+      "key": "debt_burden_ratio",
+      "label": "Debt burden ratio cap",
+      "value": 0.5,
+      "unit": "fraction of monthly income",
+      "status": "unverified",
+      "source": "UAE Central Bank mortgage loan regulations",
+      "source_url": "https://www.centralbank.ae/en/our-operations/banking-supervision/regulations/",
+      "verified_on": null
+    },
+    {
+      "key": "max_term_years",
+      "label": "Maximum mortgage term",
+      "value": 25,
+      "unit": "years",
+      "status": "unverified",
+      "source": "UAE Central Bank mortgage loan regulations",
+      "source_url": "https://www.centralbank.ae/en/our-operations/banking-supervision/regulations/",
+      "verified_on": null
+    },
+    {
+      "key": "mortgage_registration_fee",
+      "label": "Mortgage registration fee",
+      "value": 0.0025,
+      "unit": "fraction of loan amount",
+      "status": "unverified",
+      "source": "Dubai Land Department fee schedule",
+      "source_url": "https://dubailand.gov.ae/en/services/",
+      "verified_on": null
+    },
+    {
+      "key": "bank_arrangement_fee",
+      "label": "Bank arrangement fee",
+      "value": 0.01,
+      "unit": "fraction of loan amount",
+      "status": "estimate",
+      "source": "Assumption; varies by lender.",
+      "source_url": null,
+      "verified_on": null
+    },
+    {
+      "key": "default_interest_rate",
+      "label": "Indicative mortgage rate",
+      "value": 0.0425,
+      "unit": "annual nominal rate",
+      "status": "estimate",
+      "source": "Assumption.",
+      "source_url": null,
+      "verified_on": null
+    },
+    {
+      "key": "default_term_years",
+      "label": "Default mortgage term",
+      "value": 25,
+      "unit": "years",
+      "status": "estimate",
+      "source": "Assumption.",
+      "source_url": null,
+      "verified_on": null
+    }
+  ],
+  "scenarios": [
+    {
+      "scenario": "cash purchase, modest growth",
+      "name": "cash purchase, modest growth",
+      "loan_ltv": 0.0,
+      "growth": 0.03,
+      "irr": 0.05747613186456846,
+      "unlevered_irr": null,
+      "npv": -388580.8541235868,
+      "equity_invested": 4205887.43,
+      "total_returned": 5450312.12,
+      "equity_multiple": 1.2958768403323195,
+      "assumptions": {
+        "years": 5,
+        "price_growth": 0.03,
+        "rent_growth": 0.03,
+        "loan_amount": 0.0,
+        "interest_rate": 0.0425,
+        "selling_cost": 0.02,
+        "discount_rate": 0.08,
+        "vacancy": 0.08,
+        "service_charge_per_sqm": 160.0
+      },
+      "flows": [
+        {
+          "year": 0,
+          "rent": 0.0,
+          "operating_costs": 0.0,
+          "interest": 0.0,
+          "principal": 0.0,
+          "capital": -4205887.43,
+          "net": -4205887.43
+        },
+        {
+          "year": 1,
+          "rent": 250778.12,
+          "operating_costs": -73579.42,
+          "interest": -0.0,
+          "principal": -0.0,
+          "capital": 0.0,
+          "net": 177198.7
+        },
+        {
+          "year": 2,
+          "rent": 258301.47,
+          "operating_costs": -75180.42,
+          "interest": -0.0,
+          "principal": -0.0,
+          "capital": 0.0,
+          "net": 183121.04
+        },
+        {
+          "year": 3,
+          "rent": 266050.51,
+          "operating_costs": -76829.45,
+          "interest": -0.0,
+          "principal": -0.0,
+          "capital": 0.0,
+          "net": 189221.06
+        },
+        {
+          "year": 4,
+          "rent": 274032.02,
+          "operating_costs": -78527.95,
+          "interest": -0.0,
+          "principal": -0.0,
+          "capital": 0.0,
+          "net": 195504.07
+        },
+        {
+          "year": 5,
+          "rent": 282252.99,
+          "operating_costs": -80277.41,
+          "interest": -0.0,
+          "principal": -0.0,
+          "capital": 4503291.66,
+          "net": 4705267.25
+        }
+      ],
+      "disclaimer": "A projection under stated assumptions, not a forecast and not advice."
+    },
+    {
+      "scenario": "80% loan, modest growth",
+      "name": "80% loan, modest growth",
+      "loan_ltv": 0.8,
+      "growth": 0.03,
+      "irr": 0.0860722060523671,
+      "unlevered_irr": 0.05747613186456846,
+      "npv": 31684.62091082614,
+      "equity_invested": 1074441.14,
+      "total_returned": 1724891.73,
+      "equity_multiple": 1.6053850414142221,
+      "assumptions": {
+        "years": 5,
+        "price_growth": 0.03,
+        "rent_growth": 0.03,
+        "loan_amount": 3171084.856,
+        "interest_rate": 0.0425,
+        "selling_cost": 0.02,
+        "discount_rate": 0.08,
+        "vacancy": 0.08,
+        "service_charge_per_sqm": 160.0
+      },
+      "flows": [
+        {
+          "year": 0,
+          "rent": 0.0,
+          "operating_costs": 0.0,
+          "interest": 0.0,
+          "principal": 0.0,
+          "capital": -1074441.14,
+          "net": -1074441.14
+        },
+        {
+          "year": 1,
+          "rent": 250778.12,
+          "operating_costs": -73579.42,
+          "interest": -133364.2,
+          "principal": -72783.49,
+          "capital": 0.0,
+          "net": -28949.0
+        },
+        {
+          "year": 2,
+          "rent": 258301.47,
+          "operating_costs": -75180.42,
+          "interest": -130209.93,
+          "principal": -75937.76,
+          "capital": 0.0,
+          "net": -23026.66
+        },
+        {
+          "year": 3,
+          "rent": 266050.51,
+          "operating_costs": -76829.45,
+          "interest": -126918.96,
+          "principal": -79228.73,
+          "capital": 0.0,
+          "net": -16926.64
+        },
+        {
+          "year": 4,
+          "rent": 274032.02,
+          "operating_costs": -78527.95,
+          "interest": -123485.37,
+          "principal": -82662.33,
+          "capital": 0.0,
+          "net": -10643.62
+        },
+        {
+          "year": 5,
+          "rent": 282252.99,
+          "operating_costs": -80277.41,
+          "interest": -119902.98,
+          "principal": -86244.72,
+          "capital": 1729063.85,
+          "net": 1724891.73
+        }
+      ],
+      "disclaimer": "A projection under stated assumptions, not a forecast and not advice."
+    },
+    {
+      "scenario": "80% loan, strong growth",
+      "name": "80% loan, strong growth",
+      "loan_ltv": 0.8,
+      "growth": 0.08,
+      "irr": 0.2199476733358008,
+      "unlevered_irr": 0.1065972389037324,
+      "npv": 923019.6684877018,
+      "equity_invested": 1074441.14,
+      "total_returned": 2994425.4,
+      "equity_multiple": 2.78696086304172,
+      "assumptions": {
+        "years": 5,
+        "price_growth": 0.08,
+        "rent_growth": 0.08,
+        "loan_amount": 3171084.856,
+        "interest_rate": 0.0425,
+        "selling_cost": 0.02,
+        "discount_rate": 0.08,
+        "vacancy": 0.08,
+        "service_charge_per_sqm": 160.0
+      },
+      "flows": [
+        {
+          "year": 0,
+          "rent": 0.0,
+          "operating_costs": 0.0,
+          "interest": 0.0,
+          "principal": 0.0,
+          "capital": -1074441.14,
+          "net": -1074441.14
+        },
+        {
+          "year": 1,
+          "rent": 250778.12,
+          "operating_costs": -75561.35,
+          "interest": -133364.2,
+          "principal": -72783.49,
+          "capital": 0.0,
+          "net": -30930.93
+        },
+        {
+          "year": 2,
+          "rent": 270840.37,
+          "operating_costs": -79989.24,
+          "interest": -130209.93,
+          "principal": -75937.76,
+          "capital": 0.0,
+          "net": -15296.56
+        },
+        {
+          "year": 3,
+          "rent": 292507.6,
+          "operating_costs": -84771.35,
+          "interest": -126918.96,
+          "principal": -79228.73,
+          "capital": 0.0,
+          "net": 1588.55
+        },
+        {
+          "year": 4,
+          "rent": 315908.21,
+          "operating_costs": -89936.03,
+          "interest": -123485.37,
+          "principal": -82662.33,
+          "capital": 0.0,
+          "net": 19824.48
+        },
+        {
+          "year": 5,
+          "rent": 341180.87,
+          "operating_costs": -95513.89,
+          "interest": -119902.98,
+          "principal": -86244.72,
+          "capital": 2933493.1,
+          "net": 2973012.38
+        }
+      ],
+      "disclaimer": "A projection under stated assumptions, not a forecast and not advice."
+    },
+    {
+      "scenario": "80% loan, falling market",
+      "name": "80% loan, falling market",
+      "loan_ltv": 0.8,
+      "growth": -0.05,
+      "irr": -0.3052388043172716,
+      "unlevered_irr": -0.015062246158107917,
+      "npv": -1006521.3992593768,
+      "equity_invested": 1074441.14,
+      "total_returned": 212792.48,
+      "equity_multiple": 0.1980494539591991,
+      "assumptions": {
+        "years": 5,
+        "price_growth": -0.05,
+        "rent_growth": 0.0,
+        "loan_amount": 3171084.856,
+        "interest_rate": 0.0425,
+        "selling_cost": 0.02,
+        "discount_rate": 0.08,
+        "vacancy": 0.08,
+        "service_charge_per_sqm": 160.0
+      },
+      "flows": [
+        {
+          "year": 0,
+          "rent": 0.0,
+          "operating_costs": 0.0,
+          "interest": 0.0,
+          "principal": 0.0,
+          "capital": -1074441.14,
+          "net": -1074441.14
+        },
+        {
+          "year": 1,
+          "rent": 250778.12,
+          "operating_costs": -70408.34,
+          "interest": -133364.2,
+          "principal": -72783.49,
+          "capital": 0.0,
+          "net": -25777.92
+        },
+        {
+          "year": 2,
+          "rent": 250778.12,
+          "operating_costs": -68525.51,
+          "interest": -130209.93,
+          "principal": -75937.76,
+          "capital": 0.0,
+          "net": -23895.08
+        },
+        {
+          "year": 3,
+          "rent": 250778.12,
+          "operating_costs": -66736.82,
+          "interest": -126918.96,
+          "principal": -79228.73,
+          "capital": 0.0,
+          "net": -22106.39
+        },
+        {
+          "year": 4,
+          "rent": 250778.12,
+          "operating_costs": -65037.56,
+          "interest": -123485.37,
+          "principal": -82662.33,
+          "capital": 0.0,
+          "net": -20407.14
+        },
+        {
+          "year": 5,
+          "rent": 250778.12,
+          "operating_costs": -63423.27,
+          "interest": -119902.98,
+          "principal": -86244.72,
+          "capital": 231585.33,
+          "net": 212792.48
+        }
+      ],
+      "disclaimer": "A projection under stated assumptions, not a forecast and not advice."
+    },
+    {
+      "scenario": "60% loan, flat market",
+      "name": "60% loan, flat market",
+      "loan_ltv": 0.6,
+      "growth": 0.0,
+      "irr": 0.00713369632447014,
+      "unlevered_irr": 0.027965875112155647,
+      "npv": -534658.1887647295,
+      "equity_invested": 1857302.71,
+      "total_returned": 1922793.49,
+      "equity_multiple": 1.0352612313563316,
+      "assumptions": {
+        "years": 5,
+        "price_growth": 0.0,
+        "rent_growth": 0.0,
+        "loan_amount": 2378313.642,
+        "interest_rate": 0.0425,
+        "selling_cost": 0.02,
+        "discount_rate": 0.08,
+        "vacancy": 0.08,
+        "service_charge_per_sqm": 160.0
+      },
+      "flows": [
+        {
+          "year": 0,
+          "rent": 0.0,
+          "operating_costs": 0.0,
+          "interest": 0.0,
+          "principal": 0.0,
+          "capital": -1857302.71,
+          "net": -1857302.71
+        },
+        {
+          "year": 1,
+          "rent": 250778.12,
+          "operating_costs": -72390.27,
+          "interest": -100023.15,
+          "principal": -54587.62,
+          "capital": 0.0,
+          "net": 23777.08
+        },
+        {
+          "year": 2,
+          "rent": 250778.12,
+          "operating_costs": -72390.27,
+          "interest": -97657.45,
+          "principal": -56953.32,
+          "capital": 0.0,
+          "net": 23777.08
+        },
+        {
+          "year": 3,
+          "rent": 250778.12,
+          "operating_costs": -72390.27,
+          "interest": -95189.22,
+          "principal": -59421.55,
+          "capital": 0.0,
+          "net": 23777.08
+        },
+        {
+          "year": 4,
+          "rent": 250778.12,
+          "operating_costs": -72390.27,
+          "interest": -92614.03,
+          "principal": -61996.74,
+          "capital": 0.0,
+          "net": 23777.08
+        },
+        {
+          "year": 5,
+          "rent": 250778.12,
+          "operating_costs": -72390.27,
+          "interest": -89927.23,
+          "principal": -64683.54,
+          "capital": 1803908.09,
+          "net": 1827685.17
+        }
+      ],
+      "disclaimer": "A projection under stated assumptions, not a forecast and not advice."
+    }
+  ],
+  "disclaimer": "Projections under stated assumptions. Not forecasts, and not advice."
+}
