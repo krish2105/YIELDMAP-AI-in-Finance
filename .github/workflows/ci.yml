@@ -46,14 +46,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: No unfilled placeholders in docs
-        run: bash scripts/placeholder_scan.sh
-
       - uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
       - run: uv python install 3.12
       - run: uv sync
+
+      - name: No unfilled placeholders in docs
+        run: uv run python scripts/placeholder_scan.py
 
       - name: No generated data in the published results
         # The database is not committed, so this checks the results directory: a figure computed
