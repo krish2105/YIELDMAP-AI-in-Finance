@@ -12,7 +12,7 @@ import unicodedata
 
 # --------------------------------------------------------------------------- rooms
 
-_ROOM_WORDS: dict[str, int] = {
+ROOM_WORDS: dict[str, int] = {
     "studio": 0,
     "single room": 0,
     "1 b/r": 1,
@@ -29,7 +29,7 @@ _ROOM_WORDS: dict[str, int] = {
 _ROOM_NUMBER = re.compile(r"(\d{1,2})\s*(?:b\s*/?\s*r|bed|bedroom|br)\b", re.IGNORECASE)
 # Values that name a property kind rather than a bedroom count. Mapping these to a number would
 # invent a comparison that does not exist.
-_NOT_A_ROOM_COUNT = {"penthouse", "office", "shop", "warehouse", "land", "hotel", "n/a", "na", ""}
+NOT_A_ROOM_COUNT = {"penthouse", "office", "shop", "warehouse", "land", "hotel", "n/a", "na", ""}
 
 MAX_ROOMS = 20
 
@@ -47,10 +47,10 @@ def canon_rooms(value: str | int | float | None) -> int | None:
         return n if 0 <= n <= MAX_ROOMS else None
 
     text = " ".join(str(value).strip().lower().split())
-    if text in _NOT_A_ROOM_COUNT:
+    if text in NOT_A_ROOM_COUNT:
         return None
-    if text in _ROOM_WORDS:
-        return _ROOM_WORDS[text]
+    if text in ROOM_WORDS:
+        return ROOM_WORDS[text]
     if match := _ROOM_NUMBER.search(text):
         n = int(match.group(1))
         return n if 0 <= n <= MAX_ROOMS else None
@@ -71,7 +71,7 @@ def rooms_label(rooms: int | None) -> str:
 
 # -------------------------------------------------------------------- property type
 
-_PROPERTY_TYPES: dict[str, str] = {
+PROPERTY_TYPES: dict[str, str] = {
     "unit": "unit",
     "flat": "unit",
     "apartment": "unit",
@@ -93,13 +93,13 @@ def canon_property_type(value: str | None) -> str | None:
     if value is None:
         return None
     text = " ".join(str(value).strip().lower().split())
-    return _PROPERTY_TYPES.get(text)
+    return PROPERTY_TYPES.get(text)
 
 
 # ------------------------------------------------------------------------ off-plan
 
-_OFFPLAN_MARKERS = ("off-plan", "off plan", "offplan", "pre-registration", "pre registration")
-_EXISTING_MARKERS = ("existing", "ready", "resale", "secondary")
+OFFPLAN_MARKERS = ("off-plan", "off plan", "offplan", "pre-registration", "pre registration")
+EXISTING_MARKERS = ("existing", "ready", "resale", "secondary")
 
 
 def canon_is_offplan(reg_type: str | None, procedure: str | None = None) -> bool | None:
@@ -112,9 +112,9 @@ def canon_is_offplan(reg_type: str | None, procedure: str | None = None) -> bool
         if not field:
             continue
         text = str(field).strip().lower()
-        if any(m in text for m in _OFFPLAN_MARKERS):
+        if any(m in text for m in OFFPLAN_MARKERS):
             return True
-        if any(m in text for m in _EXISTING_MARKERS):
+        if any(m in text for m in EXISTING_MARKERS):
             return False
     return None
 

@@ -52,3 +52,8 @@ markers = [
     "network: needs outbound network (skipped in the dev sandbox)",
     "llm: needs a real LLM provider key",
 ]
+
+[dependency-groups]
+dev = [
+    "playwright>=1.62.0",
+]

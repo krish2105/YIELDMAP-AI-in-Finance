@@ -75,6 +75,43 @@ jobs:
         continue-on-error: true
         run: uv run python -m etl.download discover --out docs/results/source_discovery.json
 
+      - name: Discover links a browser renders
+        if: steps.probe.outputs.verdict == 'reachable'
+        continue-on-error: true
+        run: |
+          # The DLD open-data page answers 200 with almost no HTML: its dataset list and download
+          # links are built client-side, so a plain fetch finds nothing. Drive a real browser and
+          # record both what it renders and which API it calls.
+          uv run playwright install --with-deps chromium
+          uv run python -m etl.discover_spa --out docs/results/spa_discovery.json
+
+      - name: Summarise browser discovery
+        if: always()
+        continue-on-error: true
+        run: |
+          {
+            echo "## Browser discovery"
+            echo
+            python3 - <<'PY'
+          import json, pathlib
+          p = pathlib.Path("docs/results/spa_discovery.json")
+          if not p.exists():
+              print("No browser discovery report.")
+              raise SystemExit
+          r = json.loads(p.read_text())
+          print(f"{r['n_data_links']} data links, {r['n_api_requests']} api/data requests.\n")
+          for page in r["pages"]:
+              print(f"### {page['url']}")
+              if page.get("error"):
+                  print(f"- failed: {page['error']}")
+              for link in page.get("data_links", [])[:20]:
+                  print(f"- link: [{link['text']}]({link['href']})")
+              for req in page.get("requests", [])[:25]:
+                  print(f"- call: `{req['method']} {req['url']}`")
+              print()
+          PY
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Summarise discovery
         if: always()
         continue-on-error: true
