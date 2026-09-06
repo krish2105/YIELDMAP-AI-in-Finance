@@ -38,7 +38,9 @@ PATTERNS: list[tuple[str, re.Pattern[str]]] = [
     ),
 ]
 
-# Files whose whole job is to describe secrets without containing one.
+# Files whose whole job is to describe secrets without containing one. Kept as short as it can
+# be: an allowlisted file is a place a real key could sit unnoticed, so the tests assemble their
+# credential shapes at runtime rather than asking to be listed here.
 ALLOWED = {
     ".env.example",
     "scripts/scan_secrets.py",

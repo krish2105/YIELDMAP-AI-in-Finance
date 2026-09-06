@@ -22,7 +22,9 @@ PLANTED = [
     ("groq", 'key = "gsk_' + "c" * 44 + '"'),
     ("anthropic", 'ANTHROPIC_API_KEY="sk-ant-' + "d" * 40 + '"'),
     ("github", 'token = "ghp_' + "e" * 36 + '"'),
-    ("private key", "-----BEGIN OPENSSH PRIVATE KEY-----"),
+    # Assembled rather than written out, so this file does not itself contain the marker and the
+    # scanner needs no exception for it. An allowlisted file is a place a real key could hide.
+    ("private key", "-----BEGIN " + "OPENSSH PRIVATE KEY" + "-----"),
     ("assignment", 'password = "' + "f" * 30 + '"'),
 ]
 
