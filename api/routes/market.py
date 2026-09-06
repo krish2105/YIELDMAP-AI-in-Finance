@@ -192,6 +192,18 @@ def hedonic(wh: WarehouseDep) -> dict[str, Any]:
     return result("hedonic.json", wh.provenance())
 
 
+@router.get("/evals")
+def evals(wh: WarehouseDep) -> dict[str, Any]:
+    """The retrieval eval's scores, so the gate is visible rather than only enforced in CI."""
+    return result("rag_eval.json", wh.provenance())
+
+
+@router.get("/security")
+def security(wh: WarehouseDep) -> dict[str, Any]:
+    """Red-team results and the risk mapping behind them."""
+    return result("redteam.json", wh.provenance())
+
+
 @router.get("/data/freshness")
 def data_freshness(wh: WarehouseDep) -> dict[str, Any]:
     """What is loaded, how much, as of when, and from which download."""

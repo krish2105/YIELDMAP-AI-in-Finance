@@ -33,3 +33,8 @@ data/interim/
 # Caches
 .cache/
 rag/.embed_cache/
+
+# Next.js build output lives in the workspace
+web/.next/
+web/out/
+web/next-env.d.ts

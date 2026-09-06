@@ -1,0 +1,134 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Sand and teal on graphite, with a "paper map" light theme.
+ *
+ * Dark is designed first rather than inverted: the 3D city is the spine of the product and reads
+ * best against a dark ground, so that is the theme the palette was chosen for. Light is a
+ * deliberate second pass with its own values, not a flip.
+ */
+
+:root {
+  --font-display: var(--font-archivo), "Archivo", system-ui, sans-serif;
+  --font-sans: var(--font-plex), "IBM Plex Sans", system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), "IBM Plex Mono", ui-monospace, monospace;
+
+  /* Fluid type: interpolates rather than jumping at breakpoints. */
+  --step--1: clamp(0.78rem, 0.75rem + 0.15vw, 0.86rem);
+  --step-0: clamp(0.94rem, 0.9rem + 0.2vw, 1.03rem);
+  --step-1: clamp(1.13rem, 1.05rem + 0.35vw, 1.3rem);
+  --step-2: clamp(1.36rem, 1.23rem + 0.6vw, 1.7rem);
+  --step-3: clamp(1.64rem, 1.43rem + 0.95vw, 2.2rem);
+  --step-4: clamp(1.96rem, 1.65rem + 1.4vw, 2.9rem);
+  --step-hero: clamp(2.4rem, 1.5rem + 4.2vw, 5.2rem);
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+
+  /* Paper map. */
+  --bg: #f4f1ea;
+  --bg-raised: #fbf9f4;
+  --bg-sunken: #ebe6da;
+  --ink: #14140f;
+  --ink-secondary: #4a4a41;
+  --ink-muted: #77776c;
+  --line: #d9d3c4;
+  --line-strong: #bdb5a1;
+  --teal: #1baf7a;
+  --teal-ink: #0f6f4d;
+  --sand: #a97f12;
+  --surface-chart: #fcfcfb;
+  --shadow: 0 1px 2px rgb(20 20 15 / 0.06), 0 8px 24px -12px rgb(20 20 15 / 0.14);
+}
+
+:root[data-theme="dark"],
+:root:not([data-theme="light"]) {
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #131316;
+    --bg-raised: #1c1c20;
+    --bg-sunken: #0d0d0f;
+    --ink: #f2f1ec;
+    --ink-secondary: #b6b5ad;
+    --ink-muted: #85847d;
+    --line: #2c2c31;
+    --line-strong: #43434a;
+    --teal: #199e70;
+    --teal-ink: #5fd3a8;
+    --sand: #c98500;
+    --surface-chart: #1a1a19;
+    --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 12px 32px -16px rgb(0 0 0 / 0.7);
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #131316;
+  --bg-raised: #1c1c20;
+  --bg-sunken: #0d0d0f;
+  --ink: #f2f1ec;
+  --ink-secondary: #b6b5ad;
+  --ink-muted: #85847d;
+  --line: #2c2c31;
+  --line-strong: #43434a;
+  --teal: #199e70;
+  --teal-ink: #5fd3a8;
+  --sand: #c98500;
+  --surface-chart: #1a1a19;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 12px 32px -16px rgb(0 0 0 / 0.7);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: var(--step-0);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  /* Tabular figures everywhere: a column of numbers that jitters is harder to compare. */
+  font-variant-numeric: tabular-nums;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.15;
+}
+
+:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+/* Right-to-left: Arabic reads the other way, and so must the layout. */
+[dir="rtl"] .flip-rtl {
+  transform: scaleX(-1);
+}
+
+::selection {
+  background: color-mix(in oklab, var(--teal) 30%, transparent);
+}
+
+/* The single most important accessibility rule in the stylesheet. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
