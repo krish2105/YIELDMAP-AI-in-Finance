@@ -69,8 +69,28 @@ Every figure below is read from `docs/results/`, produced by the models in `fina
 | Forecast | beats seasonal naive on 77/86 areas (90%), 10.1% vs 15.2% error | 60% of areas |
 | Risk and anomalies | 1,737 of 120,346 flagged (1.44%); 86 areas scored | score in [0,100], monotone |
 | Retrieval | recall@5 and faithfulness gated in CI at 0.80 and 0.90, over 30 cases in English, Hindi and Arabic | above both gates |
-| Red team | 10/10 controls held against the OWASP ASI threat list | every attack fails to land |
-| Journey | 30 Playwright tests green on a desktop viewport and a Pixel 7 | the full journey, on a phone |
+| Red team | 11/11 controls held against the OWASP ASI threat list | every attack fails to land |
+| Journey | 34 Playwright tests green on a desktop viewport and a Pixel 7 | the full journey, on a phone |
+| Access control | writes need a token the API signed; the role is never something a caller sends | no credential, no write |
+
+## Running it
+
+Reads are public. Writing a memo — the only endpoint that writes, and the only one that spends a
+model budget — needs an account:
+
+```bash
+uv run python -m api.auth hash 'a-password'      # -> $argon2id$...
+export AUTH_SECRET="$(python3 -c 'import secrets;print(secrets.token_urlsafe(48))')"
+export YIELDMAP_USERS='you@example.com:analyst:$argon2id$...'
+```
+
+Set `YIELDMAP_ENV=production` and the service refuses to start without those, rather than running
+in a state where tokens silently stop working on restart. `GET /health` reports whether
+authentication is configured and whether memo storage is durable, so a deployment can be checked
+from outside without reading its environment.
+
+Optional: `DATABASE_URL` for durable memos (without it they go to a file store that a container
+loses on restart), and `SENTRY_DSN` for error tracking. Neither is required to run.
 
 ## For the viva
 

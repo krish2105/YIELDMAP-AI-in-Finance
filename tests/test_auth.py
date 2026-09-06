@@ -8,6 +8,7 @@ open. Every test here is written against that failure.
 
 from __future__ import annotations
 
+import secrets
 import time
 
 import jwt
@@ -18,7 +19,10 @@ from api import auth
 from api.limits import limiter
 from api.main import create_app
 
-PASSWORD = "correct-horse-battery-staple"
+# Generated per run rather than written out. A credential-shaped literal in a tracked file is
+# what scripts/scan_secrets.py exists to block — it caught this one — and a fixed password in a
+# public repository is also the kind of string that gets copied into a real deployment.
+PASSWORD = secrets.token_urlsafe(24)
 EMAIL = "analyst@yieldmap.test"
 
 

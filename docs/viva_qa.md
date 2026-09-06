@@ -158,6 +158,29 @@ Four things, in order of how hard they are to circumvent:
 `security/redteam.py` attacks all four. The results are in `docs/results/redteam.json` and on the
 `/security` page.
 
+### 10a. Who can actually use the write endpoint? (Ask me this one.)
+
+The honest answer is that until recently, anyone. The role arrived in an `X-Yieldmap-Role` header
+the sidebar set from a dropdown, and the API believed it, so `curl -X POST /memos -H
+'X-Yieldmap-Role: analyst'` worked from anywhere. That is not access control; it is a client-side
+preference with a server-side name.
+
+Worse, the red-team attack meant to catch exactly this **passed**. It tested malformed values —
+`superuser`, `viewer, admin` — confirmed they degraded to viewer, and reported the control held. It
+never tried simply claiming a valid role. A test that passes against a vulnerable system is worse
+than no test, because it produces a green tick.
+
+What it is now: a caller signs in at `POST /auth/token`, the service issues a token it signed, and
+the role is a claim inside that token. Nothing the caller sends can influence it. Reads stay public
+because the data is published. `tests/test_auth.py` tries the role in a header, in the body, in the
+query string, forged, unsigned, expired and from another issuer. And `tests/test_redteam.py` puts
+the vulnerable version back and asserts the attack now fails against it — so the attack's value is
+measured rather than assumed.
+
+Two other things came from the same audit: nothing bounded how many crew runs a stranger could
+start, so budgets protected one run while the day's quota was open to anyone (rate limits now), and
+the service had no logging at all, so a production failure produced a 500 and no record anywhere.
+
 ### 11. Someone hides an instruction in a document. What happens?
 
 `goal_hijack_via_corpus` in the red-team harness does exactly that: it plants a document reading
@@ -206,7 +229,13 @@ The data, and it is not close. Everything else is built and tested against a sta
 that fits generated data well has demonstrated that the pipeline runs, not that the model is any
 good. The MAPE figure means the code works; it does not mean the valuation is accurate.
 
-After that, in order:
+Second, and I would rather say it than have it found: **the retrieval numbers do not mean much
+yet.** The corpus is five documents and 117 chunks. Scoring recall@5 of 1.0 on that is not evidence
+of a good retriever — the corpus is too small to be a hard problem — and only four of the thirty
+cases are Arabic. The eval also runs against the offline TF-IDF fallback, so the hybrid
+BM25-plus-embedding design it is meant to measure has never actually run.
+
+Then, in order:
 
 - **Community shapes are curated centroid hexes, not true polygons.** No GeoJSON source was
   reachable. They are never used in a financial calculation — only to place a cell on the map.
@@ -214,6 +243,9 @@ After that, in order:
 - **Yields use area-level Ejari medians**, not the specific unit's rent.
 - **Mortgage parameters are as-published**, carried with `source_url` and `verified_on` per field,
   and re-verified by the ingest job rather than assumed to stay true.
+- **Accounts come from an environment variable**, because this deployment has no signup. That is a
+  deliberate limit rather than an oversight, and the interface behind it does not change when a
+  user table replaces it.
 
 ### 15. What would you do next?
 
