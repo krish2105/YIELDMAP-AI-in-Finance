@@ -12,6 +12,11 @@ export default tseslint.config(
       "**/dist/**",
       "coverage/**",
       "data/**",
+      // Playwright's own output. Both are gitignored, but a local run leaves them on disk and
+      // eslint would then lint a bundled copy of CodeMirror and report four thousand errors in
+      // code nobody here wrote.
+      "playwright-report/**",
+      "test-results/**",
       // Vendored from the dataviz reference implementation and run as-is. Linting a dependency's
       // source to this project's rules would mean editing it, and then it is no longer the
       // reference implementation.

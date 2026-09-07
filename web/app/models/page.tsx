@@ -33,11 +33,25 @@ export default function ModelsPage() {
   const hedonic = useResult<{ metrics: Hedonic; provenance: "REAL" | "SYNTHETIC"; target: string; holdout: string }>("/hedonic");
   const index = useResult<IndexPayload>("/index");
 
-  if (hedonic.isLoading) return <Loading label={t("common.loading")} />;
-  if (hedonic.isError) {
-    return <ErrorState message={(hedonic.error as Error).message} onRetry={() => hedonic.refetch()} />;
+  // The header stays even when the data does not. Returning only an error box drops the page's
+  // own title, so someone looking at it cannot tell which page failed — and leaves the document
+  // with no h1 at all, which is both an accessibility fault and how the degraded-mode test found
+  // this.
+  if (hedonic.isLoading || hedonic.isError || !hedonic.data) {
+    return (
+      <>
+        <PageHeader title={t("nav.models")} />
+        {hedonic.isError ? (
+          <ErrorState
+            message={(hedonic.error as Error).message}
+            onRetry={() => hedonic.refetch()}
+          />
+        ) : (
+          <Loading label={t("common.loading")} />
+        )}
+      </>
+    );
   }
-  if (!hedonic.data) return null;
 
   const m = hedonic.data.metrics;
 

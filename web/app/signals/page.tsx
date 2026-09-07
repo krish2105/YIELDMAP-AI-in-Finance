@@ -26,11 +26,25 @@ export default function SignalsPage() {
   const anomalies = useResult<Anomalies>("/anomalies?limit=100");
   const risk = useResult<{ provenance: "REAL" | "SYNTHETIC" }>("/risk");
 
-  if (anomalies.isLoading) return <Loading label={t("common.loading")} />;
-  if (anomalies.isError) {
-    return <ErrorState message={(anomalies.error as Error).message} onRetry={() => anomalies.refetch()} />;
+  // The header stays even when the data does not. Returning only an error box drops the page's
+  // own title, so someone looking at it cannot tell which page failed — and leaves the document
+  // with no h1 at all, which is both an accessibility fault and how the degraded-mode test found
+  // this.
+  if (anomalies.isLoading || anomalies.isError || !anomalies.data) {
+    return (
+      <>
+        <PageHeader title={t("nav.signals")} />
+        {anomalies.isError ? (
+          <ErrorState
+            message={(anomalies.error as Error).message}
+            onRetry={() => anomalies.refetch()}
+          />
+        ) : (
+          <Loading label={t("common.loading")} />
+        )}
+      </>
+    );
   }
-  if (!anomalies.data) return null;
 
   const rules = Object.entries(anomalies.data.by_rule).map(([rule, count]) => ({
     x: rule,
