@@ -46,9 +46,12 @@ THREATS: list[Threat] = [
             "instruction rather than a fact could redirect what the memo concludes."
         ),
         control=(
-            "Retrieved text is fenced in <retrieved> delimiters and quoted as data. The Auditor "
-            "blocks a memo containing advice language whatever produced it, so a successful "
-            "injection still cannot ship."
+            "Retrieved text is fenced in <retrieved> delimiters and quoted as data, and the "
+            "fence is built by security/fencing.py rather than interpolated: a document carrying "
+            "the closing delimiter has it neutralised, and a block that is not well formed raises "
+            "instead of being sent. Wrapping without that is a fence anyone can walk out of. The "
+            "Auditor blocks a memo containing advice language whatever produced it, so a "
+            "successful injection still cannot ship."
         ),
         attack_id="goal_hijack_via_corpus",
     ),

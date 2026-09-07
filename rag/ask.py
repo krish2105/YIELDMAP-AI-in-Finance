@@ -23,6 +23,7 @@ from typing import Any
 
 from rag.provider import Completion, LLMProvider, ProviderUnavailable
 from rag.retriever import RetrievalResult, Retriever
+from security.fencing import fenced
 
 CITATION = re.compile(r"\[(\d+)\]")
 SENTENCE_SPLIT = re.compile(r"(?<=[.!?])\s+(?=[A-Z؀-ۿऀ-ॿ])")
@@ -139,9 +140,12 @@ def build_prompt(question: str, retrieval: RetrievalResult, language: str) -> st
         blocks.append(f"{header}\n{hit.chunk.text}")
 
     language_name = {"ar": "Arabic", "hi": "Hindi", "en": "English"}[language]
+    # Built rather than interpolated: a chunk carrying </retrieved> used to end the fence here and
+    # everything after it read as instruction. See security/fencing.py.
+    block = fenced("retrieved", chr(10).join(blocks))
     return (
         f"Question: {question}\n\n"
-        f"<retrieved>\n{chr(10).join(blocks)}\n</retrieved>\n\n"
+        f"{block.text}\n\n"
         f"Answer in {language_name}. Cite every factual sentence with the bracketed number of the "
         f"source it came from. If the retrieved material does not answer the question, say so."
     )
