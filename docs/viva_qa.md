@@ -209,7 +209,16 @@ ledger is durable across processes so a nightly job and an interactive session s
 allowance. Every agent run is bounded on requests, seconds and steps — three axes because they fail
 differently: a loop burns steps without time, a slow provider burns time without steps.
 
-The deployed site currently runs on the offline backend and marks those answers degraded.
+Which tier is actually serving is deliberately not asserted in this document, because it changes
+and a document cannot know. Two places report it: the deploy log's `started` line carries
+`llm_chain` and `llm_first_available`, and `GET /ask/providers` reports each backend's availability,
+its last attempt, and the ledger. On 2026-09-07 the deployed API moved from the offline backend to
+Gemini's free tier; before that every answer was marked degraded, which is the state the design
+guarantees when no key is present.
+
+That sentence used to read "the deployed site currently runs on the offline backend", and it went
+stale within a day of being true. Replacing a status with a pointer to where the status lives is
+the same move as generating the table in `docs/datasets.md` from the probe artefact.
 
 ### 13. What is deployed, and what happens when it breaks?
 
@@ -222,6 +231,40 @@ Degradation is designed rather than incidental: an unreachable model provider fa
 and finally to offline fixtures; an unreachable API returns a 502 naming which of the two services
 is down; a run that exceeds its budget ends as `over_budget`, a recorded outcome carried into the
 memo, not a crash.
+
+The failure worth asking about is the quiet one. A provider key that is *set but rejected* looks
+identical to a working one from configuration alone — `available()` reads the environment, not the
+provider — so the chain would fall through to the fixture backend and every answer would be marked
+degraded with nothing saying why. `LLMProvider.last_attempt` records what actually happened on each
+backend's most recent call, and `/ask/providers` shows it beside `available`. A rejected key names
+itself there instead of hiding behind a working-looking status.
+
+### 13a. You say secrets are never logged. Prove it.
+
+I can, because it was false and the fix is in the history.
+
+`GeminiBackend` called the API with the key as a query parameter — `?key=...`. httpx puts the full
+request URL into the message of the `HTTPStatusError` it raises on a 4xx, and that message was
+caught by the provider chain, stored as an attempt reason, joined into the exception raised when no
+backend answers, written to stdout with a traceback by the logging middleware, and sent to Sentry.
+One rejected key, four copies — against a rule in `CLAUDE.md` that says secrets are never logged.
+
+It was found by reading the fallback path, not by an incident, and reproduced in four lines with
+`httpx.MockTransport` before anything was changed. The fix is that the key travels as an
+`x-goog-api-key` header, so it cannot reach a URL at all. That was verified against the live API
+rather than the documentation: with the header a bogus key returns `400 API_KEY_INVALID` — the key
+was read — and with no header at all, `403 PERMISSION_DENIED`. Two different errors, so the header
+is genuinely the auth path.
+
+`redact()` stays as a second layer over credential-shaped query values, applied where the reason is
+built rather than where it is used, because the use that gets forgotten is the one that leaks. The
+tests drive a real 400 through the chain and assert the key appears in neither the attempt reason,
+nor the provider's record, nor the escaping exception — while `400` and `gemini failed` survive, so
+the redaction has not eaten the diagnosis.
+
+The honest general answer: `scripts/scan_secrets.py` keeps credentials out of the repository and
+runs in CI, and it would never have caught this one, because the key was not in a file. Static
+scanning and runtime handling are different problems.
 
 ### 14. What is the weakest part of this project?
 
