@@ -22,11 +22,25 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: "3.12"
-      # No provider key is set. The chain falls through to the offline backend and every answer
-      # is marked degraded in the interface, which is honest and costs nothing. Adding
-      # GEMINI_API_KEY in the Render dashboard is all that is needed to switch the tier on.
+      # Which backend answers. Naming one starts the chain there and keeps the fallbacks after
+      # it, so `gemini` means gemini -> groq -> the offline fixture. That last hop is why this is
+      # safe to set whether or not a key exists: with no GEMINI_API_KEY the gemini backend reports
+      # itself unavailable, the chain falls through, and every answer is marked degraded in the
+      # interface — which is honest and costs nothing.
+      #
+      # It said `fake` until now, and the comment beside it claimed that adding GEMINI_API_KEY was
+      # all that was needed to switch the tier on. That was false: `fake` *pins* the offline
+      # backend, deliberately, so that CI cannot reach the network. Adding the key changed
+      # nothing, and the only symptom was that nothing changed.
+      #
+      # CI is unaffected — .github/workflows/ci.yml sets LLM_PROVIDER: fake in its own env block,
+      # which is what keeps the suite offline and keyless.
       - key: LLM_PROVIDER
-        value: fake
+        value: gemini
+      # The free tier. Set it in the dashboard and the chain above starts using it; leave it unset
+      # and everything still works, degraded and labelled as such.
+      - key: GEMINI_API_KEY
+        sync: false
       - key: AGENT_MAX_REQUESTS_PER_RUN
         value: "40"
       - key: AGENT_MAX_SECONDS_PER_RUN
