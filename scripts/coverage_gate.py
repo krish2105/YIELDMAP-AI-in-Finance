@@ -35,6 +35,7 @@ CRITICAL: dict[str, str] = {
     "agents/auditor.py": "every run is audited; an uncited memo is rejected",
     "agents/budget.py": "agents run under a request budget and a kill switch",
     "agents/memory.py": "retrieved memories are untrusted and quarantined",
+    "security/fencing.py": "untrusted text cannot break out of the fence that quotes it",
     "rag/quota.py": "zero paid inference: allowances are counted, not assumed",
     "etl/results.py": "generated results are routed away from the real ones",
     "scripts/guard_synthetic.py": "generated data cannot reach a Term 4 artefact",
