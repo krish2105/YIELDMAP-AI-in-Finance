@@ -6,28 +6,44 @@ procedure, and it takes about ten minutes.
 
 ## Why a person has to do this
 
-Dubai Pulse publishes the bulk CSVs openly, and refuses connections from datacenter addresses —
-every request from a GitHub Actions runner times out at connect, while the same URLs load normally
-in a browser on an ordinary connection. `docs/results/source_probe.json` records the measurement.
+Two separate obstacles, both measured rather than assumed.
 
-So this is not a workaround for a missing feature. It is the correct route to exactly the same
-published files, taken by the one kind of client the publisher serves.
+**Dubai Pulse refuses datacenter addresses**, and as of 2026-09-07 it was not answering an ordinary
+browser either — `ERR_CONNECTION_TIMED_OUT` from a residential connection, and `ConnectTimeout`
+from a GitHub Actions runner. `docs/results/source_probe.json` records the runner side. Whether
+that is an outage or a geo-restriction is not something this repository can determine.
+
+**The Land Department's own portal works**, and is the same publisher:
+
+<https://dubailand.gov.ae/en/open-data/real-estate-data/>
+
+It answered 200 in the same probe that timed out on Dubai Pulse. It is a *query* interface rather
+than a bulk download: pick a date range, solve a CAPTCHA, and export what matches. Its own banner
+says *"For previous year data kindly visit Dubai Pulse"*, so the deep history lives on the portal
+that is down and this one serves the recent window.
+
+So this is not a workaround for a missing feature. It is the correct route to published files,
+taken by the one kind of client the publisher serves.
 
 ## 1. Download
 
-Open <https://www.dubaipulse.gov.ae/organisation/dld> in a normal browser and download:
+Open <https://dubailand.gov.ae/en/open-data/real-estate-data/> and export twice:
 
-| Dataset | What it is | Roughly |
-|---|---|---|
-| **Transactions** (`dld_transactions`) | every recorded sale and purchase, 2004 onward | 300–600 MB |
-| **Rent contracts** (`dld_rent_contracts`) | registered Ejari tenancies | 300–800 MB |
+| Tab | What it is |
+|---|---|
+| **Transactions** | every recorded sale and purchase |
+| **Rents** | registered Ejari tenancies |
 
-Take the **full CSV export** of each, not a filtered view — the models want the whole history, and
-the repeat-sales index in particular needs pairs of sales of the same unit, which a recent slice
-does not contain.
+On each tab: set **From Date** as far back as it allows, leave every other filter on **All**, solve
+the CAPTCHA, **Search**, then **Download as CSV**.
 
-If the site offers a date-partitioned set instead of one file, download them all into one folder.
-The next step reads a folder.
+**If a wide range times out, narrow it and download several.** A year at a time is fine — put every
+file in one folder and the loader reads them all. Overlapping ranges cost nothing, because rows are
+deduplicated by transaction id. This matters for the repeat-sales index in particular, which needs
+pairs of sales of the *same unit* years apart, so a single recent slice will not support it.
+
+If Dubai Pulse comes back, its bulk CSVs are the better source — one file per table, full history —
+and the same command below reads them without change.
 
 ## 2. Load
 
@@ -40,7 +56,9 @@ That is the whole thing. It:
 - looks at every file in the folder, including inside `.zip` archives;
 - works out which is the transactions extract and which is the rents extract **by their columns**,
   not their names, because the portal calls them whatever it likes;
-- keeps the fuller extract when two files match the same table;
+- **keeps every file that matches a table**, not just the best one, so a year-by-year download
+  loads in full — they land as `transactions__000.csv`, `__001` and so on, and the cleaner reads
+  the set;
 - ignores anything that is not one of them, and says so rather than guessing;
 - removes the `SYNTHETIC` marker, which is what stamps every downstream row as generated;
 - rebuilds the warehouse, the ten model stages and the retrieval index.

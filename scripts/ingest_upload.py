@@ -139,7 +139,17 @@ def main(argv: list[str] | None = None) -> int:
         print("nothing readable in the paths given", file=sys.stderr)
         return 1
 
-    matched: dict[str, tuple[Path, int]] = {}
+    # Every file that matches a table is kept, not just the best one.
+    #
+    # The Land Department's own portal exports a *date range* rather than a bulk file, so the
+    # realistic download is several files — one per year, or per month — that all describe the
+    # same table. An earlier version of this kept whichever had the most mapped columns and
+    # silently dropped the rest, which for that download shape loses almost everything while
+    # printing a confident success line.
+    #
+    # Overlapping ranges cost nothing: etl.clean dedupes, by transaction id where there is one and
+    # by whole row otherwise. So downloading 2020-2024 and then 2023-2025 is safe.
+    matched: dict[str, list[tuple[Path, int]]] = {}
     unmatched: list[tuple[Path, str]] = []
     for path in files:
         verdict = identify(path)
@@ -147,16 +157,17 @@ def main(argv: list[str] | None = None) -> int:
             unmatched.append((path, "not a readable table"))
             continue
         key, score, _ = verdict
-        # More resolved columns wins: the portal publishes both a full extract and slimmer views,
-        # and the full one is the better source.
-        if key not in matched or score > matched[key][1]:
-            matched[key] = (path, score)
+        matched.setdefault(key, []).append((path, score))
 
     for key, _ in TABLES:
         if key in matched:
-            path, score = matched[key]
-            size = path.stat().st_size / 1024 / 1024
-            print(f"{key:16} <- {path.name}  ({size:.1f} MB, {score} mapped columns)")
+            parts = matched[key]
+            size = sum(p.stat().st_size for p, _ in parts) / 1024 / 1024
+            best = max(score for _, score in parts)
+            noun = "file" if len(parts) == 1 else "files"
+            print(f"{key:16} <- {len(parts)} {noun}  ({size:.1f} MB, {best} mapped columns)")
+            for part, _ in sorted(parts, key=lambda x: x[0].name):
+                print(f"                     {part.name}")
         else:
             print(f"{key:16} <- MISSING")
 
@@ -176,12 +187,28 @@ def main(argv: list[str] | None = None) -> int:
         print("\ndry run: nothing written")
         return 0
 
-    for key, (path, _) in matched.items():
-        destination = args.raw / f"{key}{path.suffix.lower()}"
+    for key, parts in matched.items():
         for existing in args.raw.glob(f"{key}.*"):
             existing.unlink()
-        shutil.copy2(path, destination)
-        print(f"wrote {shown(destination)}")
+        for existing in args.raw.glob(f"{key}__*"):
+            existing.unlink()
+
+        ordered = sorted(parts, key=lambda x: x[0].name)
+        if len(ordered) == 1:
+            path, _ = ordered[0]
+            destination = args.raw / f"{key}{path.suffix.lower()}"
+            shutil.copy2(path, destination)
+            print(f"wrote {shown(destination)}")
+            continue
+
+        # Several parts of one table. They are kept as separate files rather than concatenated
+        # here: the reader already globs them, and stitching CSVs by hand means deciding what to
+        # do about headers, encodings and a partial last line — three ways to corrupt a dataset
+        # silently, for no benefit.
+        for i, (path, _) in enumerate(ordered):
+            destination = args.raw / f"{key}__{i:03d}{path.suffix.lower()}"
+            shutil.copy2(path, destination)
+        print(f"wrote {len(ordered)} parts for {key} into {shown(args.raw)}")
 
     # The marker is what makes every downstream stage stamp rows SYNTHETIC. Real files replace
     # generated ones, so it goes — and with it the block on Term 4 artefacts.

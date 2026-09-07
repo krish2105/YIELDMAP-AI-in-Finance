@@ -108,8 +108,26 @@ class TestIntake:
         assert main([str(folder), "--raw", str(tmp_path / "raw")]) == 1
         assert "needs a date, an area and a price" in capsys.readouterr().err
 
-    def test_the_fuller_extract_wins_when_two_files_match(self, tmp_path) -> None:
-        """Portals publish both a full extract and slimmer views; the full one is the better source."""
+    def test_every_file_matching_a_table_is_kept(self, tmp_path) -> None:
+        """The Land Department's portal exports a date range rather than a bulk file, so the
+        realistic download is one file per year. An earlier version kept whichever had the most
+        mapped columns and dropped the rest, which for that download shape loses almost everything
+        while printing a confident success line."""
+        folder = tmp_path / "d"
+        folder.mkdir()
+        (folder / "transactions_2023.csv").write_text(DLD_TRANSACTIONS)
+        (folder / "transactions_2024.csv").write_text(
+            DLD_TRANSACTIONS.replace("1-2024-100", "1-2023-500").replace("1-2024-101", "1-2023-501")
+        )
+        raw = tmp_path / "raw"
+        main([str(folder), "--raw", str(raw)])
+
+        parts = sorted(p.name for p in raw.glob("transactions__*.csv"))
+        assert len(parts) == 2, f"both years should land, got {parts}"
+
+    def test_a_slimmer_view_alongside_a_full_extract_is_still_kept(self, tmp_path) -> None:
+        """Keeping both is safe where dropping one is not: etl.clean dedupes by transaction id,
+        so an overlapping slimmer view costs nothing, while discarding a year loses it."""
         folder = tmp_path / "d"
         folder.mkdir()
         (folder / "slim.csv").write_text(
@@ -118,5 +136,80 @@ class TestIntake:
         (folder / "full.csv").write_text(DLD_TRANSACTIONS)
         raw = tmp_path / "raw"
         main([str(folder), "--raw", str(raw)])
-        # The full extract has more mapped columns, so it is the one that landed.
-        assert "PROCEDURE_NAME_EN" in (raw / "transactions.csv").read_text()
+
+        landed = "".join(p.read_text() for p in raw.glob("transactions*.csv"))
+        assert "PROCEDURE_NAME_EN" in landed, "the full extract must be there"
+        assert len(list(raw.glob("transactions*.csv"))) == 2
+
+    def test_a_single_file_still_lands_under_the_plain_name(self, tmp_path) -> None:
+        """One extract is the common case and should not acquire a part suffix."""
+        folder = tmp_path / "d"
+        folder.mkdir()
+        (folder / "Transactions.csv").write_text(DLD_TRANSACTIONS)
+        raw = tmp_path / "raw"
+        main([str(folder), "--raw", str(raw)])
+        assert (raw / "transactions.csv").exists()
+
+
+class TestCleaningReadsEveryPart:
+    """The intake writing several parts is only half of it; the reader has to pick them all up."""
+
+    def test_rows_from_every_part_reach_the_warehouse(self, tmp_path) -> None:
+
+        from etl.clean import main as clean_main
+
+        raw = tmp_path / "raw"
+        raw.mkdir()
+        (raw / "transactions__000.csv").write_text(DLD_TRANSACTIONS)
+        (raw / "transactions__001.csv").write_text(
+            DLD_TRANSACTIONS.replace("1-2024-100", "9-2019-900").replace("1-2024-101", "9-2019-901")
+        )
+        (raw / "rent_contracts.csv").write_text(DLD_RENTS)
+
+        db = tmp_path / "y.duckdb"
+        # --out into tmp_path, or this writes a REAL-provenance result built from two fixture rows
+        # straight into docs/results/, which is the exact contamination the guard exists to stop.
+        clean_main(
+            [
+                "--raw",
+                str(raw),
+                "--db",
+                str(db),
+                "--provenance",
+                "REAL",
+                "--out",
+                str(tmp_path / "clean.json"),
+            ]
+        )
+
+        import duckdb
+
+        con = duckdb.connect(str(db))
+        ids = {r[0] for r in con.execute("select transaction_id from transactions").fetchall()}
+        con.close()
+        assert {"1-2024-100", "9-2019-900"} <= ids, (
+            f"rows from both parts should be present, got {sorted(ids)}"
+        )
+
+    def test_a_single_plain_file_is_still_read(self, tmp_path) -> None:
+        from etl.clean import main as clean_main
+
+        raw = tmp_path / "raw"
+        raw.mkdir()
+        (raw / "transactions.csv").write_text(DLD_TRANSACTIONS)
+        db = tmp_path / "y.duckdb"
+        assert (
+            clean_main(
+                [
+                    "--raw",
+                    str(raw),
+                    "--db",
+                    str(db),
+                    "--provenance",
+                    "REAL",
+                    "--out",
+                    str(tmp_path / "clean.json"),
+                ]
+            )
+            == 0
+        )

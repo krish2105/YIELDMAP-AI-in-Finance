@@ -248,3 +248,37 @@ class TestTheGuardSaysWhatItInspected:
             ]
         )
         assert json.loads(report.read_text())["db_inspected"] is False
+
+
+class TestTheResultsDirectoryIsNotAScratchpad:
+    """A test that runs a real pipeline stage writes a real results file unless it is told not to.
+
+    This is how a REAL-provenance result computed from two rows of test fixture landed in
+    docs/results/ — declared real, describing nothing, and indistinguishable from a measurement
+    until someone read it. Every stage takes --out for this reason; forgetting it is silent.
+    """
+
+    def test_no_committed_result_describes_a_trivially_small_sample(self) -> None:
+        import json
+
+        from scripts.guard_synthetic import ROOT
+
+        results = ROOT / "docs" / "results"
+        suspicious = []
+        for path in sorted(results.glob("*.json")):
+            try:
+                body = json.loads(path.read_text())
+            except json.JSONDecodeError:
+                continue
+            if not isinstance(body, dict):
+                continue
+            tables = body.get("tables")
+            if isinstance(tables, dict):
+                for name, table in tables.items():
+                    rows = (table or {}).get("rows_out")
+                    if isinstance(rows, int) and rows < 100:
+                        suspicious.append(f"{path.name}: {name} has {rows} rows")
+        assert suspicious == [], (
+            "a published result describes a sample too small to be a real drop, which means a "
+            f"test wrote it: {suspicious}"
+        )

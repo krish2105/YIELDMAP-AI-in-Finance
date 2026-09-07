@@ -345,19 +345,38 @@ def main(argv: list[str] | None = None) -> int:
         ("transactions", TRANSACTION_ALIASES, clean_transactions, "transaction_id"),
         ("rent_contracts", RENT_ALIASES, clean_rent_contracts, "contract_id"),
     ):
-        path = next(
-            (p for p in args.raw.glob(f"{key}.*") if p.suffix in {".csv", ".parquet"}), None
+        # A table can arrive as several files. The Land Department's portal exports a date range
+        # rather than a bulk file, so the realistic drop is one file per year — `transactions.csv`
+        # when there is a single extract, `transactions__000.csv`, `__001` and so on when there
+        # are many. Reading only the first would quietly analyse one year and report success.
+        parts = sorted(
+            p
+            for p in args.raw.iterdir()
+            if p.suffix in {".csv", ".parquet"} and (p.stem == key or p.stem.startswith(f"{key}__"))
         )
-        if path is None:
+        if not parts:
             print(f"{key}: no file in {args.raw}")
             continue
-        lf = (
-            pl.scan_parquet(path)
-            if path.suffix == ".parquet"
-            else pl.scan_csv(
-                path, infer_schema_length=10_000, ignore_errors=True, truncate_ragged_lines=True
+
+        def _scan(path: Path) -> pl.LazyFrame:
+            return (
+                pl.scan_parquet(path)
+                if path.suffix == ".parquet"
+                else pl.scan_csv(
+                    path,
+                    infer_schema_length=10_000,
+                    ignore_errors=True,
+                    truncate_ragged_lines=True,
+                )
             )
-        )
+
+        if len(parts) == 1:
+            lf = _scan(parts[0])
+        else:
+            # diagonal_relaxed: the publisher's column set drifts between years, and a column
+            # present in 2024 and absent in 2019 should be null for 2019 rather than a hard error.
+            lf = pl.concat([_scan(p) for p in parts], how="diagonal_relaxed")
+            print(f"{key}: reading {len(parts)} parts")
         columns = lf.collect_schema().names()
         mapping = map_columns(columns, aliases)
         if not mapping.usable:
@@ -370,7 +389,8 @@ def main(argv: list[str] | None = None) -> int:
         ).collect()
         tables[key] = cleaned
         report["tables"][key] = {
-            "source": path.name,
+            "source": parts[0].name if len(parts) == 1 else f"{len(parts)} parts",
+            "source_files": [p.name for p in parts],
             "rows_in": int(lf.select(pl.len()).collect().item()),
             "rows_out": cleaned.height,
             "unmapped_columns": list(mapping.unmapped),
