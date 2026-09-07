@@ -244,3 +244,59 @@ class TestCarryingForwardProbeFindings:
         p = tmp_path / "source_probe.json"
         p.write_text("{not json")
         assert unreachable_hosts(p) == set()
+
+
+class TestProbeVerdict:
+    """The verdict answers one question: can this run enumerate real data?
+
+    Only a catalogue can. Counting a reference page towards it made the probe read `reachable`
+    on 2026-09-07 while every data host had timed out, which then let the download step run for
+    nothing and would have fired a redeploy that served no new rows.
+    """
+
+    class _NullClient:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *a):
+            return False
+
+    def _probe(self, monkeypatch, tmp_path, *, ok_kinds: set[str]):
+        from dataclasses import asdict
+
+        import etl.download as dl
+
+        def fake_probe_one(client, cand):
+            ok = cand.kind in ok_kinds
+            return {**asdict(cand), "ok": ok, "status": 200 if ok else 504}
+
+        monkeypatch.setattr(dl, "_client", lambda timeout=None: self._NullClient())
+        monkeypatch.setattr(dl, "probe_one", fake_probe_one)
+        return dl.probe(tmp_path / "source_probe.json")
+
+    def test_reference_pages_answering_is_not_a_reachable_verdict(self, monkeypatch, tmp_path):
+        report = self._probe(monkeypatch, tmp_path, ok_kinds={"page"})
+
+        assert report["n_reachable"] > 0, "the fixture should have something answering"
+        assert report["n_catalogues_reachable"] == 0
+        assert report["verdict"] == "blocked"
+
+    def test_a_reachable_catalogue_is_a_reachable_verdict(self, monkeypatch, tmp_path):
+        report = self._probe(monkeypatch, tmp_path, ok_kinds={"catalogue"})
+
+        assert report["n_catalogues_reachable"] > 0
+        assert report["any_catalogue_reachable"] is True
+        assert report["verdict"] == "reachable"
+
+    def test_nothing_answering_is_blocked(self, monkeypatch, tmp_path):
+        report = self._probe(monkeypatch, tmp_path, ok_kinds=set())
+
+        assert report["n_reachable"] == 0
+        assert report["verdict"] == "blocked"
+
+    def test_the_report_says_how_many_catalogues_there_were(self, monkeypatch, tmp_path):
+        """Without the denominator, 0 reachable and 'there are none to reach' look alike."""
+        report = self._probe(monkeypatch, tmp_path, ok_kinds={"page"})
+
+        assert report["n_catalogues"] > 0
+        assert report["n_catalogues"] <= report["n_candidates"]

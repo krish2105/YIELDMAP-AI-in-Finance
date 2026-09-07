@@ -94,20 +94,37 @@ def probe(out: Path | None = None) -> dict[str, Any]:
             rows.append(row)
 
     reachable = [r for r in rows if r.get("ok")]
+    catalogues = [r for r in rows if r["kind"] == "catalogue"]
+    catalogues_ok = [r for r in catalogues if r.get("ok")]
     report = {
         "generated_at": _now(),
         "runner": "github-actions" if _on_actions() else "local",
         "n_candidates": len(rows),
         "n_reachable": len(reachable),
-        "any_catalogue_reachable": any(r["kind"] == "catalogue" and r.get("ok") for r in rows),
-        "verdict": "reachable" if reachable else "blocked",
+        "n_catalogues": len(catalogues),
+        "n_catalogues_reachable": len(catalogues_ok),
+        "any_catalogue_reachable": bool(catalogues_ok),
+        # The verdict answers one question: can this run enumerate real data? Only a catalogue
+        # can, so only a catalogue decides it.
+        #
+        # It used to be true if *anything* answered, reference documentation included. On
+        # 2026-09-07 that made a run read `reachable` while every data host — Dubai Pulse, the
+        # DLD gateway, the Central Bank — had timed out and four documentation pages had not.
+        # The download step then ran and found nothing, and the redeploy step, whose whole
+        # purpose is to fire only on a real drop, was gated on that same word.
+        "verdict": "reachable" if catalogues_ok else "blocked",
         "candidates": rows,
     }
     if out:
         out.parent.mkdir(parents=True, exist_ok=True)
         out.write_text(json.dumps(report, indent=2, ensure_ascii=False))
         print(f"\nwrote {out}", flush=True)
-    print(f"\nverdict: {report['verdict']} ({len(reachable)}/{len(rows)} reachable)", flush=True)
+    print(
+        f"\nverdict: {report['verdict']} "
+        f"({len(catalogues_ok)}/{len(catalogues)} catalogues, {len(reachable)}/{len(rows)} "
+        f"candidates answered)",
+        flush=True,
+    )
     return report
 
 
