@@ -127,7 +127,9 @@ jobs:
         with:
           enable-cache: true
       - run: uv python install 3.12
-      - run: uv sync
+      # --extra dev because this job now executes the notebook, and nbclient and the kernel are
+      # build tooling rather than something the deployed service needs.
+      - run: uv sync --extra dev
 
       - name: No unfilled placeholders in docs
         run: uv run python scripts/placeholder_scan.py
@@ -136,6 +138,15 @@ jobs:
         # The database is not committed, so this checks the results directory: a figure computed
         # from the synthetic stand-in must never appear alongside real ones.
         run: uv run python scripts/guard_synthetic.py
+
+      - name: The notebook still executes
+        # It is a graded artefact and it ships with its outputs stored, which is exactly how it
+        # rots: a renamed function leaves it rendering last week's figures perfectly, because the
+        # cells that would now fail are never run. nbclient had been a dependency since the
+        # notebook was written and nothing imported it. Five seconds, and it runs the real thing.
+        run: |
+          uv run python -m scripts.build_all --synthetic
+          uv run python -m scripts.run_notebook
 
   security:
     runs-on: ubuntu-latest
