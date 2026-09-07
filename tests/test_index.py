@@ -287,3 +287,92 @@ class TestAnnualGrowth:
         rows = annual_growth(frame_)
         assert rows[0]["growth"] is None
         assert rows[1]["growth"] == pytest.approx(0.10)
+
+
+class TestAThinDropIsAResultNotACrash:
+    """A drop too short to identify an index must not take the build down with it.
+
+    The Land Department's portal exports a date range rather than the full history, so an entirely
+    ordinary real drop can contain no repeat sales: the same unit has to sell twice, years apart,
+    and a twelve-month window rarely holds both. estimate_index raises in that case — correct for
+    a pure function — and build_all turns a non-zero exit into SystemExit, so this stage taking
+    itself down took every later stage with it and left a half-built warehouse behind a stack
+    trace. finance.forecast already degraded properly; this now matches it.
+    """
+
+    @pytest.fixture
+    def thin(self, tmp_path):
+        """A warehouse with sales but no unit sold twice."""
+        import duckdb
+        import polars as pl
+
+        rows = [
+            {
+                "ts": f"2025-0{m}-1{d}",
+                "area_name": "Marsa Dubai",
+                "area_key": "marsa dubai",
+                "building_name": f"Tower {i}",
+                "project_name": "Marina Gate",
+                "procedure": "Sell",
+                "property_sub_type": "Flat",
+                "property_type": "unit",
+                "rooms": "2 B/R",
+                "area_sqm": 100.0 + i,
+                "price_aed": 2_000_000.0 + i * 1000,
+                "price_per_sqm": 20_000.0,
+                "is_offplan": False,
+                "transaction_id": f"t{i}",
+                "provenance": "SYNTHETIC",
+            }
+            for i, (m, d) in enumerate([(1, 1), (2, 2), (3, 3)])
+        ]
+        frame = pl.DataFrame(rows).with_columns(pl.col("ts").str.to_date())
+        path = tmp_path / "thin.duckdb"
+        con = duckdb.connect(str(path))
+        con.register("tx", frame)
+        con.execute("create table transactions as select * from tx")
+        con.close()
+        return path
+
+    def test_the_stage_exits_zero_rather_than_raising(self, thin, tmp_path, monkeypatch):
+        from etl import results as results_module
+        from finance.index import main
+
+        monkeypatch.setattr(results_module, "RESULTS_DIR", tmp_path)
+        assert main(["--db", str(thin)]) == 0
+
+    def test_the_result_says_it_could_not_be_estimated_and_why(self, thin, tmp_path, monkeypatch):
+        from etl import results as results_module
+        from finance.index import run
+
+        monkeypatch.setattr(results_module, "RESULTS_DIR", tmp_path)
+        payload = run(thin)["payload"]
+        assert payload["estimated"] is False
+        assert "repeat sales" in payload["reason"]
+        assert payload["n_pairs"] == 0
+
+    def test_the_payload_keeps_one_shape_either_way(self, thin, tmp_path, monkeypatch):
+        """A consumer that branches on which keys exist gets it wrong; one that reads `estimated`
+        does not. So the descriptive fields and the collections are present regardless."""
+        from etl import results as results_module
+        from finance.index import run
+
+        monkeypatch.setattr(results_module, "RESULTS_DIR", tmp_path)
+        payload = run(thin)["payload"]
+        for key in ("method", "identity", "weighting", "annual", "series", "diagnostics", "sql"):
+            assert key in payload, key
+        assert payload["annual"] == []
+        assert payload["series"] == []
+
+    def test_a_healthy_drop_is_still_marked_estimated(self, tmp_path, monkeypatch):
+        """The declining path must not swallow the working one."""
+        from etl import results as results_module
+        from finance.base import DEFAULT_DB
+        from finance.index import run
+
+        if not DEFAULT_DB.exists():
+            pytest.skip("no warehouse in this checkout")
+        monkeypatch.setattr(results_module, "RESULTS_DIR", tmp_path)
+        payload = run(DEFAULT_DB)["payload"]
+        assert payload["estimated"] is True
+        assert payload["series"]

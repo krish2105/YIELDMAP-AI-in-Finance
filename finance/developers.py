@@ -134,8 +134,19 @@ def main(argv: list[str] | None = None) -> int:
     out = run(args.db, minimum=args.min_transactions)
     s, league = out["payload"]["summary"], out["payload"]["league"]
     print(f"{s['developers']} projects with at least {args.min_transactions} sales")
+
+    # No project clearing the bar is an ordinary outcome on a short drop, and the median premium
+    # is then None. Formatting it crashed the stage — and because build_all turns a non-zero exit
+    # into SystemExit, a cosmetic summary line took the whole build down with it. The result
+    # itself had already been written correctly.
+    if not league:
+        print("  none of them clear that bar in this drop, so there is no league to rank")
+        print(f"\nwrote {out['path']} ({out['provenance']})")
+        return 0
+
     print(f"  {s['above_their_areas']} sell above their areas, {s['below_their_areas']} below")
-    print(f"  median premium {s['median_premium_pct']:+.1f}%\n")
+    median = s["median_premium_pct"]
+    print(f"  median premium {median:+.1f}%\n" if median is not None else "  median premium —\n")
     print(f"  {'project':<22} {'sales':>6} {'areas':>6} {'premium':>9}  {'off-plan':>9}  verdict")
     for row in league[:5] + league[-3:]:
         print(

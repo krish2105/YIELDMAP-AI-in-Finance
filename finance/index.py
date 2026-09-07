@@ -246,10 +246,59 @@ def run(db_path: Path = DEFAULT_DB) -> dict[str, Any]:
         provenance = wh.provenance()
 
     pairs = build_pairs(q.frame)
-    frame, diagnostics = estimate_index(pairs)
+
+    # A drop too thin to identify an index is a result, not a crash.
+    #
+    # The Land Department's portal exports a date range rather than the full history, so a
+    # perfectly ordinary real drop can contain no repeat sales at all — the same unit has to sell
+    # twice, years apart, and a twelve-month window rarely holds both. estimate_index raises in
+    # that case, which is right for a pure function and wrong for a build stage: build_all turns a
+    # non-zero exit into SystemExit, so this taking itself down took every later stage with it,
+    # leaving a half-built warehouse and a stack trace.
+    #
+    # finance.forecast already had this shape — "0 areas forecast, 85 skipped for thin history",
+    # exit 0, a result that says so. This now matches it. The rule is the project's own: below the
+    # floor, say "insufficient" rather than publish a number, and say it in a form the page can
+    # read.
+    try:
+        frame, diagnostics = estimate_index(pairs)
+    except ValueError as exc:
+        payload = {
+            "method_id": "repeat_sales_v1",
+            # The descriptive fields stay, so the payload has one shape whether or not an index
+            # could be estimated. A consumer that has to branch on which keys exist will get it
+            # wrong; one that reads `estimated` will not.
+            "method": "Bailey-Muth-Nourse weighted least squares on period dummies",
+            "identity": (
+                "building, bedroom count and floor area, because the registry lacks a stable unit "
+                "identifier on older rows"
+            ),
+            "weighting": (
+                "inverse holding period, since a long gap accumulates more idiosyncratic noise"
+            ),
+            "estimated": False,
+            "reason": str(exc),
+            "n_pairs": pairs.height,
+            "min_periods_required": MIN_PERIODS,
+            "min_hold_days": MIN_HOLD_DAYS,
+            "sql": q.sql,
+            "note": (
+                "A repeat-sales index compares a property against itself, so it needs the same "
+                "unit sold twice with enough distinct periods connecting the sales. This drop "
+                "does not contain them. Every other measure on the site is unaffected; the index "
+                "is the one that cannot be computed from a short window."
+            ),
+            "diagnostics": {},
+            "annual": [],
+            "series": [],
+        }
+        path = write_result("index.json", payload, provenance)
+        return {"payload": payload, "path": path, "provenance": provenance}
+
     growth = annual_growth(frame)
 
     payload = {
+        "estimated": True,
         "method_id": "repeat_sales_v1",
         "method": "Bailey-Muth-Nourse weighted least squares on period dummies",
         "identity": (
@@ -276,13 +325,21 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     out = run(args.db)
-    d = out["payload"]["diagnostics"]
+    payload = out["payload"]
+
+    if not payload.get("estimated", True):
+        print(f"no index: {payload['reason']}")
+        print(f"  {payload['n_pairs']:,} repeat pairs found")
+        print(f"\nwrote {out['path']} ({out['provenance']})")
+        return 0
+
+    d = payload["diagnostics"]
     print(f"{d['n_pairs']:,} repeat pairs over {d['n_periods']} months")
     print(f"  median holding period {d['median_hold_days']:,.0f} days")
     print(f"  weighted R-squared    {d['r_squared']:.3f}")
     print(f"  thin periods          {d['thin_periods']}")
     print("\n  year   index   growth   pairs")
-    for row in out["payload"]["annual"]:
+    for row in payload["annual"]:
         g = "     —" if row["growth"] is None else f"{row['growth']:+6.1%}"
         print(f"  {row['year']}  {row['index']:7.1f}  {g}  {row['n_pairs']:>7,}")
     print(f"\nwrote {out['path']} ({out['provenance']})")
