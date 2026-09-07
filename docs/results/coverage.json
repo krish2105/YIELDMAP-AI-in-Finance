@@ -1,9 +1,9 @@
 {
   "provenance": "REAL",
   "note": "Line coverage of the Python tree, measured by pytest-cov in CI. The critical list is the set of modules that are the sole mechanism behind a rule in CLAUDE.md; they are held to a higher floor than the rest.",
-  "overall_percent": 80.81,
+  "overall_percent": 80.84,
   "overall_floor": 75.0,
-  "statements": 5749,
+  "statements": 5758,
   "missing_statements": 1103,
   "critical_floor": 85.0,
   "critical_modules": [
@@ -28,7 +28,7 @@
     {
       "path": "api/auth.py",
       "rule": "RBAC: roles are asserted by the server, never by the caller",
-      "percent": 89.2,
+      "percent": 89.9,
       "uncovered_lines": 14
     },
     {
