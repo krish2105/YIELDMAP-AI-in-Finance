@@ -36,7 +36,12 @@ def _origins() -> list[str]:
 
 
 def _llm_state() -> tuple[list[str], str | None]:
-    """The chain as configured, and the first backend in it that could answer right now.
+    """The chain as configured, and the first backend in it that is configured to be tried.
+
+    Not "the one that will answer": at startup nothing has been asked, and a backend's
+    availability check reads its environment, not the provider. A key that is set and a key that
+    works look identical here, which is why the field is named for what it measures. Whether the
+    key is accepted shows up in GET /ask/providers as last_attempt, once something has been asked.
 
     Never raises: an unreachable provider is a degraded service, not a failed start, and a
     deployment that cannot report its own configuration is worse than one running degraded.
@@ -44,10 +49,10 @@ def _llm_state() -> tuple[list[str], str | None]:
     try:
         provider = LLMProvider.from_env()
         chain = list(provider.chain)
-        answering = next((b["backend"] for b in provider.describe() if b["available"]), None)
+        first = next((b["backend"] for b in provider.describe() if b["available"]), None)
     except Exception:  # pragma: no cover - defensive; from_env does not raise today
         return [], None
-    return chain, answering
+    return chain, first
 
 
 @asynccontextmanager
@@ -75,7 +80,7 @@ async def lifespan(app: FastAPI):
     # leaves the chain pinned to the offline backend, and the only symptom is that answers stay
     # fixture text. The deploy log is where that has to be visible, because it is readable when
     # the service itself is not.
-    chain, answering = _llm_state()
+    chain, first = _llm_state()
     log.info(
         "started",
         extra={
@@ -85,7 +90,7 @@ async def lifespan(app: FastAPI):
                 "auth_configured": auth_module.is_configured(),
                 "durable_store": bool(os.environ.get("DATABASE_URL")),
                 "llm_chain": chain,
-                "llm_answering": answering,
+                "llm_first_available": first,
             }
         },
     )

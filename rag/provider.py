@@ -18,11 +18,13 @@ from __future__ import annotations
 
 import hashlib
 import os
+import re
 import shutil
 import subprocess
 import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -48,6 +50,11 @@ class Completion:
     elapsed_s: float
     degraded: bool = False
     note: str | None = None
+    # Every backend tried for *this* call, in order, and why each was skipped or failed. It lives
+    # on the result rather than on the provider because a provider is reused across requests: the
+    # accumulator this replaces grew for the life of the process and mixed one call's hops with
+    # the last one's.
+    attempts: list[dict[str, Any]] = field(default_factory=list)
 
 
 @dataclass
@@ -129,6 +136,21 @@ class OllamaBackend(Backend):
         return out
 
 
+# Query parameters whose value is a credential. Belt and braces: no backend should put a secret
+# in a URL, and GeminiBackend no longer does, but the cost of one that does is a key in the logs.
+SECRET_QUERY_PARAMS = ("key", "api_key", "apikey", "access_token", "token", "password")
+
+_SECRET_IN_URL = re.compile(
+    r"([?&](?:" + "|".join(SECRET_QUERY_PARAMS) + r")=)[^&\s'\"]+",
+    re.IGNORECASE,
+)
+
+
+def redact(text: str) -> str:
+    """Strip credential-looking query values out of a string bound for a log or a response."""
+    return _SECRET_IN_URL.sub(r"\1[redacted]", text)
+
+
 class GeminiBackend(Backend):
     """Google's free tier. The only remote tier reachable from this project's sandbox."""
 
@@ -139,6 +161,16 @@ class GeminiBackend(Backend):
         self.key = os.environ.get("GEMINI_API_KEY", "").strip()
         self.model = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
         self.embed_model = os.environ.get("GEMINI_EMBED_MODEL", "gemini-embedding-001")
+
+    def _auth(self) -> dict[str, str]:
+        """The key goes in a header, never in the query string.
+
+        httpx puts the full request URL in the message of the HTTPStatusError it raises, and that
+        message is caught, stored as an attempt reason, logged with a traceback and sent to Sentry.
+        A key passed as ?key=... therefore leaked into all four the first time Gemini answered
+        anything other than 200. A header cannot end up in a URL.
+        """
+        return {"x-goog-api-key": self.key}
 
     def available(self) -> tuple[bool, str]:
         if not self.key:
@@ -155,7 +187,7 @@ class GeminiBackend(Backend):
         with httpx.Client(timeout=120) as client:
             r = client.post(
                 f"{self.BASE}/models/{self.model}:generateContent",
-                params={"key": self.key},
+                headers=self._auth(),
                 json=body,
             )
             if r.status_code == 429:
@@ -173,7 +205,7 @@ class GeminiBackend(Backend):
             for text in texts:
                 r = client.post(
                     f"{self.BASE}/models/{self.embed_model}:embedContent",
-                    params={"key": self.key},
+                    headers=self._auth(),
                     json={
                         "content": {"parts": [{"text": text}]},
                         # 768 is the widest pgvector's HNSW index supports; the model emits more
@@ -313,7 +345,15 @@ class LLMProvider:
 
     chain: tuple[str, ...] = DEFAULT_CHAIN
     ledger: QuotaLedger = field(default_factory=QuotaLedger)
-    hops: list[dict[str, Any]] = field(default_factory=list)
+    # What actually happened on each backend's most recent attempt, as opposed to what
+    # available() predicts from configuration alone. A set key and a *working* key look identical
+    # to available(), so without this a rejected key degrades every answer to the fixture backend
+    # and no surface says why.
+    #
+    # Keyed by backend, so it is bounded by the chain rather than by the number of requests. It
+    # replaces a list that was appended to on every call, read by nothing, and never cleared — in
+    # a process that lives as long as the service, that grew without limit.
+    last_attempt: dict[str, dict[str, Any]] = field(default_factory=dict)
     _instances: dict[str, Backend] = field(default_factory=dict, repr=False)
 
     @classmethod
@@ -358,9 +398,17 @@ class LLMProvider:
                         self.ledger.remaining(name) if backend.metered else None
                     ),
                     "metered": backend.metered,
+                    # available() reports configuration; this reports the last thing that
+                    # actually happened. They disagree exactly when a key is set but rejected.
+                    "last_attempt": self.last_attempt.get(name),
                 }
             )
         return out
+
+    def _remember(self, attempts: list[dict[str, Any]]) -> None:
+        stamp = datetime.now(UTC).isoformat(timespec="seconds")
+        for attempt in attempts:
+            self.last_attempt[attempt["backend"]] = {**attempt, "at": stamp}
 
     def _run(self, kind: str, call) -> tuple[Any, str, list[dict[str, Any]]]:
         attempts: list[dict[str, Any]] = []
@@ -378,19 +426,26 @@ class LLMProvider:
             try:
                 result = call(backend)
             except QuotaExceeded as exc:
-                attempts.append({"backend": name, "outcome": "quota", "reason": str(exc)})
+                attempts.append({"backend": name, "outcome": "quota", "reason": redact(str(exc))})
                 continue
             except (ProviderUnavailable, httpx.HTTPError, OSError) as exc:
                 attempts.append(
-                    {"backend": name, "outcome": "failed", "reason": f"{type(exc).__name__}: {exc}"}
+                    {
+                        "backend": name,
+                        "outcome": "failed",
+                        # Redacted here rather than at each place a reason is used: this string
+                        # goes on to a log, a traceback, Sentry and an HTTP response, and the one
+                        # that gets forgotten is the one that leaks.
+                        "reason": redact(f"{type(exc).__name__}: {exc}"),
+                    }
                 )
                 continue
             self.ledger.record(name, kind=kind)
             attempts.append({"backend": name, "outcome": "answered", "reason": reason})
-            self.hops.extend(attempts)
+            self._remember(attempts)
             return result, name, attempts
 
-        self.hops.extend(attempts)
+        self._remember(attempts)
         raise ProviderUnavailable(
             "no backend in the chain could answer: "
             + "; ".join(f"{a['backend']} {a['outcome']} ({a['reason']})" for a in attempts)
@@ -409,6 +464,7 @@ class LLMProvider:
             backend=backend,
             elapsed_s=round(time.monotonic() - started, 3),
             degraded=degraded,
+            attempts=attempts,
             note=(
                 "Answered by the offline fixture backend because no model provider was reachable."
                 if degraded

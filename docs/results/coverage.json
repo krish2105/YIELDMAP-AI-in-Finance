@@ -1,10 +1,10 @@
 {
   "provenance": "REAL",
   "note": "Line coverage of the Python tree, measured by pytest-cov in CI. The critical list is the set of modules that are the sole mechanism behind a rule in CLAUDE.md; they are held to a higher floor than the rest.",
-  "overall_percent": 80.91,
+  "overall_percent": 81.51,
   "overall_floor": 75.0,
-  "statements": 5766,
-  "missing_statements": 1101,
+  "statements": 5781,
+  "missing_statements": 1069,
   "critical_floor": 85.0,
   "critical_modules": [
     {
