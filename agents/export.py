@@ -70,6 +70,26 @@ def to_markdown(memo: dict[str, Any]) -> str:
     return "\n".join(parts)
 
 
+# Two different reasons, worth keeping apart.
+#
+# Forbidden: XML 1.0 allows tab, newline, carriage return and everything from 0x20 up, so the rest
+# of the C0 range cannot appear at all, and a lone surrogate is not a character. html.escape does
+# not know that — it handles markup, not encoding — so a model emitting one stray byte produces a
+# .docx that Word rejects as corrupt, from an API call that returned 200.
+#
+# Merely discouraged: 0x7f-0x9f are legal in XML 1.0 and flagged as compatibility characters. They
+# are stripped too, because they are C1 control codes rather than text, but a document containing
+# one would have opened.
+_XML_FORBIDDEN = re.compile(
+    r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x84\x86-\x9f\ud800-\udfff\ufffe\uffff]"
+)
+
+
+def xml_safe(text: str) -> str:
+    """Drop the characters XML cannot carry, so a stray byte cannot corrupt a document."""
+    return _XML_FORBIDDEN.sub("", text)
+
+
 def to_html(memo: dict[str, Any]) -> str:
     """A self-contained HTML document, for printing or emailing."""
     title = f"YIELDMAP memo — {html.escape(str(memo.get('area_key', 'area')))}"
@@ -112,9 +132,13 @@ def to_docx(memo: dict[str, Any]) -> bytes:
     """
     import io
     import zipfile
+    from xml.etree import ElementTree
 
     def esc(text: str) -> str:
-        return html.escape(text, quote=False)
+        # quote=False is right here: this only ever lands in element text, never an attribute.
+        # xml_safe is not optional — html.escape handles & < > and leaves the control characters
+        # XML forbids, which do not fail loudly. They produce a .docx that Word calls corrupt.
+        return html.escape(xml_safe(text), quote=False)
 
     paragraphs: list[str] = []
     for kind, text in _blocks(to_markdown(memo)):
@@ -153,6 +177,17 @@ def to_docx(memo: dict[str, Any]) -> bytes:
         'Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" '
         'Target="word/document.xml"/></Relationships>'
     )
+
+    # Parse before shipping. Escaping is the fix; this is the check that the fix was applied
+    # everywhere, and it turns a download that fails silently in Word into an error here. It costs
+    # microseconds on a document this size.
+    try:
+        ElementTree.fromstring(document)
+    except ElementTree.ParseError as exc:  # pragma: no cover - unreachable while esc() is used
+        raise ValueError(
+            f"the generated document.xml is not well formed ({exc}); some text reached it without "
+            "going through esc()"
+        ) from exc
 
     buffer = io.BytesIO()
     with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as archive:
