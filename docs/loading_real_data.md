@@ -88,6 +88,22 @@ column rather than by a setting.
 
 What does **not** change: any code. That is the point of having built it this way.
 
+## If it says the file is not UTF-8
+
+Dubai's registry data is full of Arabic names, and the loader refuses a file it cannot read as
+UTF-8 rather than guessing at the encoding. Guessing is the tempting fix and the wrong one: the
+wrong codepage does not fail, it turns every Arabic area name into a different string, and every
+figure on the site is grouped by area.
+
+The message names the file and the conversion:
+
+```bash
+iconv -f WINDOWS-1256 -t UTF-8 'Transactions.csv' > 'Transactions-utf8.csv'
+```
+
+UTF-8 and UTF-8 with a byte-order mark both load unchanged — the second is what Excel writes, so
+opening a CSV to look at it before uploading is safe.
+
 ## If the columns have moved
 
 The publisher renames columns occasionally. `etl/schema.py` holds the aliases, and

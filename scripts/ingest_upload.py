@@ -26,6 +26,7 @@ from pathlib import Path
 
 import polars as pl
 
+from etl.clean import utf8_problem
 from etl.schema import RENT_ALIASES, TRANSACTION_ALIASES, map_columns
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -149,6 +150,15 @@ def main(argv: list[str] | None = None) -> int:
     #
     # Overlapping ranges cost nothing: etl.clean dedupes, by transaction id where there is one and
     # by whole row otherwise. So downloading 2020-2024 and then 2023-2025 is safe.
+    # Encoding is checked here rather than only in the cleaner, because this is where a person is
+    # standing. identify() reads the header row, which is ASCII in every export seen, so a legacy
+    # codepage passes identification and only fails later during the build.
+    encoding_problems = [p for p in (utf8_problem(f) for f in files) if p]
+    if encoding_problems:
+        for problem in encoding_problems:
+            print(problem, file=sys.stderr)
+        return 1
+
     matched: dict[str, list[tuple[Path, int]]] = {}
     unmatched: list[tuple[Path, str]] = []
     for path in files:

@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Literal
@@ -264,6 +265,40 @@ def clean_rent_contracts(
     return out.drop_nulls(subset=["area_key", "annual_rent_aed"])
 
 
+# How much of a file to check before believing it is UTF-8. Enough to reach real data rather than
+# only an ASCII header row, and small enough to be free on a 600 MB export.
+ENCODING_SAMPLE_BYTES = 1 << 20
+
+
+def utf8_problem(path: Path) -> str | None:
+    """Why this file is not readable as UTF-8, or None if it is.
+
+    Deliberately does not guess the encoding and decode anyway. The columns at stake are Arabic
+    area names, which become area keys, which every figure is grouped by — so a wrong guess does
+    not fail, it silently regroups the whole dataset under mojibake. A clear refusal naming the
+    fix is worth more than a rescue that might be wrong.
+    """
+    with path.open("rb") as handle:
+        sample = handle.read(ENCODING_SAMPLE_BYTES)
+    try:
+        sample.decode("utf-8")
+    except UnicodeDecodeError as exc:
+        # A truncated multi-byte character at the sample boundary is an artefact of sampling, not
+        # a broken file: anything within three bytes of the end is ignored.
+        if exc.start >= len(sample) - 3 and len(sample) == ENCODING_SAMPLE_BYTES:
+            return None
+        return (
+            f"{path.name} is not UTF-8 (byte {exc.start} is not valid). Dubai's registry data "
+            f"contains Arabic names, and a legacy codepage such as Windows-1256 has to be "
+            f"converted before it can be read:\n"
+            f"    iconv -f WINDOWS-1256 -t UTF-8 '{path.name}' > '{path.stem}-utf8.csv'\n"
+            f"This is refused rather than guessed at: decoding with the wrong codepage does not "
+            f"fail, it turns every Arabic area name into a different string, and every figure is "
+            f"grouped by area."
+        )
+    return None
+
+
 def dedupe(lf: pl.LazyFrame, *, id_col: str | None = None) -> pl.LazyFrame:
     """Drop duplicate rows.
 
@@ -356,6 +391,13 @@ def main(argv: list[str] | None = None) -> int:
         )
         if not parts:
             print(f"{key}: no file in {args.raw}")
+            continue
+
+        problems = [p for p in (utf8_problem(part) for part in parts) if p]
+        if problems:
+            for problem in problems:
+                print(f"{key}: {problem}", file=sys.stderr)
+            report["tables"][key] = {"error": "not utf-8"}
             continue
 
         def _scan(path: Path) -> pl.LazyFrame:
