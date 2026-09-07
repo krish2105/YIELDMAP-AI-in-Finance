@@ -83,6 +83,43 @@ is built and runs offline today against the fallback, so supplying the key produ
 without any further work. Until then the eval reports the lexical baseline's score, and labels it
 as such.
 
+## Refusing to answer
+
+The Ask path declines when retrieval returns nothing. Over 117 chunks BM25 always returns
+something, so that path was effectively unreachable — a question about the weather retrieves the
+five nearest Dubai chunks and the model is asked to answer from them. Whether it declines is then
+the model's judgement rather than a mechanism, which is not what "structural" means anywhere else
+in this project.
+
+The obvious fix is a relevance floor: refuse when the best hit scores below a threshold.
+`scripts/calibrate_relevance.py` tested whether such a threshold exists before one was written,
+over the eval's own 30 answerable questions and 8 out-of-scope ones.
+
+| Signal | In-scope minimum | Out-of-scope maximum | Best threshold catches | while wrongly refusing |
+|---|---|---|---|---|
+| Top BM25 score | 6.86 | 19.58 | 100% | **50%** of real questions |
+| Top cosine similarity | 0.000 | 0.895 | 100% | **57%** |
+| Distinctive-term coverage | 0.375 | 0.800 | 100% | **33%** |
+
+**None of them separates.** Every out-of-scope range overlaps its in-scope range, so any threshold
+either admits the questions it was meant to catch or refuses the ones it was meant to keep. The
+reason is structural rather than a matter of tuning: the word that makes a question unanswerable is
+usually a single token in a sentence of otherwise on-topic vocabulary — *"What is the rental yield
+on a flat in **London**?"* — and all three signals aggregate over the whole question, diluting
+precisely the term that carries the answer. "Who won the football match last night?" is separable by
+every signal; it is also the only question here nobody would actually ask this site.
+
+So no threshold ships. The refusal guarantee is left where it can be enforced rather than
+estimated: at the answering stage, where a sentence that cannot cite retrieved material is dropped,
+and a memo whose factual sentences are not all cited is withheld entirely.
+
+What this costs is now measured rather than assumed. The eval scores the 8 out-of-scope cases
+separately from recall, and against the offline fixture backend — which answers every prompt by
+construction — the refusal rate is **0%**. That figure is reported and not gated: it describes the
+stand-in, not the system. It becomes a real measurement, and a gate worth setting, the first time
+the harness runs against a model. Before these cases existed the eval reported `answer_rate: 1.0`
+and an empty refusal list, which reads as a virtue and was an absence of any test.
+
 ## Reranking
 
 No local cross-encoder is downloadable, so reranking is done by asking the generation model to

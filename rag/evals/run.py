@@ -141,8 +141,25 @@ def run(*, k: int = 5, out: Path | None = None) -> dict[str, Any]:
 
     results = [score_case(c, retriever, provider, k=k) for c in cases]
 
-    recall = sum(1 for r in results if r.recalled) / len(results)
+    # Recall is a retrieval measure and is undefined for a question with no correct document, so
+    # it is computed over the answerable cases only. Averaging the out-of-scope cases into it
+    # would mix two different questions — "did it find the right source" and "did it know there
+    # was none" — into one number that answers neither.
+    answerable = [r for r in results if r.expected is not None]
+    refusal_cases = [r for r in results if r.expected is None]
+
+    recall = sum(1 for r in answerable if r.recalled) / len(answerable) if answerable else 0.0
     faithfulness = sum(1 for r in results if r.faithful) / len(results)
+
+    # What the out-of-scope cases measure: given a question this corpus cannot answer, did the
+    # system decline rather than write something from the nearest five chunks? Reported and not
+    # gated while the backend is the offline fixture, which answers everything by construction —
+    # gating it there would fail the build for a property of the stand-in rather than the system.
+    refusal_rate = (
+        sum(1 for r in refusal_cases if not r.answered) / len(refusal_cases)
+        if refusal_cases
+        else None
+    )
 
     # Recall@5 over a corpus this size is close to free: with 117 chunks and five slots, a
     # retriever that is merely not broken scores well. Rank-sensitive measures are what separate
@@ -151,25 +168,39 @@ def run(*, k: int = 5, out: Path | None = None) -> dict[str, Any]:
     # Cases that expected an answer and got one. Reported rather than gated: on the offline
     # fixture backend a non-English question legitimately cannot be answered well, and hiding that
     # behind a passing faithfulness score would be the dishonest reading of these numbers.
-    expecting = [r for r in results if r.expected is not None]
-    answer_rate = sum(1 for r in expecting if r.answered) / len(expecting) if expecting else 0.0
+    answer_rate = sum(1 for r in answerable if r.answered) / len(answerable) if answerable else 0.0
 
-    ranked = [r for r in results if r.expected is not None]
-    precision_at_1 = sum(1 for r in ranked if r.hit_rank == 1) / len(ranked) if ranked else 0.0
-    mrr = sum(1 / r.hit_rank for r in ranked if r.hit_rank) / len(ranked) if ranked else 0.0
+    precision_at_1 = (
+        sum(1 for r in answerable if r.hit_rank == 1) / len(answerable) if answerable else 0.0
+    )
+    mrr = (
+        sum(1 / r.hit_rank for r in answerable if r.hit_rank) / len(answerable)
+        if answerable
+        else 0.0
+    )
 
+    # Split the same way the headline is: recall over the answerable cases, refusal over the
+    # out-of-scope ones. Mixing them here while separating them above would have the breakdown
+    # disagree with the total, which is how a table stops being read.
     by_lang: dict[str, dict[str, Any]] = {}
     for lang in sorted({r.lang for r in results}):
         subset = [r for r in results if r.lang == lang]
+        can_answer = [r for r in subset if r.expected is not None]
+        cannot = [r for r in subset if r.expected is None]
         by_lang[lang] = {
             "cases": len(subset),
-            "recall": sum(1 for r in subset if r.recalled) / len(subset),
-            "faithfulness": sum(1 for r in subset if r.faithful) / len(subset),
-            "answer_rate": round(
-                sum(1 for r in subset if r.answered and r.expected is not None)
-                / max(sum(1 for r in subset if r.expected is not None), 1),
-                4,
-            ),
+            "answerable": len(can_answer),
+            "out_of_scope": len(cannot),
+            "recall": round(sum(1 for r in can_answer if r.recalled) / len(can_answer), 4)
+            if can_answer
+            else None,
+            "faithfulness": round(sum(1 for r in subset if r.faithful) / len(subset), 4),
+            "answer_rate": round(sum(1 for r in can_answer if r.answered) / len(can_answer), 4)
+            if can_answer
+            else None,
+            "refusal_rate": round(sum(1 for r in cannot if not r.answered) / len(cannot), 4)
+            if cannot
+            else None,
         }
 
     semantic_backend = retriever.semantic.backend
@@ -180,11 +211,22 @@ def run(*, k: int = 5, out: Path | None = None) -> dict[str, Any]:
     report = {
         "provenance": provenance,
         "n_cases": len(results),
+        "n_answerable": len(answerable),
+        "n_out_of_scope": len(refusal_cases),
         "k": k,
         "recall_at_k": round(recall, 4),
         "recall_at_1": round(precision_at_1, 4),
         "mrr": round(mrr, 4),
         "answer_rate": round(answer_rate, 4),
+        "refusal_rate": round(refusal_rate, 4) if refusal_rate is not None else None,
+        "refusal_gated": not retriever.semantic.degraded,
+        "refusal_note": (
+            "Out-of-scope questions the corpus cannot answer. Declining is correct; answering is "
+            "a fabrication. Not gated against the offline fixture backend, which answers every "
+            "prompt by construction. scripts/calibrate_relevance.py records why there is no "
+            "retrieval-score threshold behind this: on a corpus this size no signal separates an "
+            "unanswerable question from a topically adjacent one."
+        ),
         "faithfulness": round(faithfulness, 4),
         "recall_target": RECALL_TARGET,
         "faithfulness_target": FAITHFULNESS_TARGET,
@@ -218,8 +260,9 @@ def run(*, k: int = 5, out: Path | None = None) -> dict[str, Any]:
             if retriever.semantic.degraded
             else None
         ),
-        "failures": [r.as_dict() for r in results if not (r.recalled and r.faithful)],
-        "refusals": [r.as_dict() for r in results if not r.answered and r.expected],
+        "failures": [r.as_dict() for r in answerable if not (r.recalled and r.faithful)],
+        "refusals": [r.as_dict() for r in answerable if not r.answered],
+        "answered_out_of_scope": [r.as_dict() for r in refusal_cases if r.answered],
         "cases": [r.as_dict() for r in results],
     }
 
@@ -245,7 +288,11 @@ def main(argv: list[str] | None = None) -> int:
     out = args.out or result_path("rag_eval.json", report["provenance"])
     out.write_text(json.dumps(report, indent=2, ensure_ascii=False))
 
-    print(f"{report['n_cases']} cases, k={report['k']}, backend {report['retrieval_backend']}")
+    print(
+        f"{report['n_cases']} cases "
+        f"({report['n_answerable']} answerable, {report['n_out_of_scope']} out of scope), "
+        f"k={report['k']}, backend {report['retrieval_backend']}"
+    )
     print(
         f"  recall@{report['k']}   {report['recall_at_k']:.1%}  "
         f"(target {report['recall_target']:.0%})  {'met' if report['recall_met'] else 'MISSED'}"
@@ -255,12 +302,25 @@ def main(argv: list[str] | None = None) -> int:
         f"(target {report['faithfulness_target']:.0%})  "
         f"{'met' if report['faithfulness_met'] else 'MISSED'}"
     )
+    if report["refusal_rate"] is not None:
+        gated = "gated" if report["refusal_gated"] else "reported, not gated"
+        print(f"  refusal       {report['refusal_rate']:.1%}  of out-of-scope questions  ({gated})")
     print()
     for lang, row in report["by_language"].items():
+        recall = f"{row['recall']:.0%}" if row["recall"] is not None else "  —"
+        refusal = f"   refusal {row['refusal_rate']:.0%}" if row["refusal_rate"] is not None else ""
         print(
-            f"  {lang}  {row['cases']:>2} cases   recall {row['recall']:.0%}   "
-            f"faithfulness {row['faithfulness']:.0%}"
+            f"  {lang}  {row['answerable']:>2} answerable   recall {recall}   "
+            f"faithfulness {row['faithfulness']:.0%}{refusal}"
         )
+
+    if report["answered_out_of_scope"]:
+        print(
+            f"\n  {len(report['answered_out_of_scope'])} out-of-scope question(s) answered "
+            f"rather than declined:"
+        )
+        for f in report["answered_out_of_scope"]:
+            print(f"    {f['id']:<24} {f['question'][:52]}")
 
     if report["failures"]:
         print(f"\n  {len(report['failures'])} case(s) missed:")

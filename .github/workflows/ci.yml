@@ -70,10 +70,18 @@ jobs:
 
       - name: Retrieval eval
         # Gated: recall@5 at 0.80 and faithfulness at 0.90, across English, Hindi and Arabic.
-        # Runs offline against the fixture backend, so it needs no key and no quota.
+        # Runs offline against the fixture backend, so it needs no key and no quota. The eight
+        # out-of-scope cases are scored separately and reported rather than gated: the fixture
+        # backend answers every prompt, so a refusal gate here would test the stand-in.
         run: |
           uv run python -m rag.indexer
           uv run python -m rag.evals.run --gate
+
+      - name: Is there a relevance floor?
+        # Re-measures whether any retrieval signal separates an unanswerable question from a
+        # topically adjacent one. The answer is currently no, and it is worth re-checking as the
+        # corpus grows, because the day it becomes yes is the day Ask can refuse structurally.
+        run: uv run python -m scripts.calibrate_relevance
 
       - name: The operator upload path
         # The seam the data ladder rests on: a person downloads the published files and this turns

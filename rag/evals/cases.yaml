@@ -168,3 +168,55 @@ cases:
     lang: hi
     question: JVC में संपत्ति की कीमत क्या है?
     expect_area: jumeirah village circle
+
+  # ------------------------------------------------------- out of scope, must refuse
+  # Questions this corpus genuinely cannot answer. They are here because a system that answers
+  # everything has no way to be wrong, and because the "no matching data" path was written and
+  # never exercised: before these cases existed the eval reported answer_rate 1.0 and refusals [],
+  # which reads as a virtue and was really an absence of any test.
+  #
+  # They are chosen to be *plausible* rather than absurd — the questions a person looking at a
+  # Dubai property site would actually type. That is deliberate: scripts/calibrate_relevance.py
+  # shows that lexical, semantic and term-coverage signals all separate absurd questions from
+  # real ones and none of them separates these, because the distinguishing word is one token in
+  # a sentence of otherwise on-topic vocabulary.
+  #
+  # A case with no expect_doc and no expect_area is scored as a refusal case: declining is correct
+  # and answering is a fabrication.
+
+  - id: oos_golden_visa
+    lang: en
+    question: How do I get a UAE golden visa through property investment?
+    note: visa policy is not in the corpus, and the question is adjacent to everything that is
+
+  - id: oos_crime
+    lang: en
+    question: What is the crime rate in Business Bay?
+    note: names a community the warehouse knows, about a fact it holds no data on
+
+  - id: oos_london
+    lang: en
+    question: What is the rental yield on a flat in London?
+    note: the right concept, the wrong city — one token apart from an answerable question
+
+  - id: oos_schools
+    lang: en
+    question: Which primary school is nearest to Dubai Marina?
+
+  - id: oos_mortgage_lender
+    lang: en
+    question: Which bank offers the best mortgage rate in Dubai right now?
+    note: no lender data, and recommending a product would cross the advice boundary
+
+  - id: oos_football
+    lang: en
+    question: Who won the football match last night?
+    note: the control — unrelated to everything, and the only one every signal separates
+
+  - id: oos_ar_visa
+    lang: ar
+    question: ما هي متطلبات التأشيرة السياحية لمواطن كندي؟
+
+  - id: oos_hi_weather
+    lang: hi
+    question: अगस्त में दुबई का मौसम कैसा रहता है?
