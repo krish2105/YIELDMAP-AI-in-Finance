@@ -321,10 +321,12 @@ def main(argv: list[str] | None = None) -> int:
     print(f"{a['flagged']:,} of {a['total_transactions']:,} transactions flagged ({a['rate']:.2%})")
     for rule, count in a["by_rule"].items():
         print(f"    {rule:<24} {count:>7,}")
-    print(
-        f"\n{s['areas_scored']} areas scored, {s['areas_unscored']} too thin; "
-        f"median score {s['median_score']:.0f}"
-    )
+    # Every area being too thin to score is an ordinary outcome on a short drop, and the median
+    # is then None. Formatting it crashed the stage, and build_all turns a non-zero exit into
+    # SystemExit — so a summary line took the whole build down. The result was already written.
+    median = s["median_score"]
+    tail = f"median score {median:.0f}" if median is not None else "none thick enough to score"
+    print(f"\n{s['areas_scored']} areas scored, {s['areas_unscored']} too thin; {tail}")
     print("\n  highest risk areas")
     for r in p["areas"][:5]:
         if r["score"] is None:

@@ -274,9 +274,36 @@ def run(db_path: Path = DEFAULT_DB) -> dict[str, Any]:
         q = wh.query(TRAINING_SQL)
         provenance = wh.provenance()
 
-    fitted = fit(q.frame)
+    # Too little history to hold out a year and still have something to train on is a result, not
+    # a crash — see the same treatment in finance.index. A build stage that raises takes every
+    # later stage with it, because build_all turns a non-zero exit into SystemExit.
+    try:
+        fitted = fit(q.frame)
+    except ValueError as exc:
+        payload = {
+            "method_id": "hedonic_v1",
+            "target": "log price per square metre, back-transformed with Duan smearing",
+            "holdout": "most recent 12 months, split by time rather than at random",
+            "features": FEATURES,
+            "estimated": False,
+            "reason": str(exc),
+            "n_rows": q.frame.height,
+            "note": (
+                "The valuation model is scored on a held-out final year, so it needs enough "
+                "history to train on what comes before it. This drop does not have it. The "
+                "figures that come straight from the registry are unaffected; the modelled ones "
+                "are the ones a short window cannot support."
+            ),
+            "smearing_factor": None,
+            "sql": q.sql,
+            "metrics": {},
+        }
+        path = write_result("hedonic.json", payload, provenance)
+        return {"payload": payload, "path": path, "provenance": provenance}
+
     payload = {
         "method_id": "hedonic_v1",
+        "estimated": True,
         "target": "log price per square metre, back-transformed with Duan smearing",
         "holdout": "most recent 12 months, split by time rather than at random",
         "features": FEATURES,
@@ -294,7 +321,15 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     out = run(args.db)
-    m = out["payload"]["metrics"]
+    payload = out["payload"]
+
+    if not payload.get("estimated", True):
+        print(f"no model: {payload['reason']}")
+        print(f"  {payload['n_rows']:,} rows available")
+        print(f"wrote {out['path']} ({out['provenance']})")
+        return 0
+
+    m = payload["metrics"]
     print(f"trained on {m['n_train']:,} rows ({m['train_period'][0]} to {m['train_period'][1]})")
     print(f"tested on  {m['n_test']:,} rows ({m['test_period'][0]} to {m['test_period'][1]})")
     print(f"  holdout MAPE       {m['test']['mape']:.1%}")

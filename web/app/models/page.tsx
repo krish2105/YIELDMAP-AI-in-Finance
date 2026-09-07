@@ -26,11 +26,26 @@ interface IndexPayload {
   weighting: string;
   diagnostics: Record<string, number | null>;
   annual: { year: number; index: number; growth: number | null; n_pairs: number }[];
+  // Absent on older result files, which is why the check below treats undefined as estimated.
+  estimated?: boolean;
+  reason?: string;
+  note?: string;
+  n_pairs?: number;
 }
 
 export default function ModelsPage() {
   const { t } = useShell();
-  const hedonic = useResult<{ metrics: Hedonic; provenance: "REAL" | "SYNTHETIC"; target: string; holdout: string }>("/hedonic");
+  const hedonic = useResult<{
+    metrics: Hedonic;
+    provenance: "REAL" | "SYNTHETIC";
+    target: string;
+    holdout: string;
+    // Absent on older result files, so undefined means estimated.
+    estimated?: boolean;
+    reason?: string;
+    note?: string;
+    n_rows?: number;
+  }>("/hedonic");
   const index = useResult<IndexPayload>("/index");
 
   // The header stays even when the data does not. Returning only an error box drops the page's
@@ -49,6 +64,28 @@ export default function ModelsPage() {
         ) : (
           <Loading label={t("common.loading")} />
         )}
+      </>
+    );
+  }
+
+  // A drop too short to hold out a final year cannot be scored, and the result says so rather
+  // than shipping empty metrics that would render as NaN across the page.
+  if (hedonic.data.estimated === false) {
+    return (
+      <>
+        <PageHeader title={t("nav.models")} />
+        <ProvenanceNotice provenance={hedonic.data.provenance} />
+        <Section title="Valuation" hint={hedonic.data.target}>
+          <Card>
+            <p className="text-sm text-ink-secondary">{hedonic.data.note}</p>
+            <p className="mt-2 text-xs" style={{ color: "var(--warn-ink)" }}>
+              {hedonic.data.reason}
+            </p>
+            <p className="mt-2 text-xs text-ink-muted">
+              {(hedonic.data.n_rows ?? 0).toLocaleString()} rows available
+            </p>
+          </Card>
+        </Section>
       </>
     );
   }
@@ -109,7 +146,19 @@ export default function ModelsPage() {
         </Card>
       </Section>
 
-      {index.data ? (
+      {index.data && index.data.estimated === false ? (
+        <Section title="Price index" hint={index.data.method}>
+          <Card>
+            <p className="text-sm text-ink-secondary">{index.data.note}</p>
+            <p className="mt-2 text-xs" style={{ color: "var(--warn-ink)" }}>
+              {index.data.reason}
+            </p>
+            <p className="mt-2 text-xs text-ink-muted">
+              {(index.data.n_pairs ?? 0).toLocaleString()} repeat pairs found
+            </p>
+          </Card>
+        </Section>
+      ) : index.data ? (
         <Section title="Price index" hint={index.data.method}>
           <Card>
             <p className="mb-3 text-sm text-ink-secondary">
