@@ -36,11 +36,11 @@ Click any KPI tile and the query is right there. Cells with too few transactions
 
 | What | Where | Status |
 |---|---|---|
-| **Web app** | https://yieldmap-git-claude-yiel-5130d2-krishnamathur008-1499s-projects.vercel.app | twenty tabs, live. Open it on a phone — the layout is built for one |
+| **Web app** | https://yieldmap-krishnamathur008-1499s-projects.vercel.app | twenty tabs, live. Open it on a phone — the layout is built for one |
 | **Analytics API** | https://yieldmap-api.onrender.com | free tier: sleeps after 15 minutes idle, so the first request takes about 50 seconds |
 | API health | https://yieldmap-api.onrender.com/health | says which database is loaded and whether it is real or generated |
 | Ingest job | [Actions → Ingest DLD open data](https://github.com/krish2105/YIELDMAP-AI-in-Finance/actions/workflows/ingest.yml) | nightly; probe and discovery reports land in `docs/results/` |
-| Continuous integration | [Actions → CI](https://github.com/krish2105/YIELDMAP-AI-in-Finance/actions/workflows/ci.yml) | four jobs: tests, web, docs, security |
+| Continuous integration | [Actions → CI](https://github.com/krish2105/YIELDMAP-AI-in-Finance/actions/workflows/ci.yml) | five jobs: python, web, docs, security, e2e |
 | Notebook | [`docs/term4_yieldmap.ipynb`](docs/term4_yieldmap.ipynb) | GitHub renders it with its charts |
 
 **The figures are currently generated, not real, and the site says so on every page.** The Dubai
@@ -73,6 +73,7 @@ Every figure below is read from `docs/results/`, produced by the models in `fina
 | Cost | $0.00/month; the free tier binds at ~100 daily users, on embeddings before generation | stays free at course scale |
 | Journey | 38 Playwright tests green on a desktop viewport and a Pixel 7, run in CI | the full journey, on a phone |
 | Python | 843 tests | — |
+| Front end | 25 tests, including one that fails if a string renders in English under another locale | every key translated |
 | Coverage | 78.7% of 5,521 statements; the nine modules that are the sole mechanism behind a rule in `CLAUDE.md` are held to 85% and sit at 87–100% | 75% overall, 85% on those |
 | Access control | writes need a token the API signed; the role is never something a caller sends | no credential, no write |
 | Frame rate | 60fps desktop, 61fps on a Pixel 7 — measured in software rasterisation, so a floor | 60 / 30 |
