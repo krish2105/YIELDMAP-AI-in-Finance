@@ -246,3 +246,66 @@ class TestQuota:
         ledger.record("gemini", kind="embed")
         ledger.record("gemini", kind="generate")
         assert ledger.report()["today"]["_by_kind"]["gemini:embed"] == 1
+
+
+class TestTheDeployedDefaultIsSafeWithoutAKey:
+    """render.yaml sets LLM_PROVIDER=gemini, and that has to be safe before a key exists.
+
+    It said `fake` until now, with a comment claiming that adding GEMINI_API_KEY was all that was
+    needed to switch the tier on. That was false — `fake` *pins* the offline backend so CI cannot
+    reach the network — so adding the key changed nothing, and the only symptom was that nothing
+    changed. Setting the blueprint to `gemini` makes the sentence true, but only if the chain
+    still answers with no key present. That is what these check.
+    """
+
+    def test_gemini_without_a_key_still_ends_at_the_offline_backend(self, monkeypatch):
+        monkeypatch.setenv("LLM_PROVIDER", "gemini")
+        monkeypatch.delenv("GEMINI_API_KEY", raising=False)
+        chain = LLMProvider.from_env().chain
+        assert chain[0] == "gemini"
+        assert chain[-1] == "fake", "with no key the service must still be able to answer"
+
+    def test_the_gemini_backend_says_why_it_cannot_answer(self, monkeypatch):
+        """/ask/providers shows this reason, so it is what an operator reads after setting the
+        variable and wondering whether it took."""
+        monkeypatch.setenv("LLM_PROVIDER", "gemini")
+        monkeypatch.delenv("GEMINI_API_KEY", raising=False)
+        described = {row["backend"]: row for row in LLMProvider.from_env().describe()}
+        gemini = described["gemini"]
+        assert gemini["available"] is False
+        assert "GEMINI_API_KEY" in gemini["reason"]
+
+    def test_an_answer_still_comes_back(self, monkeypatch, tmp_path):
+        """The whole point of the fallthrough: no key is a degraded service, not a broken one."""
+        from rag.quota import QuotaLedger
+
+        monkeypatch.setenv("LLM_PROVIDER", "gemini")
+        monkeypatch.delenv("GEMINI_API_KEY", raising=False)
+        provider = LLMProvider(
+            chain=LLMProvider.from_env().chain, ledger=QuotaLedger(path=tmp_path / "q.json")
+        )
+        completion = provider.generate("anything", system="s", max_tokens=50)
+        assert completion.text.strip()
+        assert completion.backend == "fake"
+
+    def test_fake_still_pins_the_offline_backend(self, monkeypatch):
+        """CI depends on this: LLM_PROVIDER=fake must reach no network whatever else is set."""
+        monkeypatch.setenv("LLM_PROVIDER", "fake")
+        monkeypatch.setenv("GEMINI_API_KEY", "looks-real-but-must-be-ignored")
+        assert LLMProvider.from_env().chain == ("fake",)
+
+    def test_the_blueprint_and_the_code_agree(self):
+        """A blueprint naming a backend the chain builder does not know would silently fall back
+        to the full default chain, which is not what the file appears to say."""
+        import yaml
+
+        from rag.provider import DEFAULT_CHAIN
+        from scripts.coverage_gate import ROOT
+
+        blueprint = yaml.safe_load((ROOT / "render.yaml").read_text())
+        env = {e["key"]: e.get("value") for e in blueprint["services"][0]["envVars"]}
+        assert env["LLM_PROVIDER"] in DEFAULT_CHAIN, (
+            f"render.yaml sets LLM_PROVIDER={env['LLM_PROVIDER']!r}, which from_env does not "
+            f"recognise; it would quietly use the whole default chain instead"
+        )
+        assert "GEMINI_API_KEY" in env, "the key should be declared so an operator can see it"
