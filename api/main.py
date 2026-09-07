@@ -20,6 +20,7 @@ from api import auth as auth_module
 from api.limits import READS, enforce_by_address
 from api.observability import RequestLogMiddleware, configure_logging, configure_sentry
 from api.routes import ask, auth, market, memos, simulate
+from rag.provider import LLMProvider
 
 VERSION = "0.1.0"
 
@@ -32,6 +33,21 @@ NOT_ADVICE = (
 def _origins() -> list[str]:
     raw = os.environ.get("CORS_ALLOW_ORIGINS", "http://localhost:3000")
     return [o.strip() for o in raw.split(",") if o.strip()]
+
+
+def _llm_state() -> tuple[list[str], str | None]:
+    """The chain as configured, and the first backend in it that could answer right now.
+
+    Never raises: an unreachable provider is a degraded service, not a failed start, and a
+    deployment that cannot report its own configuration is worse than one running degraded.
+    """
+    try:
+        provider = LLMProvider.from_env()
+        chain = list(provider.chain)
+        answering = next((b["backend"] for b in provider.describe() if b["available"]), None)
+    except Exception:  # pragma: no cover - defensive; from_env does not raise today
+        return [], None
+    return chain, answering
 
 
 @asynccontextmanager
@@ -55,6 +71,11 @@ async def lifespan(app: FastAPI):
     for problem in problems:
         log.warning("authentication is not configured", extra={"context": {"problem": problem}})
 
+    # Backend names only, never a key. Setting GEMINI_API_KEY without also setting LLM_PROVIDER
+    # leaves the chain pinned to the offline backend, and the only symptom is that answers stay
+    # fixture text. The deploy log is where that has to be visible, because it is readable when
+    # the service itself is not.
+    chain, answering = _llm_state()
     log.info(
         "started",
         extra={
@@ -63,6 +84,8 @@ async def lifespan(app: FastAPI):
                 "sentry": sentry,
                 "auth_configured": auth_module.is_configured(),
                 "durable_store": bool(os.environ.get("DATABASE_URL")),
+                "llm_chain": chain,
+                "llm_answering": answering,
             }
         },
     )

@@ -39,6 +39,11 @@ services:
         value: gemini
       # The free tier. Set it in the dashboard and the chain above starts using it; leave it unset
       # and everything still works, degraded and labelled as such.
+      #
+      # A value already set in the dashboard wins over this file, so an existing service that was
+      # created when this said `fake` still says `fake` until someone changes it there. The deploy
+      # log is where to check: the `started` line carries llm_chain and llm_answering, so a chain
+      # of ["fake"] beside a key that is set names the mistake without reaching the service.
       - key: GEMINI_API_KEY
         sync: false
       - key: AGENT_MAX_REQUESTS_PER_RUN

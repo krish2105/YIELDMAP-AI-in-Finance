@@ -7,6 +7,8 @@ worth asserting at the boundary rather than trusting each route to remember.
 
 from __future__ import annotations
 
+import json
+import logging
 import re
 from pathlib import Path
 
@@ -313,3 +315,80 @@ class TestBoundsAgreeWithTheInterface:
             f"the screener page clamps to [{ui_floor}, {ui_ceiling}] but the API accepts "
             f"[{api_floor}, {api_ceiling}]"
         )
+
+
+class TestStartupLog:
+    """The deploy log has to say which backend will answer.
+
+    Render's dashboard shows the log without the service being reachable, and the failure this
+    guards against is silent by construction: setting GEMINI_API_KEY while LLM_PROVIDER is still
+    'fake' changes nothing, and the only symptom is that answers stay fixture text.
+    """
+
+    DUMMY_KEY = "not-a-real-key-1234567890"
+
+    @pytest.fixture(autouse=True)
+    def _restore_root_handlers(self):
+        """configure_logging() replaces the root handlers; put the test session's back after."""
+        root = logging.getLogger()
+        saved = list(root.handlers)
+        level = root.level
+        yield
+        root.handlers = saved
+        root.setLevel(level)
+
+    def _start(self, capsys) -> dict:
+        from api.main import create_app as build
+
+        with TestClient(build()):
+            pass
+        lines = [
+            json.loads(line)
+            for line in capsys.readouterr().out.splitlines()
+            if line.startswith("{")
+        ]
+        started = [line for line in lines if line.get("message") == "started"]
+        assert len(started) == 1, f"expected one 'started' line, got {len(started)}"
+        return started[0]
+
+    def test_it_names_the_chain_and_the_backend_that_will_answer(self, monkeypatch, capsys):
+        monkeypatch.setenv("LLM_PROVIDER", "gemini")
+        monkeypatch.setenv("GEMINI_API_KEY", self.DUMMY_KEY)
+
+        body = self._start(capsys)
+
+        assert body["llm_chain"] == ["gemini", "groq", "fake"]
+        assert body["llm_answering"] == "gemini"
+
+    def test_a_key_set_beside_the_offline_provider_shows_a_chain_that_never_reaches_it(
+        self, monkeypatch, capsys
+    ):
+        """The exact mistake: the key is set, and the chain stops before it."""
+        monkeypatch.setenv("LLM_PROVIDER", "fake")
+        monkeypatch.setenv("GEMINI_API_KEY", self.DUMMY_KEY)
+
+        body = self._start(capsys)
+
+        assert body["llm_chain"] == ["fake"]
+        assert body["llm_answering"] == "fake"
+
+    def test_no_key_still_reports_a_backend_that_answers(self, monkeypatch, capsys):
+        monkeypatch.setenv("LLM_PROVIDER", "gemini")
+        monkeypatch.delenv("GEMINI_API_KEY", raising=False)
+        monkeypatch.delenv("GROQ_API_KEY", raising=False)
+
+        body = self._start(capsys)
+
+        assert body["llm_chain"][-1] == "fake"
+        assert body["llm_answering"] == "fake"
+
+    def test_the_key_itself_never_reaches_the_log(self, monkeypatch, capsys):
+        monkeypatch.setenv("LLM_PROVIDER", "gemini")
+        monkeypatch.setenv("GEMINI_API_KEY", self.DUMMY_KEY)
+
+        from api.main import create_app as build
+
+        with TestClient(build()):
+            pass
+
+        assert self.DUMMY_KEY not in capsys.readouterr().out
