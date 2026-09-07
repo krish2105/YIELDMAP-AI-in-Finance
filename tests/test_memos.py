@@ -10,11 +10,12 @@ from __future__ import annotations
 import io
 import os
 import zipfile
+from xml.etree import ElementTree
 
 import pytest
 from fastapi.testclient import TestClient
 
-from agents.export import to_docx, to_html, to_markdown
+from agents.export import to_docx, to_html, to_markdown, xml_safe
 from agents.store import MemoStore, StoredMemo, new_id
 from api.main import create_app
 
@@ -234,6 +235,62 @@ class TestExport:
         document = zipfile.ZipFile(io.BytesIO(to_docx(a_memo()))).read("word/document.xml").decode()
         assert "Heading1" in document
         assert "•" in document
+
+
+class TestTheDocumentIsActuallyOpenable:
+    """A .docx that Word calls corrupt is a 200 that failed.
+
+    html.escape handles markup, not encoding. It leaves the control characters XML forbids, and
+    memo_md is model output — so one stray byte produced a download that the API reported as
+    success and Word refused to open, with nothing in between to say so. The deployed service
+    moved onto a live model on 2026-09-07, which widens the input space this has to survive.
+    """
+
+    @staticmethod
+    def _document(memo: dict) -> str:
+        return zipfile.ZipFile(io.BytesIO(to_docx(memo))).read("word/document.xml").decode("utf-8")
+
+    @pytest.mark.parametrize(
+        ("name", "char"),
+        [
+            ("nul", "\x00"),
+            ("bell", "\x07"),
+            ("shift-out", "\x0e"),
+            ("escape", "\x1b"),
+        ],
+    )
+    def test_a_control_character_does_not_corrupt_the_document(self, name, char):
+        memo = a_memo(memo_md=f"# Dubai Marina\n\nThe yield is 6.2%.{char} Still readable.\n")
+
+        document = self._document(memo)
+
+        ElementTree.fromstring(document)  # raises ParseError if Word would reject it
+        assert "Still readable." in document, "sanitising must not eat the sentence"
+
+    def test_a_c1_control_code_is_stripped_though_it_would_not_have_broken_anything(self):
+        """0x7f-0x9f are legal in XML 1.0, so this is hygiene rather than a corruption fix.
+
+        Kept out of the parametrised test above deliberately: that case would have passed with or
+        without the fix, which is the kind of test that makes a suite look stronger than it is.
+        """
+        assert xml_safe("before\x7fafter") == "beforeafter"
+
+    def test_the_characters_xml_does_allow_are_kept(self):
+        cleaned = xml_safe("tab\there, newline\nhere, return\rhere, émoji ✅")
+        assert cleaned == "tab\there, newline\nhere, return\rhere, émoji ✅"
+
+    def test_escaping_still_happens_after_sanitising(self):
+        document = self._document(a_memo(memo_md="# A < B & C > D"))
+        assert "&lt;" in document and "&amp;" in document
+        assert "<w:t" in document, "the markup itself is still markup"
+
+    def test_a_document_that_would_not_parse_is_an_error_not_a_download(self, monkeypatch):
+        """The invariant behind the fix, so a field added later without esc() is caught here."""
+        import agents.export as mod
+
+        monkeypatch.setattr(mod, "xml_safe", lambda text: text)
+        with pytest.raises(ValueError, match="not well formed"):
+            to_docx(a_memo(memo_md="broken\x00here"))
 
 
 class TestEndpoints:
