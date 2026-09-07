@@ -34,8 +34,14 @@ def provider(tmp_path) -> LLMProvider:
 
 
 class TestCaseSet:
-    def test_there_are_thirty_cases(self, cases):
-        assert len(cases) == 30
+    def test_the_set_has_answerable_and_out_of_scope_cases(self, cases):
+        answerable = [c for c in cases if c.get("expect_doc") or c.get("expect_area")]
+        out_of_scope = [c for c in cases if c not in answerable]
+        assert len(answerable) == 30
+        assert len(out_of_scope) >= 6, (
+            "the out-of-scope cases are what stop the eval rewarding a system that answers "
+            "everything; without them answer_rate is 1.0 by construction"
+        )
 
     def test_case_ids_are_unique(self, cases):
         assert len({c["id"] for c in cases}) == len(cases)
@@ -176,8 +182,8 @@ def report():
 
 class TestGate:
     def test_the_whole_set_is_scored(self, report):
-        assert report["n_cases"] == 30
-        assert len(report["cases"]) == 30
+        assert report["n_cases"] == len(report["cases"])
+        assert report["n_answerable"] + report["n_out_of_scope"] == report["n_cases"]
 
     def test_recall_meets_its_target(self, report):
         assert report["recall_at_k"] >= RECALL_TARGET, report["failures"]
@@ -205,3 +211,50 @@ class TestGate:
 
     def test_the_verdict_combines_both_gates(self, report):
         assert report["passed"] == (report["recall_met"] and report["faithfulness_met"])
+
+
+class TestOutOfScopeCasesAreScoredSeparately:
+    """Recall asks whether the right source was found; refusal asks whether the system knew there
+    was none. Averaging them produces a number that answers neither, and the direction of the
+    error is the dangerous one: adding unanswerable questions would *lower* recall, making a
+    system that correctly declines look worse than one that fabricates.
+    """
+
+    def test_recall_is_computed_over_answerable_cases_only(self, report):
+        # Every out-of-scope case is currently answered by the fixture backend. If they counted
+        # toward recall it would read 30/38 = 0.79 and fail its own gate.
+        assert report["recall_at_k"] >= RECALL_TARGET
+        assert report["n_out_of_scope"] > 0
+
+    def test_the_refusal_rate_is_reported(self, report):
+        assert report["refusal_rate"] is not None
+        assert 0.0 <= report["refusal_rate"] <= 1.0
+
+    def test_refusal_is_not_gated_against_the_fixture_backend(self, report):
+        """The offline backend answers every prompt by construction, so gating refusal there
+        would fail the build for a property of the stand-in rather than of the system."""
+        if report["degraded"]:
+            assert report["refusal_gated"] is False
+
+    def test_an_out_of_scope_question_that_was_answered_is_named(self, report):
+        """A rate alone does not say which question was fabricated against."""
+        answered = report["answered_out_of_scope"]
+        assert len(answered) == round((1 - report["refusal_rate"]) * report["n_out_of_scope"])
+        for case in answered:
+            assert case["question"].strip()
+
+    def test_the_language_breakdown_agrees_with_the_headline(self, report):
+        """The totals are split one way and the breakdown another is how a table stops being
+        read. Both now count answerable and out-of-scope separately."""
+        assert (
+            sum(r["answerable"] for r in report["by_language"].values()) == report["n_answerable"]
+        )
+        assert (
+            sum(r["out_of_scope"] for r in report["by_language"].values())
+            == report["n_out_of_scope"]
+        )
+
+    def test_the_report_says_why_there_is_no_retrieval_threshold(self, report):
+        """The obvious fix — refuse below a similarity score — was measured and does not work on
+        this corpus. The report points at the evidence rather than leaving it unexplained."""
+        assert "calibrate_relevance" in report["refusal_note"]

@@ -1,11 +1,16 @@
 {
   "provenance": "SYNTHETIC",
-  "n_cases": 30,
+  "n_cases": 38,
+  "n_answerable": 30,
+  "n_out_of_scope": 8,
   "k": 5,
   "recall_at_k": 1.0,
   "recall_at_1": 0.8667,
   "mrr": 0.9094,
   "answer_rate": 1.0,
+  "refusal_rate": 0.0,
+  "refusal_gated": false,
+  "refusal_note": "Out-of-scope questions the corpus cannot answer. Declining is correct; answering is a fabrication. Not gated against the offline fixture backend, which answers every prompt by construction. scripts/calibrate_relevance.py records why there is no retrieval-score threshold behind this: on a corpus this size no signal separates an unanswerable question from a topically adjacent one.",
   "faithfulness": 1.0,
   "recall_target": 0.8,
   "faithfulness_target": 0.9,
@@ -22,22 +27,31 @@
   },
   "by_language": {
     "ar": {
-      "cases": 4,
+      "cases": 5,
+      "answerable": 4,
+      "out_of_scope": 1,
       "recall": 1.0,
       "faithfulness": 1.0,
-      "answer_rate": 1.0
+      "answer_rate": 1.0,
+      "refusal_rate": 0.0
     },
     "en": {
-      "cases": 23,
+      "cases": 29,
+      "answerable": 23,
+      "out_of_scope": 6,
       "recall": 1.0,
       "faithfulness": 1.0,
-      "answer_rate": 1.0
+      "answer_rate": 1.0,
+      "refusal_rate": 0.0
     },
     "hi": {
-      "cases": 3,
+      "cases": 4,
+      "answerable": 3,
+      "out_of_scope": 1,
       "recall": 1.0,
       "faithfulness": 1.0,
-      "answer_rate": 1.0
+      "answer_rate": 1.0,
+      "refusal_rate": 0.0
     }
   },
   "retrieval_backend": "tfidf-svd",
@@ -45,6 +59,210 @@
   "caveat": "Scored against the offline TF-IDF fallback because no embedding provider was reachable. Supplying GEMINI_API_KEY reruns the same harness against real embeddings.",
   "failures": [],
   "refusals": [],
+  "answered_out_of_scope": [
+    {
+      "id": "oos_golden_visa",
+      "lang": "en",
+      "question": "How do I get a UAE golden visa through property investment?",
+      "expected": null,
+      "expected_kind": null,
+      "hit_rank": null,
+      "recalled": false,
+      "faithful": true,
+      "answered": true,
+      "factual_sentences": 0,
+      "cited_sentences": 0,
+      "retrieved": [
+        "ejari",
+        "dubai investment park first",
+        "dubai investment park second",
+        "dld_fees",
+        "rent_increase_rules"
+      ],
+      "notes": [
+        "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
+      ]
+    },
+    {
+      "id": "oos_crime",
+      "lang": "en",
+      "question": "What is the crime rate in Business Bay?",
+      "expected": null,
+      "expected_kind": null,
+      "hit_rank": null,
+      "recalled": false,
+      "faithful": true,
+      "answered": true,
+      "factual_sentences": 0,
+      "cited_sentences": 0,
+      "retrieved": [
+        "business bay",
+        "rent_increase_rules",
+        "rent_increase_rules",
+        "methodology",
+        "dubai investment park first"
+      ],
+      "notes": [
+        "the question names Business Bay, so that area's recorded figures were included",
+        "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
+      ]
+    },
+    {
+      "id": "oos_london",
+      "lang": "en",
+      "question": "What is the rental yield on a flat in London?",
+      "expected": null,
+      "expected_kind": null,
+      "hit_rank": null,
+      "recalled": false,
+      "faithful": true,
+      "answered": true,
+      "factual_sentences": 0,
+      "cited_sentences": 0,
+      "retrieved": [
+        "rent_increase_rules",
+        "rent_increase_rules",
+        "methodology",
+        "service_charges",
+        "dld_fees"
+      ],
+      "notes": [
+        "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
+      ]
+    },
+    {
+      "id": "oos_schools",
+      "lang": "en",
+      "question": "Which primary school is nearest to Dubai Marina?",
+      "expected": null,
+      "expected_kind": null,
+      "hit_rank": null,
+      "recalled": false,
+      "faithful": true,
+      "answered": true,
+      "factual_sentences": 0,
+      "cited_sentences": 0,
+      "retrieved": [
+        "marsa dubai",
+        "ejari",
+        "rent_increase_rules",
+        "dld_fees",
+        "dld_fees"
+      ],
+      "notes": [
+        "the question names Dubai Marina, so that area's recorded figures were included",
+        "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
+      ]
+    },
+    {
+      "id": "oos_mortgage_lender",
+      "lang": "en",
+      "question": "Which bank offers the best mortgage rate in Dubai right now?",
+      "expected": null,
+      "expected_kind": null,
+      "hit_rank": null,
+      "recalled": false,
+      "faithful": true,
+      "answered": true,
+      "factual_sentences": 0,
+      "cited_sentences": 0,
+      "retrieved": [
+        "rent_increase_rules",
+        "rent_increase_rules",
+        "dld_fees",
+        "dld_fees",
+        "dld_fees"
+      ],
+      "notes": [
+        "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
+      ]
+    },
+    {
+      "id": "oos_football",
+      "lang": "en",
+      "question": "Who won the football match last night?",
+      "expected": null,
+      "expected_kind": null,
+      "hit_rank": null,
+      "recalled": false,
+      "faithful": true,
+      "answered": true,
+      "factual_sentences": 0,
+      "cited_sentences": 0,
+      "retrieved": [
+        "al yelayiss 1",
+        "al safouh second",
+        "business bay",
+        "nakhlat jumeirah",
+        "al satwa"
+      ],
+      "notes": [
+        "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
+      ]
+    },
+    {
+      "id": "oos_ar_visa",
+      "lang": "ar",
+      "question": "ما هي متطلبات التأشيرة السياحية لمواطن كندي؟",
+      "expected": null,
+      "expected_kind": null,
+      "hit_rank": null,
+      "recalled": false,
+      "faithful": true,
+      "answered": true,
+      "factual_sentences": 0,
+      "cited_sentences": 0,
+      "retrieved": [
+        "ejari",
+        "methodology",
+        "service_charges",
+        "dubai investment park second",
+        "nad al shiba first"
+      ],
+      "notes": [
+        "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
+      ]
+    },
+    {
+      "id": "oos_hi_weather",
+      "lang": "hi",
+      "question": "अगस्त में दुबई का मौसम कैसा रहता है?",
+      "expected": null,
+      "expected_kind": null,
+      "hit_rank": null,
+      "recalled": false,
+      "faithful": true,
+      "answered": true,
+      "factual_sentences": 0,
+      "cited_sentences": 0,
+      "retrieved": [
+        "dld_fees",
+        "ejari",
+        "service_charges",
+        "rent_increase_rules",
+        "methodology"
+      ],
+      "notes": [
+        "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
+      ]
+    }
+  ],
   "cases": [
     {
       "id": "en_rent_increase",
@@ -801,6 +1019,208 @@
       ],
       "notes": [
         "the question names Jumeirah Village Circle, so that area's recorded figures were included",
+        "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
+      ]
+    },
+    {
+      "id": "oos_golden_visa",
+      "lang": "en",
+      "question": "How do I get a UAE golden visa through property investment?",
+      "expected": null,
+      "expected_kind": null,
+      "hit_rank": null,
+      "recalled": false,
+      "faithful": true,
+      "answered": true,
+      "factual_sentences": 0,
+      "cited_sentences": 0,
+      "retrieved": [
+        "ejari",
+        "dubai investment park first",
+        "dubai investment park second",
+        "dld_fees",
+        "rent_increase_rules"
+      ],
+      "notes": [
+        "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
+      ]
+    },
+    {
+      "id": "oos_crime",
+      "lang": "en",
+      "question": "What is the crime rate in Business Bay?",
+      "expected": null,
+      "expected_kind": null,
+      "hit_rank": null,
+      "recalled": false,
+      "faithful": true,
+      "answered": true,
+      "factual_sentences": 0,
+      "cited_sentences": 0,
+      "retrieved": [
+        "business bay",
+        "rent_increase_rules",
+        "rent_increase_rules",
+        "methodology",
+        "dubai investment park first"
+      ],
+      "notes": [
+        "the question names Business Bay, so that area's recorded figures were included",
+        "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
+      ]
+    },
+    {
+      "id": "oos_london",
+      "lang": "en",
+      "question": "What is the rental yield on a flat in London?",
+      "expected": null,
+      "expected_kind": null,
+      "hit_rank": null,
+      "recalled": false,
+      "faithful": true,
+      "answered": true,
+      "factual_sentences": 0,
+      "cited_sentences": 0,
+      "retrieved": [
+        "rent_increase_rules",
+        "rent_increase_rules",
+        "methodology",
+        "service_charges",
+        "dld_fees"
+      ],
+      "notes": [
+        "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
+      ]
+    },
+    {
+      "id": "oos_schools",
+      "lang": "en",
+      "question": "Which primary school is nearest to Dubai Marina?",
+      "expected": null,
+      "expected_kind": null,
+      "hit_rank": null,
+      "recalled": false,
+      "faithful": true,
+      "answered": true,
+      "factual_sentences": 0,
+      "cited_sentences": 0,
+      "retrieved": [
+        "marsa dubai",
+        "ejari",
+        "rent_increase_rules",
+        "dld_fees",
+        "dld_fees"
+      ],
+      "notes": [
+        "the question names Dubai Marina, so that area's recorded figures were included",
+        "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
+      ]
+    },
+    {
+      "id": "oos_mortgage_lender",
+      "lang": "en",
+      "question": "Which bank offers the best mortgage rate in Dubai right now?",
+      "expected": null,
+      "expected_kind": null,
+      "hit_rank": null,
+      "recalled": false,
+      "faithful": true,
+      "answered": true,
+      "factual_sentences": 0,
+      "cited_sentences": 0,
+      "retrieved": [
+        "rent_increase_rules",
+        "rent_increase_rules",
+        "dld_fees",
+        "dld_fees",
+        "dld_fees"
+      ],
+      "notes": [
+        "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
+      ]
+    },
+    {
+      "id": "oos_football",
+      "lang": "en",
+      "question": "Who won the football match last night?",
+      "expected": null,
+      "expected_kind": null,
+      "hit_rank": null,
+      "recalled": false,
+      "faithful": true,
+      "answered": true,
+      "factual_sentences": 0,
+      "cited_sentences": 0,
+      "retrieved": [
+        "al yelayiss 1",
+        "al safouh second",
+        "business bay",
+        "nakhlat jumeirah",
+        "al satwa"
+      ],
+      "notes": [
+        "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
+      ]
+    },
+    {
+      "id": "oos_ar_visa",
+      "lang": "ar",
+      "question": "ما هي متطلبات التأشيرة السياحية لمواطن كندي؟",
+      "expected": null,
+      "expected_kind": null,
+      "hit_rank": null,
+      "recalled": false,
+      "faithful": true,
+      "answered": true,
+      "factual_sentences": 0,
+      "cited_sentences": 0,
+      "retrieved": [
+        "ejari",
+        "methodology",
+        "service_charges",
+        "dubai investment park second",
+        "nad al shiba first"
+      ],
+      "notes": [
+        "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
+        "1 sentence(s) were removed because they stated a fact without citing a source",
+        "Answered by the offline fixture backend because no model provider was reachable."
+      ]
+    },
+    {
+      "id": "oos_hi_weather",
+      "lang": "hi",
+      "question": "अगस्त में दुबई का मौसम कैसा रहता है?",
+      "expected": null,
+      "expected_kind": null,
+      "hit_rank": null,
+      "recalled": false,
+      "faithful": true,
+      "answered": true,
+      "factual_sentences": 0,
+      "cited_sentences": 0,
+      "retrieved": [
+        "dld_fees",
+        "ejari",
+        "service_charges",
+        "rent_increase_rules",
+        "methodology"
+      ],
+      "notes": [
         "embedding provider unavailable: only the offline fixture backend is available; using a TF-IDF approximation fitted on the corpus, which captures co-occurrence rather than meaning",
         "1 sentence(s) were removed because they stated a fact without citing a source",
         "Answered by the offline fixture backend because no model provider was reachable."
