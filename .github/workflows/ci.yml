@@ -139,6 +139,12 @@ jobs:
         # from the synthetic stand-in must never appear alongside real ones.
         run: uv run python scripts/guard_synthetic.py
 
+      - name: The reachability table still describes the probe
+        # docs/datasets.md's host table is generated from docs/results/source_probe.json. It was
+        # prose until 2026-09-07 and had drifted from the artefact it claimed to report, which is
+        # what a hand-typed measurement does when nothing compares the two.
+        run: uv run python -m scripts.render_probe_table --check
+
       - name: The notebook still executes
         # It is a graded artefact and it ships with its outputs stored, which is exactly how it
         # rots: a renamed function leaves it rendering last week's figures perfectly, because the
