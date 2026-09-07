@@ -107,6 +107,32 @@ Fix it once, in the dashboard: **Render → yieldmap-api → Settings → Build 
 deploy. The same applies to Vercel, which takes production from the repository's default branch
 and needs no action.
 
+## Memos are being lost on restart
+
+`GET /health` reports `store.durable`. When it is `false` the API is writing memos to the
+container's disk, which a free-tier instance discards on every restart and sleep — silently, and
+with no error anywhere.
+
+The fix is `DATABASE_URL`. It points at the Supabase project shared with RAQIB, and YIELDMAP's
+tables live in the `yieldmap` schema rather than `public`, which RAQIB owns. That isolation is
+enforced twice over: every statement names the schema, and each pooled connection pins
+`search_path` to it. The first is what makes it correct behind a transaction pooler, where session
+state does not survive between statements.
+
+To set it up from scratch:
+
+1. **Supabase → the project → Connect.** Take the **session pooler** URI (port 5432) or the direct
+   connection. The transaction pooler (6543) also works, but the session pooler is the better fit
+   for a long-lived connection pool.
+2. Substitute the database password into it. Supabase does not display it after project creation —
+   reset it under Settings → Database if it is not to hand.
+3. **Render → yieldmap-api → Environment → `DATABASE_URL`** → paste → Save. `DATABASE_SCHEMA` is
+   already `yieldmap` from the blueprint.
+4. The service redeploys. Confirm with `GET /health`: `store.durable` is `true` and
+   `store.schema` is `yieldmap`.
+
+The schema and its table are created on first connection if absent, so there is no migration step.
+
 ## What has no procedure yet
 
 Said plainly, because a runbook that pretends to cover everything is worse than one with gaps:

@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import uuid
 from dataclasses import asdict, dataclass, field
 from datetime import UTC, datetime
@@ -126,8 +127,33 @@ def new_id() -> str:
     return uuid.uuid4().hex[:12]
 
 
+# The schema these tables live in.
+#
+# This database is shared with another project: YIELDMAP's app tables sit in their own namespace so
+# that neither can collide with, shadow or accidentally drop the other's. `public` is left entirely
+# alone. Overridable for a dedicated database, where `public` is a reasonable answer.
+DEFAULT_SCHEMA = "yieldmap"
+
+# Postgres identifiers are not parameterisable, so the schema name is interpolated — which means it
+# has to be checked rather than trusted. It arrives from the environment, and an environment
+# variable is exactly the kind of thing that ends up holding whatever someone pasted.
+_SCHEMA_NAME = re.compile(r"^[a-z_][a-z0-9_]{0,62}$")
+
+
+def schema_name(value: str | None = None) -> str:
+    name = (value if value is not None else os.environ.get("DATABASE_SCHEMA", "")).strip()
+    name = name or DEFAULT_SCHEMA
+    if not _SCHEMA_NAME.match(name):
+        raise ValueError(
+            f"{name!r} is not a usable Postgres schema name: lower-case letters, digits and "
+            f"underscores, starting with a letter or underscore"
+        )
+    return name
+
+
 SCHEMA = """
-create table if not exists memo (
+create schema if not exists {schema};
+create table if not exists {schema}.memo (
     id            text primary key,
     run_id        text not null,
     area_key      text not null,
@@ -144,7 +170,7 @@ create table if not exists memo (
     user_id       text,
     created_at    timestamptz not null default now()
 );
-create index if not exists memo_created_idx on memo (created_at desc);
+create index if not exists memo_created_idx on {schema}.memo (created_at desc);
 """
 
 _COLUMNS = (
@@ -162,13 +188,35 @@ class PostgresMemoStore:
 
     durable = True
 
-    def __init__(self, dsn: str) -> None:
+    def __init__(self, dsn: str, schema: str | None = None) -> None:
         from psycopg_pool import ConnectionPool
 
         self.dsn = dsn
-        self._pool = ConnectionPool(dsn, min_size=1, max_size=4, open=True, timeout=10)
+        self.schema = schema_name(schema)
+        # Every statement names the schema explicitly. search_path below is set as well, but a
+        # transaction pooler — which is what a free-tier deployment usually gets — hands each
+        # transaction a different server connection, so session state set once cannot be relied
+        # on. Qualifying the name is what makes this correct under either pooler; the search_path
+        # is the second line of defence.
+        self.table = f"{self.schema}.memo"
+
+        # Every pooled connection starts with the search path already pointing here, so the
+        # unqualified table names in the statements below can only ever resolve inside this
+        # schema. Without it a pooled connection could reach a same-named table in public — which
+        # in a shared database is somebody else's.
+        def configure(conn) -> None:
+            # `execute` opens a transaction, and the pool requires a connection handed back to it
+            # to be idle — psycopg discards one left INTRANS, so every checkout times out. Commit.
+            conn.execute(f"set search_path to {self.schema}")
+            conn.commit()
+
+        self._pool = ConnectionPool(
+            dsn, min_size=1, max_size=4, open=True, timeout=10, configure=configure
+        )
         with self._pool.connection() as conn:
-            conn.execute(SCHEMA)
+            # str.replace rather than str.format: the DDL contains '{}'::jsonb defaults, and
+            # format reads those braces as placeholders.
+            conn.execute(SCHEMA.replace("{schema}", self.schema))
 
     def close(self) -> None:
         self._pool.close()
@@ -179,14 +227,14 @@ class PostgresMemoStore:
         with self._pool.connection() as conn:
             conn.execute(
                 """
-                insert into memo (id, run_id, area_key, memo_md, citations, disagreements,
+                insert into {table} (id, run_id, area_key, memo_md, citations, disagreements,
                                   findings, audit, budget, status, provenance, user_id, created_at)
                 values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 on conflict (id) do update set
                     memo_md = excluded.memo_md,
                     status = excluded.status,
                     audit = excluded.audit
-                """,
+                """.replace("{table}", self.table),
                 (
                     memo.id,
                     memo.run_id,
@@ -206,8 +254,8 @@ class PostgresMemoStore:
             # Bounded the same way as the file store, so a long-running deployment cannot fill a
             # free tier's disk with memos nobody will read.
             conn.execute(
-                "delete from memo where id in ("
-                "  select id from memo order by created_at desc offset %s"
+                f"delete from {self.table} where id in ("  # noqa: S608 - validated identifier
+                f"  select id from {self.table} order by created_at desc offset %s"
                 ")",
                 (MAX_MEMOS,),
             )
@@ -238,7 +286,7 @@ class PostgresMemoStore:
             return None
         with self._pool.connection() as conn:
             row = conn.execute(
-                f"select {_COLUMNS} from memo where id = %s",  # noqa: S608 - fixed column list
+                f"select {_COLUMNS} from {self.table} where id = %s",  # noqa: S608 - fixed columns
                 (memo_id,),
             ).fetchone()
         return self._row(row) if row else None
@@ -246,7 +294,7 @@ class PostgresMemoStore:
     def list(self, *, limit: int = 50) -> list[StoredMemo]:
         with self._pool.connection() as conn:
             rows = conn.execute(
-                f"select {_COLUMNS} from memo order by created_at desc limit %s",  # noqa: S608
+                f"select {_COLUMNS} from {self.table} order by created_at desc limit %s",  # noqa: S608
                 (limit,),
             ).fetchall()
         return [self._row(r) for r in rows]
@@ -263,6 +311,11 @@ def build_store(dsn: str | None = None) -> FileMemoStore | PostgresMemoStore:
     if not dsn:
         return FileMemoStore()
     return PostgresMemoStore(dsn)
+
+
+def store_schema() -> str:
+    """The schema a Postgres store would use, for /health to report without connecting."""
+    return schema_name()
 
 
 # The name the rest of the codebase imports. Kept so call sites read as "a memo store" rather than

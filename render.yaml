@@ -47,8 +47,19 @@ services:
         sync: false
       # Durable memo storage. Unset, the API falls back to a file store on the container's
       # ephemeral disk, which loses every memo on restart — /health reports which is in use.
+      #
+      # This points at a Supabase database shared with another project, which is why the schema
+      # below exists: YIELDMAP's tables live in their own namespace and every statement names it,
+      # so neither project can reach the other's. Use the **session** pooler (port 5432) or the
+      # direct connection; the transaction pooler works too, because the schema is qualified per
+      # statement rather than set once per session.
       - key: DATABASE_URL
         sync: false
+      # The namespace the memo table lives in. Defaults to `yieldmap` in code, and is set here so
+      # the sharing is visible to anyone reading the blueprint rather than being a default they
+      # have to go and look up.
+      - key: DATABASE_SCHEMA
+        value: yieldmap
       # Error tracking. Unset, Sentry stays off and the service runs normally.
       - key: SENTRY_DSN
         sync: false
