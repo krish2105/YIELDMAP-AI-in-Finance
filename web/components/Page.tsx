@@ -73,6 +73,9 @@ export function ErrorState({ message, onRetry }: { message: string; onRetry?: ()
   return (
     <div
       role="alert"
+      // The provenance banner also carries role="alert", so a test asking "did anything alert?"
+      // matches on a healthy page and proves nothing. This names the error state specifically.
+      data-testid="error-state"
       className="rounded-xl border border-line bg-sunken px-4 py-6 text-sm text-ink-secondary"
     >
       <p className="mb-2 font-medium text-ink">{message}</p>

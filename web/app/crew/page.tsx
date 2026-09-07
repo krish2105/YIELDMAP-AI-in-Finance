@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 
 import { AdviceNotice } from "@/components/Notices";
-import { Card, Empty, PageHeader, Section } from "@/components/Page";
+import { Card, Empty, ErrorState, PageHeader, Section } from "@/components/Page";
 import { useShell } from "@/components/Providers";
 import { API_BASE, api } from "@/lib/api";
 import { useAreas } from "@/lib/hooks";
@@ -195,7 +195,12 @@ export default function CrewPage() {
 
       <Section title="What it costs" hint="Zero, by construction.">
         <Card>
-          {providers.data ? (
+          {providers.isError ? (
+            <ErrorState
+              message={(providers.error as Error).message}
+              onRetry={() => providers.refetch()}
+            />
+          ) : providers.data ? (
             <>
               <p className="mb-2 text-sm text-ink-secondary">
                 Provider chain: {providers.data.chain.join(" → ")}

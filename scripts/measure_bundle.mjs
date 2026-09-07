@@ -31,6 +31,7 @@ for (const page of PAGES) {
   let raw = 0;
   let brotli = 0;
   let gzip = 0;
+  let three = 0;
   for (const url of urls) {
     const file = join(STATIC, url.slice("/_next/static/".length));
     if (!existsSync(file)) continue;
@@ -38,8 +39,19 @@ for (const page of PAGES) {
     raw += statSync(file).size;
     brotli += brotliCompressSync(bytes).length;
     gzip += gzipSync(bytes, { level: 9 }).length;
+    // A marker only three.js defines, so this counts the library rather than a mention of it.
+    if (bytes.includes("WebGLRenderer") || bytes.includes("PerspectiveCamera")) {
+      three += statSync(file).size;
+    }
   }
-  pages.push({ page, chunks: urls.length, raw_bytes: raw, brotli_bytes: brotli, gzip_bytes: gzip });
+  pages.push({
+    page,
+    chunks: urls.length,
+    raw_bytes: raw,
+    brotli_bytes: brotli,
+    gzip_bytes: gzip,
+    three_bytes: three,
+  });
 }
 
 const heaviest = pages.reduce((a, b) => (b.brotli_bytes > a.brotli_bytes ? b : a));
@@ -72,3 +84,38 @@ for (const p of pages) {
   );
 }
 console.log("\nwrote docs/results/bundle.json");
+
+/**
+ * The budget, and why it is enforced rather than merely recorded.
+ *
+ * 836 KB of three.js once sat in the shared chunk, so all twenty routes paid for a map that one
+ * of them draws. It was found by measuring, fixed by making the city a dynamic import, and then
+ * nothing stopped it coming back — an unguarded `import` in a shared component is all it takes,
+ * and the symptom is a slower site rather than a broken one, which is the kind nobody reports.
+ *
+ * The ceiling is set above today's heaviest page with room for ordinary growth, so it fails on a
+ * regression rather than on a feature.
+ */
+const BUDGET_KB = 340;
+const heaviestKb = Math.round(heaviest.brotli_bytes / 1024);
+
+// three.js is the specific regression this guards. It belongs in the city chunk and nowhere else,
+// so its presence in any page's initial JavaScript means the dynamic import has been undone.
+const withThree = pages.filter((p) => p.chunks > 0 && p.three_bytes > 0);
+
+const problems = [];
+if (heaviestKb > BUDGET_KB) {
+  problems.push(
+    `${heaviest.page} sends ${heaviestKb}KB brotli, over the ${BUDGET_KB}KB budget`,
+  );
+}
+for (const p of withThree) {
+  problems.push(`${p.page} loads three.js in its initial JavaScript; the city must stay lazy`);
+}
+
+if (problems.length) {
+  console.error("\nbundle budget:");
+  for (const problem of problems) console.error(`  ${problem}`);
+}
+if (process.argv.includes("--gate") && problems.length) process.exit(1);
+console.log(`budget: ${heaviestKb}KB of ${BUDGET_KB}KB on the heaviest page (${heaviest.page})`);

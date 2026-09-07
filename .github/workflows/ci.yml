@@ -199,6 +199,19 @@ jobs:
         # caption and sample-size chip in the interface.
         run: npm run e2e
 
+      - name: Page weight budget
+        # Measured since the three.js fix and never enforced, which is how an 836 KB shared chunk
+        # would come back: an unguarded import in a shared component is all it takes, and the
+        # symptom is a slower site rather than a broken one. Runs after Playwright so the two do
+        # not contend for the port.
+        run: |
+          npm --workspace @yieldmap/web run start -- --port 3100 &
+          for i in $(seq 1 30); do
+            curl -sSf -o /dev/null http://127.0.0.1:3100 && break
+            sleep 2
+          done
+          node scripts/measure_bundle.mjs --gate
+
       - name: Publish what was measured
         if: always()
         uses: actions/upload-artifact@v4
@@ -208,6 +221,7 @@ jobs:
             docs/results/fps_*.json
             docs/results/accessibility_*.json
             docs/results/palette.json
+            docs/results/bundle.json
           if-no-files-found: warn
 
       - name: The report from a failed run

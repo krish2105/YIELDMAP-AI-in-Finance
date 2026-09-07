@@ -35,11 +35,25 @@ export default function DevelopersPage() {
   const { t } = useShell();
   const developers = useResult<Developers>("/developers");
 
-  if (developers.isLoading) return <Loading label={t("common.loading")} />;
-  if (developers.isError) {
-    return <ErrorState message={(developers.error as Error).message} onRetry={() => developers.refetch()} />;
+  // The header stays even when the data does not. Returning only an error box drops the page's
+  // own title, so someone looking at it cannot tell which page failed — and leaves the document
+  // with no h1 at all, which is both an accessibility fault and how the degraded-mode test found
+  // this.
+  if (developers.isLoading || developers.isError || !developers.data) {
+    return (
+      <>
+        <PageHeader title={t("nav.developers")} />
+        {developers.isError ? (
+          <ErrorState
+            message={(developers.error as Error).message}
+            onRetry={() => developers.refetch()}
+          />
+        ) : (
+          <Loading label={t("common.loading")} />
+        )}
+      </>
+    );
   }
-  if (!developers.data) return null;
 
   const { summary, league } = developers.data;
 

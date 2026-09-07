@@ -25,11 +25,25 @@ export default function DataPage() {
   const { t } = useShell();
   const freshness = useResult<Freshness>("/data/freshness");
 
-  if (freshness.isLoading) return <Loading label={t("common.loading")} />;
-  if (freshness.isError) {
-    return <ErrorState message={(freshness.error as Error).message} onRetry={() => freshness.refetch()} />;
+  // The header stays even when the data does not. Returning only an error box drops the page's
+  // own title, so someone looking at it cannot tell which page failed — and leaves the document
+  // with no h1 at all, which is both an accessibility fault and how the degraded-mode test found
+  // this.
+  if (freshness.isLoading || freshness.isError || !freshness.data) {
+    return (
+      <>
+        <PageHeader title={t("nav.data")} />
+        {freshness.isError ? (
+          <ErrorState
+            message={(freshness.error as Error).message}
+            onRetry={() => freshness.refetch()}
+          />
+        ) : (
+          <Loading label={t("common.loading")} />
+        )}
+      </>
+    );
   }
-  if (!freshness.data) return null;
 
   return (
     <>

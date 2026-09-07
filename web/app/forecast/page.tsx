@@ -34,11 +34,25 @@ export default function ForecastPage() {
   const { t } = useShell();
   const forecast = useResult<ForecastPayload>("/forecast");
 
-  if (forecast.isLoading) return <Loading label={t("common.loading")} />;
-  if (forecast.isError) {
-    return <ErrorState message={(forecast.error as Error).message} onRetry={() => forecast.refetch()} />;
+  // The header stays even when the data does not. Returning only an error box drops the page's
+  // own title, so someone looking at it cannot tell which page failed — and leaves the document
+  // with no h1 at all, which is both an accessibility fault and how the degraded-mode test found
+  // this.
+  if (forecast.isLoading || forecast.isError || !forecast.data) {
+    return (
+      <>
+        <PageHeader title={t("nav.forecast")} />
+        {forecast.isError ? (
+          <ErrorState
+            message={(forecast.error as Error).message}
+            onRetry={() => forecast.refetch()}
+          />
+        ) : (
+          <Loading label={t("common.loading")} />
+        )}
+      </>
+    );
   }
-  if (!forecast.data) return null;
 
   const { summary, areas, skipped } = forecast.data;
   const scatter = areas
