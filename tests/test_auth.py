@@ -213,3 +213,81 @@ class TestConfiguration:
         monkeypatch.setenv("YIELDMAP_USERS", "broken-entry;also:bad;x@y.z:sudo:$argon2id$fake")
         assert auth.authenticate("x@y.z", "anything") is None
         assert not auth._directory()
+
+
+class TestHealthCanSayWhetherAnAccountLoaded:
+    """A malformed entry in YIELDMAP_USERS is skipped rather than raising, because one bad account
+    must not take the service down. Skipping *silently* is its own failure: set three accounts, get
+    two, and nothing anywhere says so — /health reports "configured" either way, and the person who
+    cannot sign in has no way to tell a wrong password from an entry that never loaded.
+    """
+
+    GOOD = "a@example.com:admin:$argon2id$v=19$m=65536,t=3,p=4$c29tZXNhbHQ$aGFzaA"
+    ALSO_GOOD = "b@example.com:analyst:$argon2id$v=19$m=65536,t=3,p=4$c29tZXNhbHQ$aGFzaA"
+
+    def test_it_counts_the_accounts_that_parsed(self, monkeypatch):
+        from api.auth import directory_status
+
+        monkeypatch.setenv("YIELDMAP_USERS", f"{self.GOOD};{self.ALSO_GOOD}")
+        status = directory_status()
+        assert status["accounts"] == 2
+        assert status["malformed_entries"] == 0
+
+    def test_an_entry_missing_its_role_is_counted_as_malformed(self, monkeypatch):
+        from api.auth import directory_status
+
+        monkeypatch.setenv("YIELDMAP_USERS", f"a@example.com:nohashhere;{self.ALSO_GOOD}")
+        status = directory_status()
+        assert status["accounts"] == 1
+        assert status["malformed_entries"] == 1
+
+    def test_an_unknown_role_is_counted_as_malformed(self, monkeypatch):
+        """ "administrator" is the plausible typo, and it silently produced no account."""
+        from api.auth import directory_status
+
+        monkeypatch.setenv("YIELDMAP_USERS", f"a@example.com:administrator:x;{self.ALSO_GOOD}")
+        status = directory_status()
+        assert status["accounts"] == 1
+        assert status["malformed_entries"] == 1
+
+    def test_it_reports_which_roles_exist_without_naming_anyone(self, monkeypatch):
+        from api.auth import directory_status
+
+        monkeypatch.setenv("YIELDMAP_USERS", f"{self.GOOD};{self.ALSO_GOOD}")
+        assert directory_status()["roles"] == ["admin", "analyst"]
+
+    def test_it_never_discloses_an_address_or_a_hash(self, monkeypatch):
+        """This goes in a public /health response. Counts and role names only."""
+        import json
+
+        from api.auth import directory_status
+
+        monkeypatch.setenv("YIELDMAP_USERS", f"{self.GOOD};{self.ALSO_GOOD}")
+        body = json.dumps(directory_status())
+        assert "example.com" not in body
+        assert "argon2" not in body
+        assert "$" not in body
+
+    def test_an_empty_variable_is_zero_accounts_and_no_complaints(self, monkeypatch):
+        from api.auth import directory_status
+
+        monkeypatch.setenv("YIELDMAP_USERS", "")
+        assert directory_status() == {"accounts": 0, "roles": [], "malformed_entries": 0}
+
+    def test_trailing_separators_are_not_malformed(self, monkeypatch):
+        """A trailing semicolon is how a list gets edited, not a mistake worth reporting."""
+        from api.auth import directory_status
+
+        monkeypatch.setenv("YIELDMAP_USERS", f"{self.GOOD};")
+        assert directory_status()["malformed_entries"] == 0
+
+    def test_health_carries_it(self, monkeypatch):
+        from fastapi.testclient import TestClient
+
+        from api.main import create_app
+
+        monkeypatch.setenv("YIELDMAP_USERS", f"{self.GOOD};{self.ALSO_GOOD}")
+        monkeypatch.setenv("AUTH_SECRET", "x" * 32)
+        body = TestClient(create_app()).get("/health").json()
+        assert body["auth"]["accounts"] == 2
+        assert body["auth"]["malformed_entries"] == 0

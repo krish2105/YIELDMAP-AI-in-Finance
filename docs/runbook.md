@@ -70,6 +70,33 @@ missing — see `docs/loading_real_data.md`.
   uv run python -m api.auth hash 'the-password'
   ```
 
+## Someone cannot sign in
+
+`GET /health` reports the account list without disclosing it:
+
+```json
+"auth": { "configured": true, "accounts": 2, "roles": ["admin", "analyst"], "malformed_entries": 0 }
+```
+
+`configured` only means `AUTH_SECRET` and `YIELDMAP_USERS` are both set. It does not mean the
+account someone is trying to use loaded. A malformed entry is skipped rather than raising — one bad
+account must not take the service down — so check `accounts` against how many you set, and
+`malformed_entries` against zero.
+
+`YIELDMAP_USERS` is `email:role:argon2-hash`, semicolon separated. The two mistakes that produce a
+skipped entry rather than an error are a missing field and a role that is not exactly `viewer`,
+`analyst` or `admin` — `administrator` is the plausible typo. Neither is visible from the outside
+except as a count that is one lower than expected.
+
+Add an account:
+
+```bash
+uv run python -m api.auth hash 'the-password'   # paste the output as the third field
+```
+
+Never the password itself: only the hash is stored, and `scripts/scan_secrets.py` blocks a hash
+from reaching the repository either way.
+
 ## Everything is slow, or answers stopped
 
 Check `/ask/providers`. If every backend reads `skipped`, the chain has nothing left and answers

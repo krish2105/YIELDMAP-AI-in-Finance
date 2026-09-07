@@ -157,7 +157,13 @@ def create_app() -> FastAPI:
             "database": {"path": str(path), "present": path.exists()},
             # Named so a deployment can be checked from outside without reading its environment.
             # Booleans only: which store, not its address; whether auth is on, not its secret.
-            "auth": {"configured": auth_module.is_configured()},
+            "auth": {
+                "configured": auth_module.is_configured(),
+                # Counts and role names only, never an address or a hash. "Configured" alone
+                # cannot distinguish a variable that is set from one that parsed the account you
+                # meant — a malformed entry is skipped, and skipping silently is its own failure.
+                **auth_module.directory_status(),
+            },
             # The schema, not the connection string: this database is shared with another
             # project, so which namespace the memos land in is worth being able to check from
             # outside. It is a name, not a credential.

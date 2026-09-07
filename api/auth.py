@@ -119,21 +119,51 @@ def _directory() -> dict[str, User]:
 
     Generate one with:  uv run python -m api.auth hash 'the-password'
     """
+    users, _ = _parse_directory()
+    return users
+
+
+def _parse_directory() -> tuple[dict[str, User], int]:
+    """The accounts, and how many entries were rejected on the way.
+
+    A malformed entry is skipped rather than raising, because one bad account must not take the
+    whole service down — but skipping silently is its own failure. Setting three accounts and
+    getting two is invisible from outside: /health reports "configured" either way, and the person
+    who cannot sign in has no way to tell a wrong password from an entry that never loaded. So the
+    count comes back with them.
+    """
     raw = os.environ.get("YIELDMAP_USERS", "").strip()
     users: dict[str, User] = {}
+    rejected = 0
     for entry in raw.split(";"):
         entry = entry.strip()
         if not entry:
             continue
-        # rsplit from the right twice: an Argon2 hash contains ':' characters, an email does not.
+        # Split twice from the left: an Argon2 hash contains ':' characters, an email does not.
         parts = entry.split(":", 2)
         if len(parts) != 3:
+            rejected += 1
             continue
         email, role, password_hash = (p.strip() for p in parts)
         if role not in ROLE_ORDER or not email or not password_hash:
+            rejected += 1
             continue
         users[email.lower()] = User(email=email.lower(), password_hash=password_hash, role=role)  # type: ignore[arg-type]
-    return users
+    return users, rejected
+
+
+def directory_status() -> dict[str, Any]:
+    """What /health can say about the account list without disclosing any of it.
+
+    Counts and role names only — never an address, never a hash. Enough to tell "the variable is
+    set" from "the variable is set and the account you meant is in it".
+    """
+    users, rejected = _parse_directory()
+    return {
+        "accounts": len(users),
+        "roles": sorted({u.role for u in users.values()}),
+        "malformed_entries": rejected,
+    }
 
 
 def authenticate(email: str, password: str) -> User | None:
