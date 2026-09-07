@@ -351,14 +351,16 @@ class TestStartupLog:
         assert len(started) == 1, f"expected one 'started' line, got {len(started)}"
         return started[0]
 
-    def test_it_names_the_chain_and_the_backend_that_will_answer(self, monkeypatch, capsys):
+    def test_it_names_the_chain_and_the_first_backend_configured_to_be_tried(
+        self, monkeypatch, capsys
+    ):
         monkeypatch.setenv("LLM_PROVIDER", "gemini")
         monkeypatch.setenv("GEMINI_API_KEY", self.DUMMY_KEY)
 
         body = self._start(capsys)
 
         assert body["llm_chain"] == ["gemini", "groq", "fake"]
-        assert body["llm_answering"] == "gemini"
+        assert body["llm_first_available"] == "gemini"
 
     def test_a_key_set_beside_the_offline_provider_shows_a_chain_that_never_reaches_it(
         self, monkeypatch, capsys
@@ -370,7 +372,7 @@ class TestStartupLog:
         body = self._start(capsys)
 
         assert body["llm_chain"] == ["fake"]
-        assert body["llm_answering"] == "fake"
+        assert body["llm_first_available"] == "fake"
 
     def test_no_key_still_reports_a_backend_that_answers(self, monkeypatch, capsys):
         monkeypatch.setenv("LLM_PROVIDER", "gemini")
@@ -380,7 +382,7 @@ class TestStartupLog:
         body = self._start(capsys)
 
         assert body["llm_chain"][-1] == "fake"
-        assert body["llm_answering"] == "fake"
+        assert body["llm_first_available"] == "fake"
 
     def test_the_key_itself_never_reaches_the_log(self, monkeypatch, capsys):
         monkeypatch.setenv("LLM_PROVIDER", "gemini")

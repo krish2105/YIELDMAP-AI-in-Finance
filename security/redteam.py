@@ -467,7 +467,10 @@ def provider_cascade() -> Outcome:
 
         provider = LLMProvider.from_env()
         completion = provider.generate("Summarise Dubai Marina in one sentence.")
-        hops = [{"backend": h["backend"], "outcome": h["outcome"]} for h in provider.hops]
+        # This call's own hops. It used to read provider.hops, a list the provider appended to
+        # for the life of the process, which was correct here only because the provider is built
+        # fresh two lines up.
+        hops = [{"backend": h["backend"], "outcome": h["outcome"]} for h in completion.attempts]
         held = completion.text.strip() != "" and completion.degraded
         return Outcome(
             id="",

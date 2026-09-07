@@ -107,7 +107,7 @@ class TestFallthrough:
         provider = LLMProvider(chain=DEFAULT_CHAIN, ledger=ledger)
         completion = provider.generate("what is the median price in JVC?")
         assert isinstance(completion, Completion)
-        outcomes = {h["backend"]: h["outcome"] for h in provider.hops}
+        outcomes = {h["backend"]: h["outcome"] for h in completion.attempts}
         assert outcomes["fake"] == "answered"
         assert outcomes["gemini"] == "skipped"
 
@@ -219,7 +219,8 @@ class TestQuota:
         provider = LLMProvider(chain=("gemini", "groq"), ledger=ledger)
         with pytest.raises(ProviderUnavailable):
             provider.generate("anything")
-        assert any(h["backend"] == "gemini" and h["outcome"] == "skipped" for h in provider.hops)
+        # Nothing was returned to read attempts from, so the provider's own record is the witness.
+        assert provider.last_attempt["gemini"]["outcome"] == "skipped"
 
     def test_a_spent_budget_does_not_stop_a_backend_that_spends_nothing(self, clean_env, tmp_path):
         """The regression.
@@ -309,3 +310,152 @@ class TestTheDeployedDefaultIsSafeWithoutAKey:
             f"recognise; it would quietly use the whole default chain instead"
         )
         assert "GEMINI_API_KEY" in env, "the key should be declared so an operator can see it"
+
+
+class TestTheKeyStaysOutOfEverything:
+    """A rejected key must not put itself in the log on the way out.
+
+    Gemini used to be called with `?key=<the key>`, and httpx puts the full request URL in the
+    message of the HTTPStatusError it raises on a 4xx. That message was caught, stored as an
+    attempt reason, re-raised inside ProviderUnavailable, written to stdout by log.exception with
+    its traceback, and sent to Sentry. One bad key, four copies.
+    """
+
+    KEY = "AIzaSyNOT-A-REAL-KEY-000111222333"
+
+    def _gemini_returning(self, status: int, body: dict):
+        import httpx
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            return httpx.Response(status, json=body, request=request)
+
+        return httpx.MockTransport(handler)
+
+    @pytest.fixture(autouse=True)
+    def _key(self, monkeypatch):
+        monkeypatch.setenv("GEMINI_API_KEY", self.KEY)
+        monkeypatch.setenv("LLM_PROVIDER", "gemini")
+        monkeypatch.delenv("GROQ_API_KEY", raising=False)
+
+    def test_the_key_travels_as_a_header_not_a_query_parameter(self, monkeypatch):
+        import httpx
+
+        from rag.provider import GeminiBackend
+
+        seen: dict[str, httpx.Request] = {}
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            seen["request"] = request
+            return httpx.Response(
+                200, json={"candidates": [{"content": {"parts": [{"text": "hi"}]}}]}
+            )
+
+        real_client = httpx.Client
+        monkeypatch.setattr(
+            httpx, "Client", lambda **kw: real_client(transport=httpx.MockTransport(handler), **kw)
+        )
+
+        assert GeminiBackend().generate("q") == "hi"
+
+        request = seen["request"]
+        assert self.KEY not in str(request.url), "the key is in the URL, where errors quote it"
+        assert request.headers.get("x-goog-api-key") == self.KEY
+
+    def test_a_rejected_key_is_not_quoted_back_in_the_failure(self, monkeypatch):
+        """The end-to-end shape: a 400, through the chain, into the reason a caller can read."""
+        import httpx
+
+        from rag.provider import LLMProvider
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            # Google answers a bad key with 400 and this body; the URL is what mattered.
+            return httpx.Response(400, json={"error": {"message": "API key not valid"}})
+
+        real_client = httpx.Client
+        monkeypatch.setattr(
+            httpx, "Client", lambda **kw: real_client(transport=httpx.MockTransport(handler), **kw)
+        )
+
+        provider = LLMProvider.from_env()
+        completion = provider.generate("what is the yield in JVC?")
+
+        # It still answers — the chain falls through to the offline backend, and says so.
+        assert completion.backend == "fake"
+        assert completion.degraded is True
+
+        attempt = provider.last_attempt["gemini"]
+        assert attempt["outcome"] == "failed"
+        assert "400" in attempt["reason"], "the reason should still name what went wrong"
+        assert self.KEY not in attempt["reason"]
+        assert self.KEY not in repr(provider.last_attempt)
+
+    def test_the_exception_that_escapes_when_nothing_answers_is_clean(self, monkeypatch):
+        """The last mile: this message reaches log.exception's traceback, stdout and Sentry."""
+        import httpx
+
+        from rag.provider import LLMProvider, ProviderUnavailable
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            return httpx.Response(400, json={"error": {"message": "API key not valid"}})
+
+        real_client = httpx.Client
+        monkeypatch.setattr(
+            httpx, "Client", lambda **kw: real_client(transport=httpx.MockTransport(handler), **kw)
+        )
+
+        # No 'fake' at the end, so the chain runs out and the failure escapes as an exception.
+        provider = LLMProvider(chain=("gemini",))
+        with pytest.raises(ProviderUnavailable) as caught:
+            provider.generate("what is the yield in JVC?")
+
+        message = str(caught.value)
+        assert self.KEY not in message
+        assert "gemini failed" in message, "it must still say which backend and that it failed"
+
+    def test_redact_strips_a_credential_from_a_url_whoever_put_it_there(self):
+        from rag.provider import redact
+
+        leaked = (
+            "HTTPStatusError: Client error '400 Bad Request' for url "
+            f"'https://example.invalid/v1/models/x:generateContent?key={self.KEY}&alt=json'"
+        )
+        cleaned = redact(leaked)
+
+        assert self.KEY not in cleaned
+        assert "[redacted]" in cleaned
+        assert "400 Bad Request" in cleaned, "redaction must not eat the diagnosis"
+        assert "alt=json" in cleaned, "only the credential goes"
+
+    @pytest.mark.parametrize("param", ["key", "api_key", "access_token", "TOKEN", "password"])
+    def test_redact_covers_the_names_a_credential_hides_behind(self, param):
+        from rag.provider import redact
+
+        assert "sesame" not in redact(f"failed for 'https://h/p?{param}=sesame'")
+
+
+class TestWhatActuallyHappened:
+    """available() reports configuration. last_attempt reports behaviour. They can disagree."""
+
+    def test_it_is_bounded_by_the_chain_not_by_the_number_of_calls(self, monkeypatch):
+        from rag.provider import LLMProvider
+
+        monkeypatch.setenv("LLM_PROVIDER", "fake")
+        provider = LLMProvider.from_env()
+        for _ in range(25):
+            provider.generate("a question")
+
+        assert set(provider.last_attempt) == {"fake"}, "one entry per backend, not per call"
+
+    def test_describe_reports_the_last_attempt_beside_availability(self, monkeypatch):
+        from rag.provider import LLMProvider
+
+        monkeypatch.setenv("LLM_PROVIDER", "fake")
+        provider = LLMProvider.from_env()
+
+        before = provider.describe()[0]
+        assert before["last_attempt"] is None, "nothing has been attempted yet"
+
+        provider.generate("a question")
+        after = provider.describe()[0]
+        assert after["last_attempt"]["outcome"] == "answered"
+        assert after["last_attempt"]["at"].startswith("20")
