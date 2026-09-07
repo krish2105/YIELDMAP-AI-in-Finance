@@ -208,12 +208,19 @@ jobs:
           Written by the ingest workflow, which runs where the publisher is reachable.
 
           Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
+          # --autostash because earlier steps in this job write tracked files this commit does
+          # not claim — the probe rewrites docs/results/source_probe.json even when the reports
+          # commit is skipped. Without it `git pull --rebase` refuses with "you have unstaged
+          # changes", which no amount of waiting fixes: on 2026-09-07 it failed four times in a
+          # row and the job still went green.
           for attempt in 1 2 3 4; do
-            git pull --rebase origin "${GITHUB_REF_NAME}" && git push origin "HEAD:${GITHUB_REF_NAME}" && exit 0
+            git pull --rebase --autostash origin "${GITHUB_REF_NAME}" \
+              && git push origin "HEAD:${GITHUB_REF_NAME}" && exit 0
             echo "push attempt $attempt failed; retrying"
             sleep $((2 ** attempt))
           done
-          echo "could not push the reports"
+          echo "::error::could not push the reports; they exist only in this run's artifacts"
+          exit 1
 
       - name: Upload reports as a workflow artifact
         if: always()
@@ -263,10 +270,15 @@ jobs:
 
           Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
           for attempt in 1 2 3 4; do
-            git pull --rebase origin "${GITHUB_REF_NAME}" && git push origin "HEAD:${GITHUB_REF_NAME}" && exit 0
+            git pull --rebase --autostash origin "${GITHUB_REF_NAME}" \
+              && git push origin "HEAD:${GITHUB_REF_NAME}" && exit 0
+            echo "push attempt $attempt failed; retrying"
             sleep $((2 ** attempt))
           done
-          echo "could not push the archive"
+          # Loud, because a silent failure here leaves every corpus document still claiming its
+          # source is "not yet archived" with nothing to say why.
+          echo "::error::could not push the archive; the hashes exist only in this run's log"
+          exit 1
 
       # ------------------------------------------------------- redeploy on real data
       - name: Redeploy the API when the drop is real
@@ -277,10 +289,17 @@ jobs:
         #
         # Skipped silently when RENDER_DEPLOY_HOOK is not configured, so a fork or a repository
         # without the secret still runs the ingest rather than failing on a step it cannot do.
-        if: steps.probe.outputs.verdict == 'reachable'
+        #
+        # Gated on a drop existing rather than on the probe verdict. A verdict describes what
+        # answered; only a file on disk says a redeploy would serve anything new, and the two
+        # came apart on 2026-09-07 when the probe read `reachable` and nothing downloaded.
         env:
           HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
         run: |
+          if ! ls data/raw/*.csv data/raw/*.zip data/raw/*.xlsx >/dev/null 2>&1; then
+            echo "::notice::no drop was downloaded; nothing new to serve, so no redeploy"
+            exit 0
+          fi
           if [ -z "${HOOK}" ]; then
             echo "::notice::RENDER_DEPLOY_HOOK is not set; skipping the redeploy"
             exit 0
