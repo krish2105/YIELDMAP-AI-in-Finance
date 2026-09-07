@@ -15,6 +15,7 @@ from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
+from agents.store import store_schema
 from api import auth as auth_module
 from api.limits import READS, enforce_by_address
 from api.observability import RequestLogMiddleware, configure_logging, configure_sentry
@@ -157,7 +158,13 @@ def create_app() -> FastAPI:
             # Named so a deployment can be checked from outside without reading its environment.
             # Booleans only: which store, not its address; whether auth is on, not its secret.
             "auth": {"configured": auth_module.is_configured()},
-            "store": {"durable": bool(os.environ.get("DATABASE_URL"))},
+            # The schema, not the connection string: this database is shared with another
+            # project, so which namespace the memos land in is worth being able to check from
+            # outside. It is a name, not a credential.
+            "store": {
+                "durable": bool(os.environ.get("DATABASE_URL")),
+                "schema": store_schema() if os.environ.get("DATABASE_URL") else None,
+            },
         }
 
     return app

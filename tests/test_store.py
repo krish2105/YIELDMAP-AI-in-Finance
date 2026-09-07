@@ -117,3 +117,146 @@ class TestDurabilityIsDeclared:
         """A silent fallback is a deployment that looks healthy and loses every memo."""
         with pytest.raises(Exception, match=r".*"):
             build_store("postgresql://nobody@127.0.0.1:1/nothing")
+
+
+class TestTheSchemaName:
+    """The schema name is interpolated into DDL because Postgres identifiers cannot be bound as
+    parameters, so it is validated rather than trusted. It arrives from an environment variable,
+    which is exactly the kind of place that ends up holding whatever someone pasted.
+    """
+
+    def test_the_default_is_the_projects_own_schema(self):
+        from agents.store import DEFAULT_SCHEMA, schema_name
+
+        assert schema_name("") == DEFAULT_SCHEMA
+        assert DEFAULT_SCHEMA != "public", (
+            "the default must not be public: this database is shared with another project"
+        )
+
+    def test_an_explicit_name_is_used(self):
+        from agents.store import schema_name
+
+        assert schema_name("yieldmap_test") == "yieldmap_test"
+
+    def test_it_reads_the_environment_when_given_nothing(self, monkeypatch):
+        from agents.store import schema_name
+
+        monkeypatch.setenv("DATABASE_SCHEMA", "somewhere_else")
+        assert schema_name() == "somewhere_else"
+
+    @pytest.mark.parametrize(
+        "name",
+        [
+            "public; drop schema public cascade",
+            'yieldmap"',
+            "yield map",
+            "1yieldmap",
+            "Yieldmap",  # upper case would need quoting to resolve, so it is refused outright
+            "a" * 64,
+            "-",
+        ],
+    )
+    def test_a_name_that_would_need_quoting_or_carries_sql_is_refused(self, name):
+        from agents.store import schema_name
+
+        with pytest.raises(ValueError):
+            schema_name(name)
+
+
+@pytest.mark.skipif(not DSN, reason="needs a Postgres")
+class TestTheStoreStaysInsideItsSchema:
+    """This database is shared with another project. The isolation is the whole reason a schema
+    was chosen over a second Supabase project, so it is asserted rather than assumed.
+    """
+
+    def test_the_tables_are_created_in_the_configured_schema(self):
+        from agents.store import PostgresMemoStore
+
+        store = PostgresMemoStore(DSN, schema="yieldmap_isolation_test")
+        try:
+            with store._pool.connection() as conn:  # noqa: SLF001 - inspecting the fixture
+                found = conn.execute(
+                    "select table_schema from information_schema.tables where table_name = 'memo'"
+                    " and table_schema = 'yieldmap_isolation_test'"
+                ).fetchone()
+            assert found is not None
+        finally:
+            with store._pool.connection() as conn:  # noqa: SLF001
+                conn.execute("drop schema if exists yieldmap_isolation_test cascade")
+            store.close()
+
+    def test_it_does_not_read_a_same_named_table_in_public(self):
+        """The failure this guards against: a pooled connection whose search_path was never set
+        resolves `memo` to whatever `public.memo` happens to be — in a shared database, somebody
+        else's table, and a write into it."""
+        from agents.store import PostgresMemoStore, StoredMemo, new_id
+
+        store = PostgresMemoStore(DSN, schema="yieldmap_isolation_test")
+        try:
+            with store._pool.connection() as conn:  # noqa: SLF001
+                conn.execute("create table if not exists public.memo (id text primary key)")
+                conn.execute(
+                    "insert into public.memo (id) values ('a-decoy') on conflict do nothing"
+                )
+
+            store.save(
+                StoredMemo(
+                    id=new_id(),
+                    run_id="r1",
+                    area_key="marsa dubai",
+                    memo_md="body",
+                    citations=[],
+                    disagreements=[],
+                    findings=[],
+                    audit={},
+                    budget={},
+                    status="succeeded",
+                    provenance="SYNTHETIC",
+                )
+            )
+
+            with store._pool.connection() as conn:  # noqa: SLF001
+                decoys = conn.execute("select count(*) from public.memo").fetchone()[0]
+                mine = conn.execute("select count(*) from yieldmap_isolation_test.memo").fetchone()[
+                    0
+                ]
+            assert decoys == 1, "the store wrote into public.memo, which is not its table"
+            assert mine == 1
+        finally:
+            with store._pool.connection() as conn:  # noqa: SLF001
+                conn.execute("drop table if exists public.memo")
+                conn.execute("drop schema if exists yieldmap_isolation_test cascade")
+            store.close()
+
+    def test_it_works_when_the_session_search_path_is_not_its_own(self):
+        """Supabase's transaction pooler hands each transaction a different server connection, so
+        session state set once at checkout cannot be relied on. Every statement names the schema,
+        and this proves it by pointing search_path somewhere else entirely."""
+        from agents.store import PostgresMemoStore, StoredMemo, new_id
+
+        store = PostgresMemoStore(DSN, schema="yieldmap_isolation_test")
+        try:
+            with store._pool.connection() as conn:  # noqa: SLF001
+                conn.execute("set search_path to pg_catalog")
+                conn.commit()
+
+            memo = StoredMemo(
+                id=new_id(),
+                run_id="r1",
+                area_key="marsa dubai",
+                memo_md="body",
+                citations=[],
+                disagreements=[],
+                findings=[],
+                audit={},
+                budget={},
+                status="succeeded",
+                provenance="SYNTHETIC",
+            )
+            store.save(memo)
+            assert store.get(memo.id) is not None
+            assert any(m.id == memo.id for m in store.list(limit=10))
+        finally:
+            with store._pool.connection() as conn:  # noqa: SLF001
+                conn.execute("drop schema if exists yieldmap_isolation_test cascade")
+            store.close()
