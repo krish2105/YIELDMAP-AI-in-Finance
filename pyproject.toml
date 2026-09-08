@@ -40,6 +40,15 @@ dev = [
     "pip-audit>=2.7",
 ]
 
+# Term 4 artefact generation. Kept out of `dev` and out of the deployed service: the report and
+# the deck are produced on demand, not built or served, and the API has no reason to carry a
+# document library. `uv sync --extra docs` reproduces them from the lockfile, which is what makes
+# regenerating these documents from a fresh clone deterministic.
+docs = [
+    "python-docx>=1.1",
+    "python-pptx>=1.0",
+]
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
