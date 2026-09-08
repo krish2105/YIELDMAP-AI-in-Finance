@@ -41,7 +41,10 @@ jobs:
         with:
           enable-cache: true
       - run: uv python install 3.12
-      - run: uv sync --extra dev
+      # --extra docs as well: tests/test_term4_artefacts.py importorskips python-docx and
+      # python-pptx, so without them the twelve tests that hold the report and the deck to
+      # the provenance guard would skip here and look like coverage they are not.
+      - run: uv sync --extra dev --extra docs
       - name: Lint
         run: uv run ruff check . && uv run ruff format --check .
 
@@ -129,7 +132,7 @@ jobs:
       - run: uv python install 3.12
       # --extra dev because this job now executes the notebook, and nbclient and the kernel are
       # build tooling rather than something the deployed service needs.
-      - run: uv sync --extra dev
+      - run: uv sync --extra dev --extra docs
 
       - name: No unfilled placeholders in docs
         run: uv run python scripts/placeholder_scan.py

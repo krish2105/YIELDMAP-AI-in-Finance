@@ -1,4 +1,10 @@
--- YIELDMAP application schema.
+-- YIELDMAP application schema — the intended one, and NOT what is deployed.
+--
+-- Read 0002_yieldmap_schema.sql before applying this. As of the Term 4 archival pass this file
+-- had never been run: the deployed database is shared with another project, and the only YIELDMAP
+-- object in it is yieldmap.memo, which the application creates for itself. These tables are
+-- unqualified, so applying this to a shared database creates them in `public`, alongside somebody
+-- else's. Apply it only when YIELDMAP owns the database.
 --
 -- This database holds application state only: users, memos, agent runs, the document corpus and
 -- its embeddings. The property analytics live in DuckDB, because 1.5 million transactions plus

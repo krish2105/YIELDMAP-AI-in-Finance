@@ -121,7 +121,7 @@ Issues
 0
 
 Pull requests
-1
+0
 
 Actions
 
@@ -159,8 +159,8 @@ Code Open more actions menu
 Latest commit
 
 History
-51 Commits
-51 Commits
+92 Commits
+92 Commits
 
 Folders and files
 Name Name Last commit message
@@ -342,7 +342,7 @@ Where
 Status
 
 Web app
-https://yieldmap-git-claude-yiel-5130d2-krishnamathur008-1499s-projects.vercel.app
+https://yieldmap-krishnamathur008-1499s-projects.vercel.app
 twenty tabs, live. Open it on a phone — the layout is built for one
 
 Analytics API
@@ -359,7 +359,7 @@ nightly; probe and discovery reports land in docs/results/
 
 Continuous integration
 Actions → CI
-four jobs: tests, web, docs, security
+five jobs: python, web, docs, security, e2e
 
 Notebook
 docs/term4_yieldmap.ipynb
@@ -423,12 +423,24 @@ $0.00/month; the free tier binds at ~100 daily users, on embeddings before gener
 stays free at course scale
 
 Journey
-34 Playwright tests green on a desktop viewport and a Pixel 7
+78 Playwright tests green on a desktop viewport and a Pixel 7, run in CI
 the full journey, on a phone
 
+Degraded mode
+every route loaded with the API refusing: the ten that fetch on load show an error and a working retry, the six form pages stay usable, nothing crashes
+never a blank page
+
 Python
-703 tests
+843 tests
 —
+
+Front end
+25 tests, including one that fails if a string renders in English under another locale
+every key translated
+
+Coverage
+78.7% of 5,521 statements; the nine modules that are the sole mechanism behind a rule in CLAUDE.md are held to 85% and sit at 87–100%
+75% overall, 85% on those
 
 Access control
 writes need a token the API signed; the role is never something a caller sends
@@ -441,6 +453,10 @@ Frame rate
 Accessibility
 0 violations across 7 pages, WCAG 2.1 AA, both viewports — was 7 serious
 none serious
+
+Page weight
+207–210 KB of JavaScript brotli-compressed on most routes, 292 KB on a chart page; three.js on none of them
+gated at 340 KB, and at zero three.js
 
 Running it
 
@@ -511,7 +527,7 @@ request-count budgets and graceful degradation at every step. The Anthropic back
 code and is switched off.
 
 About
-No description, website, or topics provided.
+yieldmap-sandy.vercel.app
 Resources
 Readme
 Security policy

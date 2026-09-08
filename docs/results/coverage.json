@@ -1,10 +1,10 @@
 {
   "provenance": "REAL",
   "note": "Line coverage of the Python tree, measured by pytest-cov in CI. The critical list is the set of modules that are the sole mechanism behind a rule in CLAUDE.md; they are held to a higher floor than the rest.",
-  "overall_percent": 81.86,
+  "overall_percent": 83.82,
   "overall_floor": 75.0,
-  "statements": 5898,
-  "missing_statements": 1070,
+  "statements": 6650,
+  "missing_statements": 1076,
   "critical_floor": 85.0,
   "critical_modules": [
     {
@@ -58,8 +58,8 @@
     {
       "path": "scripts/guard_synthetic.py",
       "rule": "generated data cannot reach a Term 4 artefact",
-      "percent": 87.3,
-      "uncovered_lines": 10
+      "percent": 89.9,
+      "uncovered_lines": 8
     },
     {
       "path": "security/fencing.py",
