@@ -67,9 +67,9 @@
     <link rel="preload" as="style" onload="this.rel='stylesheet';this.removeAttribute('as')" href="/scripts/plugins/highcharts/highcharts.css" />
         <link rel="preload" as="style" onload="this.rel='stylesheet';this.removeAttribute('as')" href="/css/animate.css" />
         <link rel="preload" as="style" onload="this.rel='stylesheet';this.removeAttribute('as')" href="/css/owl.carousel.min.css" />
-        <link rel="preload" as="style" onload="this.rel='stylesheet';this.removeAttribute('as')" href="/css/main.css?v=202609031001140000" />
-        <link rel="preload" as="style" onload="this.rel='stylesheet';this.removeAttribute('as')" href="/css/main_nav.css?v=202609031001140000" />
-        <link rel="preload" as="style" onload="this.rel='stylesheet';this.removeAttribute('as')" href="/css/responsive.css?v=202609031001140000" />
+        <link rel="preload" as="style" onload="this.rel='stylesheet';this.removeAttribute('as')" href="/css/main.css?v=202609080916220000" />
+        <link rel="preload" as="style" onload="this.rel='stylesheet';this.removeAttribute('as')" href="/css/main_nav.css?v=202609080916220000" />
+        <link rel="preload" as="style" onload="this.rel='stylesheet';this.removeAttribute('as')" href="/css/responsive.css?v=202609080916220000" />
 
     <link rel="preload" as="style" onload="this.rel='stylesheet';this.removeAttribute('as')" href="/scripts/UI/plugins/fontawesome-free-5.11.2-web/css/all.css" />
     <link rel="preload" as="style" onload="this.rel='stylesheet';this.removeAttribute('as')" href="/css/icomoon/icomoon.css" />
@@ -251,7 +251,7 @@
     <div id="annuncementDiv" style="display:none;">
         <div class="home-feature-announcement alert-orange alert-icon-orange alert-dismissible">
 <div class="container">
-<p>We would like to inform you that from 1st August 2021, we have changed our technical support email from <strong style="text-decoration: line-through;"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c6afa8a0a986a3b4a3b5e8a7a3">[email&#160;protected]</a></strong> to <span><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8de4e3ebe2cde9f8efece4e1ece3e9a3eae2fba3ece8">[email&#160;protected]</a></span>. Kindly ensure to use the new email.</p>
+<p>We would like to inform you that from 1st August 2021, we have changed our technical support email from <strong style="text-decoration: line-through;"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="81e8efe7eec1e4f3e4f2afe0e4">[email&#160;protected]</a></strong> to <span><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="afc6c1c9c0efcbdacdcec6c3cec1cb81c8c0d981ceca">[email&#160;protected]</a></span>. Kindly ensure to use the new email.</p>
 <button class="close annuncementDivClose" data-bs-dismiss="alert" aria-label="Close"> <span class="sr-only">Close</span> </button></div>
 </div>
 
@@ -737,7 +737,7 @@
 
 </div>
 
-<section class="pb-5 animated fadeIn">
+<div class="pb-5 animated fadeIn">
     <div class="container">
         <div class="srv-pane-tab flex-column mt-4 svr-detail-tab">
             <div class="srv-desc-card">
@@ -814,12 +814,12 @@
             </div>
         </div>
     </div>
-</section>
+</div>
 
 </main>
     
     <!--Footer-->
-<section class="footer-area" aria-label="Site information">
+<div class="footer-area" aria-label="Site information">
     <div class="company-info">
         <a href="https://dubaicareers.ae/en/Pages/default.aspx" class="entity-logo" rel="noreferrer" data-bs-toggle="tooltip" data-placement="top" data-container=".company-info" title="This link will direct you to an external website that may have different content and privacy policies than dubailand.gov.ae" aria-label="Dubai Career">
             <img src="/assets/img/Dubai_Careers.svg" class="img-fluid lazyload" alt="Logo of Dubai Career" title="Dubai Career" width="140" height="33" />
@@ -898,7 +898,7 @@
                     <div>
                         <span class="txt-best-view">This site is best viewed on latest versions of  Chrome / Firefox / Edge - Resolution 1920x1080<br />
 Site was last updated on</span>
-                        <span class="txt-last-modify">03 September 2026 - 10:09 AM</span>
+                        <span class="txt-last-modify">08 September 2026 - 09:09 AM</span>
                     </div>
                     <div class="txt-copyright">
                         Copyright © 2024 Dubai Land Department - All Right Reserved
@@ -907,7 +907,7 @@ Site was last updated on</span>
             </div>
         </div>
     </div>
-</section>
+</div>
 
 <footer class="d-flex dld-footer align-items-center" id="footer" aria-label="Quick links">
     <div class="container-fluid d-flex justify-content-between">
@@ -1091,7 +1091,7 @@ Site was last updated on</span>
                     </div>
                 </div>
 
-                <p class="text-center mb-0">For general enquiries, send us an email : <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="41323431312e3335012f2e302e25286f222e2c">[email&#160;protected]</a></p>
+                <p class="text-center mb-0">For general enquiries, send us an email : <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="32414742425d4046725c5d435d565b1c515d5f">[email&#160;protected]</a></p>
             </div>
         </div>
     </div>
@@ -1296,7 +1296,16 @@ Site was last updated on</span>
             });
             $('.skipContent').on("click", function (e) {
                 e.preventDefault();
+                // SortSite: "this skip link is broken" — #skipcontent only exists on
+                // pages that render the breadcrumb partial (Partials/pagetitle,
+                // pagetitleCustom, PageTopSection). Pages without a breadcrumb (e.g.
+                // MyDLD's React app, some landing pages) had no #skipcontent element,
+                // so the link silently did nothing. main.dld-main-content wraps
+                //  on every page, so use it as a guaranteed fallback.
                 var $target = $('#skipcontent');
+                if (!$target.length) {
+                    $target = $('main.dld-main-content');
+                }
                 if ($target.length) {
                     $target.attr('tabindex', '-1').focus();
                     $('html, body').animate({ scrollTop: $target.offset().top - 80 }, 10);
