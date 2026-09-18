@@ -118,7 +118,7 @@ Star
 Code
 
 Issues
-1
+0
 
 Pull requests
 1
@@ -159,8 +159,8 @@ Code Open more actions menu
 Latest commit
 
 History
-102 Commits
-102 Commits
+103 Commits
+103 Commits
 
 Folders and files
 Name Name Last commit message
