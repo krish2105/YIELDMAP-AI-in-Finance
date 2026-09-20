@@ -5,7 +5,7 @@ title: Ejari tenancy registration
 source: Dubai Land Department guidance on Ejari
 source_url: https://dubailand.gov.ae/en/eservices/
 status: archived, but the page does not contain the cited terms
-retrieved: 2026-09-19T07:24:42+00:00 · sha256 39ce0c3a9a0cb6c7 · docs/sources/ejari
+retrieved: 2026-09-20T07:49:19+00:00 · sha256 5a03b368a6a69f45 · docs/sources/ejari
 expect_terms: Ejari, tenancy contract, registration
 lang: en
 ---
