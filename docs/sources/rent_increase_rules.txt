@@ -71,10 +71,6 @@ Real Estate Data
 
 News & Media
 
-User Guide
-
-Downloads
-
 Support
 
 Noqodi Payment Support
@@ -100,8 +96,6 @@ Currently there are no new notifications from Land Department
 View All Notifications
 
 Accessibility
-
-Voice Navigation
 
 Heading
 
@@ -151,16 +145,6 @@ Residency Status
 
 All
 
-Facebook
-
-Linkedin
-
-Instagram
-
-Twitter
-
-Email
-
 About Us
 
 Support
@@ -182,11 +166,9 @@ Service Name Updates
 This site is best viewed on latest versions of Chrome / Firefox / Edge - Resolution 1920x1080
 
 Site was last updated on
-08 September 2026 - 09:09 AM
+23 September 2026 - 07:09 AM
 
 Copyright © 2024 Dubai Land Department - All Right Reserved
-
-Happiness Meter
 
 Services
 
@@ -208,16 +190,6 @@ Chat
 Follow Us on Social Media
 
 Close
-
-Facebook
-
-Linkedin
-
-Instagram
-
-Twitter
-
-Email
 
 Malik
 
