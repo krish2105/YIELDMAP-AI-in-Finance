@@ -45,7 +45,7 @@ Policies
 
 Rules & Regulations
 
-Downloads
+Download Documents
 
 Services
 
@@ -99,7 +99,7 @@ View All Notifications
 
 Accessibility
 
-Heading
+Our Services
 
 About Us
 
@@ -122,7 +122,7 @@ Service Name Updates
 This site is best viewed on latest versions of Chrome / Firefox / Edge - Resolution 1920x1080
 
 Site was last updated on
-23 September 2026 - 07:09 AM
+30 September 2026 - 13:09 PM
 
 Copyright © 2024 Dubai Land Department - All Right Reserved
 
@@ -145,8 +145,6 @@ Chat
 
 Follow Us on Social Media
 
-Close
-
 Malik
 
 Close
@@ -160,8 +158,6 @@ Chat with Malik
 
 Noqodi Customer Support
 
-Close
-
 For payment-related issues, please reach us via phone or through our support form
 
 Call Us
@@ -171,5 +167,3 @@ Submit
 Support Request
 
 For general enquiries, send us an email : [email&#160;protected]
-
-Close
