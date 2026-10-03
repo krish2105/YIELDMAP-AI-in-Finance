@@ -5,7 +5,7 @@ title: How YIELDMAP computes what it shows
 source: This project
 source_url: https://github.com/krish2105/YIELDMAP-AI-in-Finance
 status: archived and corroborated
-retrieved: 2026-10-02T08:39:09+00:00 · sha256 714f8d4edb7ba7e2 · docs/sources/methodology
+retrieved: 2026-10-03T08:16:01+00:00 · sha256 d9e32472978e15cf · docs/sources/methodology
 expect_terms: hedonic, repeat-sales, provenance
 lang: en
 ---
