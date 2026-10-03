@@ -22,7 +22,7 @@ from pathlib import Path
 
 from docx import Document
 from docx.enum.table import WD_TABLE_ALIGNMENT
-from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_BREAK
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Cm, Pt, RGBColor
@@ -97,6 +97,29 @@ def _styles(doc: Document) -> None:
         style.paragraph_format.keep_with_next = True
 
 
+def _header_repeats(row) -> None:
+    """Mark a row as a header, so Word repeats it at the top of every page the table spans.
+
+    Without this a table that breaks across a page leaves the continuation with no column
+    labels — the reader meets "stand-in" and a bare filename with nothing saying what either
+    column is.
+    """
+    properties = row._tr.get_or_add_trPr()
+    header = OxmlElement("w:tblHeader")
+    header.set(qn("w:val"), "true")
+    properties.append(header)
+
+
+def _keep_row_whole(row) -> None:
+    """Stop a single row splitting across a page break.
+
+    A row that splits puts the tail of one cell at the top of the next page, orphaned from the
+    label that says what it measures.
+    """
+    properties = row._tr.get_or_add_trPr()
+    properties.append(OxmlElement("w:cantSplit"))
+
+
 def _shade(cell, hex_colour: str) -> None:
     shading = OxmlElement("w:shd")
     shading.set(qn("w:val"), "clear")
@@ -121,14 +144,18 @@ def _table(doc: Document, rows: list[Row], *, show_provenance: bool) -> None:
         _para(doc, "Not measured — no results file for this section.", italic=True, colour=MUTED)
         return
 
-    headers = ["Measure", "Result", "Target"] + (["Data"] if show_provenance else []) + ["Source"]
+    headers = (
+        ["Measure", "Result", "Target"]
+        + (["Data"] if show_provenance else [])
+        + ["In docs/results/"]
+    )
     # A4 is 21.0 cm wide and the margins take 4.8, so the text column is 16.2 cm and the widths
     # below must sum to exactly that. They summed to 18.1 in the first draft, which Word does not
     # clamp — it runs the table off the page. Arithmetic catches this without a renderer.
     widths = (
-        [Cm(4.0), Cm(5.6), Cm(2.8), Cm(1.5), Cm(2.3)]
+        [Cm(3.5), Cm(5.0), Cm(2.7), Cm(1.4), Cm(3.6)]
         if show_provenance
-        else [Cm(4.4), Cm(6.6), Cm(3.0), Cm(2.2)]
+        else [Cm(4.0), Cm(6.0), Cm(2.8), Cm(3.4)]
     )
     assert abs(sum(w.cm for w in widths) - 16.2) < 0.01, "table is wider than the text column"
 
@@ -137,6 +164,8 @@ def _table(doc: Document, rows: list[Row], *, show_provenance: bool) -> None:
     table.alignment = WD_TABLE_ALIGNMENT.CENTER
     table.autofit = False
 
+    _header_repeats(table.rows[0])
+    _keep_row_whole(table.rows[0])
     for i, (cell, head) in enumerate(zip(table.rows[0].cells, headers, strict=True)):
         cell.width = widths[i]
         _shade(cell, "EDF4F2")
@@ -148,11 +177,16 @@ def _table(doc: Document, rows: list[Row], *, show_provenance: bool) -> None:
         run.font.color.rgb = ACCENT
 
     for row in rows:
-        cells = table.add_row().cells
+        added = table.add_row()
+        _keep_row_whole(added)
+        cells = added.cells
         values = [row.label, row.measured, row.target]
         if show_provenance:
             values.append("stand-in" if row.provenance != "REAL" else "real")
-        values.append(row.source)
+        # Without the extension: every source is a JSON file under docs/results/, the caption
+        # says so, and the five characters are the difference between a name that fits this
+        # column and one that breaks across two lines mid-word.
+        values.append(row.source.removesuffix(".json"))
         for i, (cell, value) in enumerate(zip(cells, values, strict=True)):
             cell.width = widths[i]
             para = cell.paragraphs[0]
@@ -227,7 +261,7 @@ def _cover(doc: Document, bundle: Bundle, draft: bool) -> None:
         run.italic = True
         run.font.color.rgb = MUTED
 
-    doc.add_paragraph().add_run().add_break()
+    doc.add_paragraph().add_run().add_break(WD_BREAK.PAGE)
 
 
 def _headers_and_footers(doc: Document) -> None:
@@ -255,13 +289,25 @@ def _headers_and_footers(doc: Document) -> None:
 def build(bundle: Bundle, draft: bool) -> Document:
     doc = Document()
     _styles(doc)
-    _cover(doc, bundle, draft)
+    _cover(doc, bundle, draft)  # ends with a page break, so the cover stands alone
     _headers_and_footers(doc)
 
     doc.add_heading("Contents", level=1)
+    # A real TOC field builds itself from the headings, which is what the brief asks for — but an
+    # unbuilt field renders as nothing in LibreOffice and Google Docs, so the page arrives blank
+    # and the reader has no idea why. One line of guidance costs less than that confusion.
+    _para(
+        doc,
+        "Word builds this list from the document's headings. If it is empty, right-click it and "
+        "choose Update Field.",
+        size=9,
+        colour=MUTED,
+        italic=True,
+        after=10,
+    )
     toc = doc.add_paragraph()
     _field(toc, 'TOC \\o "1-2" \\h \\z \\u', "Right-click here and choose Update Field.")
-    doc.add_paragraph().add_run().add_break()
+    doc.add_paragraph().add_run().add_break(WD_BREAK.PAGE)
 
     _executive_summary(doc, bundle, draft)
     _problem(doc, bundle)
