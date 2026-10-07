@@ -99,54 +99,43 @@ Dismiss alert
 {{ message }}
 
 krish2105
-
-/
-
 YIELDMAP-AI-in-Finance
 
+Repository navigation
+
+Code
+Issues
+Pull requests 1  ( 1 )
+Actions
+Projects
+Security and quality
+Insights
+
+More items
+
+YIELDMAP-AI-in-Finance
 Public
 
-Notifications
-You must be signed in to change notification settings
+Notifications You must be signed in to change notification settings
+Fork 0  ( 0 )
+Star 0  ( 0 ) You must be signed in to star a repository
 
-Fork
-0
+About
+yieldmap-sandy.vercel.app
+Resources
+Readme
+Security policy
+Security policy
+Activity
 
-Star
-0
+Stars
+0 stars
+Watchers
+0 watching
+Forks
+0 forks
 
-Code
-
-Issues
-0
-
-Pull requests
-1
-
-Actions
-
-Projects
-
-Security and quality
-0
-
-Insights
-
-Additional navigation options
-
-Code
-
-Issues
-
-Pull requests
-
-Actions
-
-Projects
-
-Security and quality
-
-Insights
+Report repository
 
 claude/yieldmap-dubai-property-ai-v0kxyo
 
@@ -159,8 +148,8 @@ Code Open more actions menu
 Latest commit
 
 History
-121 Commits
-121 Commits
+122 Commits
+122 Commits
 
 Folders and files
 Name Name Last commit message
