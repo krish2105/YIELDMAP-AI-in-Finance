@@ -67,9 +67,9 @@
     <link rel="preload" as="style" onload="this.rel='stylesheet';this.removeAttribute('as')" href="/scripts/plugins/highcharts/highcharts.css" />
         <link rel="preload" as="style" onload="this.rel='stylesheet';this.removeAttribute('as')" href="/css/animate.css" />
         <link rel="preload" as="style" onload="this.rel='stylesheet';this.removeAttribute('as')" href="/css/owl.carousel.min.css" />
-        <link rel="preload" as="style" onload="this.rel='stylesheet';this.removeAttribute('as')" href="/css/main.css?v=202609281616200000" />
-        <link rel="preload" as="style" onload="this.rel='stylesheet';this.removeAttribute('as')" href="/css/main_nav.css?v=202609281616200000" />
-        <link rel="preload" as="style" onload="this.rel='stylesheet';this.removeAttribute('as')" href="/css/responsive.css?v=202609281616200000" />
+        <link rel="preload" as="style" onload="this.rel='stylesheet';this.removeAttribute('as')" href="/css/main.css?v=202610070929100000" />
+        <link rel="preload" as="style" onload="this.rel='stylesheet';this.removeAttribute('as')" href="/css/main_nav.css?v=202610070929100000" />
+        <link rel="preload" as="style" onload="this.rel='stylesheet';this.removeAttribute('as')" href="/css/responsive.css?v=202610070929100000" />
 
     <link rel="preload" as="style" onload="this.rel='stylesheet';this.removeAttribute('as')" href="/scripts/UI/plugins/fontawesome-free-5.11.2-web/css/all.css" />
     <link rel="preload" as="style" onload="this.rel='stylesheet';this.removeAttribute('as')" href="/css/icomoon/icomoon.css" />
@@ -234,7 +234,9 @@
     </noscript>
     <!-- End Google Tag Manager (noscript) -->
         <a href="#skipcontent" class="skip skipContent">Skip to main content</a>
-    <div id="loading" class="loader-container">
+    <div id="a11yStatus" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+    <div id="a11yAlert" class="sr-only" role="alert" aria-live="assertive" aria-atomic="true"></div>
+    <div id="loading" class="loader-container" aria-hidden="true">
         <div class="cs-loader">
             <div class="cs-loader-inner">
                 <span>●</span>
@@ -251,7 +253,7 @@
     <div id="annuncementDiv" style="display:none;">
         <div class="home-feature-announcement alert-orange alert-icon-orange alert-dismissible">
 <div class="container">
-<p>We would like to inform you that from 1st August 2021, we have changed our technical support email from <strong style="text-decoration: line-through;"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="dfb6b1b9b09fbaadbaacf1beba">[email&#160;protected]</a></strong> to <span><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8ae3e4ece5caeeffe8ebe3e6ebe4eea4ede5fca4ebef">[email&#160;protected]</a></span>. Kindly ensure to use the new email.</p>
+<p>We would like to inform you that from 1st August 2021, we have changed our technical support email from <strong style="text-decoration: line-through;"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1f767179705f7a6d7a6c317e7a">[email&#160;protected]</a></strong> to <span><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="335a5d555c73574651525a5f525d571d545c451d5256">[email&#160;protected]</a></span>. Kindly ensure to use the new email.</p>
 <button class="close annuncementDivClose" data-bs-dismiss="alert" aria-label="Close"> <span class="sr-only">Close</span> </button></div>
 </div>
 
@@ -310,7 +312,7 @@
     
 
 	<style>
-		#alertModalDiv,.home-feature-announcement{display:none !important}.dld-hlink{min-height:24px;min-width:24px}.btn-mic{min-width:24px}@media (max-width:1024px){body div#DeafServicePlace{display:none}}@media(max-width:991px){.dld-malik-assis{inset-inline-end:100px;bottom:16px;z-index:2}.floating-overlay .dld-malik-assis{z-index:1060}}
+		#alertModalDiv,.home-feature-announcement{display:none !important}.dld-hlink{min-height:24px;min-width:24px}.btn-mic{min-width:24px}@media (max-width:992px){.list-group-eservices div.d-none.d-lg-flex.gap-3{display:flex !important;margin-inline-start:2rem}.service-list-content .list-group-item:last-child{flex-direction:column;align-items:end !important}.all-services-content{justify-content:start}}@media (max-width:1024px){body div#DeafServicePlace{display:none}}@media(max-width:991px){.dld-malik-assis{inset-inline-end:100px;bottom:16px;z-index:2}.floating-overlay .dld-malik-assis{z-index:1060}}
 	</style>
 
 	<div id="alertModalDiv" style="display:none;">
@@ -320,13 +322,13 @@
 <script>
 	var showModal = true; // from Umbraco
 	var currentLang = "en";
-	var timeGuid = "b43f4707-0a8a-c036-1333-b02ce070f5f2";
+	var timeGuid = "71aa23c8-b7bd-1daf-2c4d-8bfe300b764d";
 </script>
 
 
 <script>
 	$(document).ready(function () {
-		const modalId="#alertModalDiv",closeBtn=".alertModalDivClose",keyName="alertModalDismissed_"+timeGuid+"_"+currentLang;if("undefined"!=typeof showModal){if(!showModal)for(let e=localStorage.length-1;e>=0;e--){const o=localStorage.key(e);o.startsWith("alertModalDismissed_")&&localStorage.removeItem(o)}localStorage.getItem(keyName)||$(modalId).show().fadeIn(),$(closeBtn).on("click",(function(){$(modalId).fadeOut(),localStorage.setItem(keyName,"1")}))}var isArabic=$('html').attr('lang')==='ar';$('.srv-img-holder-04 img').attr('alt',isArabic ? 'صورة لمنصة 04 – المنصة التفاعلية الموحدة':'Image for 04 Platform-Unified interactive platform');$('.widge-04 img').attr('alt',isArabic ? 'صورة لأداة منصة 04 – المنصة التفاعلية الموحدة':'Image for 04 Platform-Unified interactive platform widget');setTimeout(function(){var $container=$('#emiratesID.auth-container-form');var $input=$('#date-picker-inp-dob');if($container.length && $input.length){$container .find('label[for="dob"]').attr('for','date-picker-inp-dob');}},2000);
+		const modalId="#alertModalDiv",closeBtn=".alertModalDivClose",keyName="alertModalDismissed_"+timeGuid+"_"+currentLang;if("undefined"!=typeof showModal){if(!showModal)for(let e=localStorage.length-1;e>=0;e--){const o=localStorage.key(e);o.startsWith("alertModalDismissed_")&&localStorage.removeItem(o)}localStorage.getItem(keyName)||$(modalId).show().fadeIn(),$(closeBtn).on("click",(function(){$(modalId).fadeOut(),localStorage.setItem(keyName,"1")}))}
 	});
 </script>
     <div class="dld-head-section">
@@ -492,7 +494,7 @@
                         </li>
                     </ul>
                     <a href="https://tec.gov.ae/en/web/tec/home" title="This link will direct you to an external website that may have different content and privacy policies than dubailand.gov.ae" aria-label="Dubai Government website">
-                        <img src="/assets/img/dubai-gov.svg" alt="dubai government logo for mobile" class="dld-main-header__gov-logo">
+                        <img src="/assets/img/dubai-gov.svg" alt="Dubai Government logo for mobile" class="dld-main-header__gov-logo">
                     </a>
                 </div>
             </div>
@@ -506,8 +508,8 @@
 				</div>
 				<div class="dld-logo-for-mobile">
 					<a href="/en/">
-						<img src="/assets/img/land_department.svg" alt="Logo of Dubai Land Department in color for mobile" class="dld-main-header__logo dld-logo-default">
-						<img src="/assets/img/land_department-white.svg" alt="Logo of Dubai Land Department in white for mobile" class="dld-main-header__logo dld-logo-white">
+                        <img src="/assets/img/land_department.svg" alt="Logo of Dubai Land Department in color for mobile" class="dld-main-header__logo dld-logo-default">
+                        <img src="/assets/img/land_department-white.svg" alt="Logo of Dubai Land Department in white for mobile" class="dld-main-header__logo dld-logo-white">
 					</a>
 				</div>
 				<ul class="right-mnu navbar-nav">
@@ -517,7 +519,7 @@
 							<span class="sr-only">Search</span>
 						</button>
 						<div class="dropdown-menu search">
-							<form id="formSearch" action="/en/search">
+							<form id="formSearch" role="search" action="/en/search">
     <label class="sr-only black" for="master_search">What are you looking for&#x2026;?</label>
     <i class="dld-icon-md icon-search secondary--text"></i>
     <input class="search__input" tabindex="0" type="text" id="master_search" name="q" placeholder="Search.." aria-label="Search" autocomplete="off">
@@ -609,11 +611,11 @@
     <!--Footer-->
 <div class="footer-area">
     <div class="company-info">
-        <a href="https://dubaicareers.ae/en/Pages/default.aspx" class="entity-logo" rel="noreferrer" data-bs-toggle="tooltip" data-placement="top" data-container=".company-info" title="This link will direct you to an external website that may have different content and privacy policies than dubailand.gov.ae" aria-label="Dubai Career">
-            <img src="/assets/img/Dubai_Careers.svg" class="img-fluid lazyload" alt="Logo of Dubai Career" title="Dubai Career" width="140" height="33" />
+        <a href="https://dubaicareers.ae/en/Pages/default.aspx" class="entity-logo dubai-career" rel="noreferrer" data-bs-toggle="tooltip" data-placement="top" data-container=".company-info" title="This link will direct you to an external website that may have different content and privacy policies than dubailand.gov.ae" aria-label="Dubai Career">
+            <img src="/assets/img/Dubai_Careers.svg" class="img-fluid lazyload" alt="Logo of Dubai Career" title="Dubai Career" />
         </a>
-        <a href="https://www.dubaipulse.gov.ae/organisation/dld" class="entity-logo" rel="noreferrer" data-bs-toggle="tooltip" data-placement="top" data-container=".company-info" title="This link will direct you to an external website that may have different content and privacy policies than dubailand.gov.ae" aria-label="Dubai Pulse">
-            <img src="/assets/img/dubai-pulse-logo.png" class="img-fluid lazyload" alt="Logo of Dubai Pulse" title="Dubai Pulse" width="160" height="34" />
+        <a href="https://www.dubaipulse.gov.ae/organisation/dld" class="entity-logo data-dubai" rel="noreferrer" data-bs-toggle="tooltip" data-placement="top" data-container=".company-info" title="This link will direct you to an external website that may have different content and privacy policies than dubailand.gov.ae" aria-label="Discover Dubai Data">
+            <img src="/assets/img/logo-data-dubai.svg" class="img-fluid lazyload" alt="Logo of Data Dubai" title="Discover Dubai Data" />
         </a>
     </div>
     <div class="footer-dark">
@@ -652,7 +654,7 @@
         <i class="icon-twitter" aria-hidden="true"></i>
     </a>
 
-    <a href="/cdn-cgi/l/email-protection#c7aea9a1a887a3b2a5a6aeaba6a9a3e9a0a8b1e9a6a2" class="link-mailto" aria-label="Email: info@dubailand.gov.ae">
+    <a href="/cdn-cgi/l/email-protection#d8b1b6beb798bcadbab9b1b4b9b6bcf6bfb7aef6b9bd" class="link-mailto" aria-label="Email: info@dubailand.gov.ae">
         <i class="icon-gmail" aria-hidden="true"></i>
     </a>
 </div>
@@ -697,7 +699,7 @@
                     <div>
                         <span class="txt-best-view">This site is best viewed on latest versions of  Chrome / Firefox / Edge - Resolution 1920x1080<br />
 Site was last updated on</span>
-                        <span class="txt-last-modify">30 September 2026 - 13:09 PM</span>
+                        <span class="txt-last-modify">07 October 2026 - 09:10 AM</span>
                     </div>
                     <div class="txt-copyright">
                         Copyright © 2024 Dubai Land Department - All Right Reserved
@@ -720,7 +722,7 @@ Site was last updated on</span>
                data-width="850"
                data-height="650"
                data-src="https://04.gov.ae/case-generate?entity=bff2f61a-bc06-ec11-b6e5-0022486fc780&lang=en" data-bs-toggle="tooltip" data-placement="top" data-container="#footer" title="04 Platform - Unified interactive platform">
-                <img src="/assets/images/icons-footer-04.svg" height="32" width="32" alt="04-icon">
+                <img src="/assets/images/icons-footer-04.svg" height="32" width="32" alt="Icon for 04 Platform - Unified interactive platform">
             </button>
             <a href="/en/eservices/all-services?id=19503" class="d-flex align-items-center justify-content-center footer-service-link" data-bs-toggle="tooltip" data-placement="top" data-container="#footer" title="Services">
                 <i class="secondary--text icon-apps dld-icon-md"></i>
@@ -747,8 +749,8 @@ Site was last updated on</span>
                     <span class="sticky-footer-text">Support</span>
                 </a>
                 <a href="https://dubai.ae/en" target="_blank" rel="noopener noreferrer" data-bs-toggle="tooltip" data-bs-placement="top" title="This link will direct you to an external website that may have different content and privacy policies than dubailand.gov.ae" aria-label="Dubai.ae website" class="d-flex align-items-center justify-content-center footer-ai-link">
-                    <img src="/assets/images/icons-dubaiae.svg" class="icon-dubai-ae d-lg-inline-block d-none" alt="Dubai AE">
-                    <img src="/assets/images/icons-mdubaiae.svg" class="icon-dubai-ae d-lg-none d-inline-block" alt="Mobile view Dubai AE">
+                    <img src="/assets/images/icons-dubaiae.svg" class="icon-dubai-ae d-lg-inline-block d-none" alt="Information image for Dubai.ae">
+                    <img src="/assets/images/icons-mdubaiae.svg" class="icon-dubai-ae d-lg-none d-inline-block" alt="Information image for Dubai.ae on mobile">
                 </a>
                 <a href="javascript:;"
                    data-dubaiAi-fancybox
@@ -758,7 +760,7 @@ Site was last updated on</span>
                    data-src="https://chat.dubai.ae/?lang=en&mode=modal&source=DL"
                    data-bs-toggle="tooltip" data-bs-placement="top" title="Dubai AI" class="d-flex align-items-center justify-content-center footer-ai-link iframe">
                     <i class="icon-dsg-ai"></i>
-                    <img src="/assets/images/icons-ai-link.svg" class="icon-dubai-ai" alt="Dubai AI">
+                    <img src="/assets/images/icons-ai-link.svg" class="icon-dubai-ai" alt="Information image for Dubai AI">
                 </a>
                 <a href="#" id="btnOpenChatMobile" class="chat-fab-link align-items-center justify-content-center d-lg-none d-flex mt-2 ">
                     <i class="primary--text icon-chat dld-icon-md"></i>
@@ -812,7 +814,7 @@ Site was last updated on</span>
         <i class="icon-twitter" aria-hidden="true"></i>
     </a>
 
-    <a href="/cdn-cgi/l/email-protection#2841464e47684c5d4a49414449464c064f475e06494d" class="link-mailto" aria-label="Email: info@dubailand.gov.ae">
+    <a href="/cdn-cgi/l/email-protection#a7cec9c1c8e7c3d2c5c6cecbc6c9c389c0c8d189c6c2" class="link-mailto" aria-label="Email: info@dubailand.gov.ae">
         <i class="icon-gmail" aria-hidden="true"></i>
     </a>
 </div>
@@ -898,7 +900,7 @@ Site was last updated on</span>
                     </div>
                 </div>
 
-                <p class="text-center mb-0">For general enquiries, send us an email : <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b5c6c0c5c5dac7c1f5dbdac4dad1dc9bd6dad8">[email&#160;protected]</a></p>
+                <p class="text-center mb-0">For general enquiries, send us an email : <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="fc8f898c8c938e88bc92938d939895d29f9391">[email&#160;protected]</a></p>
             </div>
         </div>
     </div>
@@ -1003,7 +1005,7 @@ Site was last updated on</span>
     <script src="/scripts/UI/plugins/owl.carousel.min.js"></script>
     <script src="/scripts/UI/plugins/jquery.autocomplete.min.js"></script>
 
-    <script src="/scripts/UI/js/main.js?v=202609281616200000"></script>
+    <script src="/scripts/UI/js/main.js?v=202610070929100000"></script>
     <script src="/scripts/happiness-meter-1.0.1.js"></script>
     <script src="/scripts/UI/plugins/chosen/chosen.jquery.min.js"></script>
 
