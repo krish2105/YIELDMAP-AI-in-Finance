@@ -13,6 +13,8 @@ We would like to inform you that from 1st August 2021, we have changed our techn
 
 Close
 
+Our Voice Bot is currently undergoing scheduled upgrades to provide you with a better experience. The service will be available again tomorrow. We apologize for the inconvenience and appreciate your patience.
+
 Toggle navigation
 
 Main Menu
@@ -45,6 +47,8 @@ Policies
 
 Rules & Regulations
 
+Download Documents
+
 Services
 
 Information
@@ -70,10 +74,6 @@ Indexes
 Real Estate Data
 
 News & Media
-
-User Guide
-
-Downloads
 
 Support
 
@@ -101,19 +101,7 @@ View All Notifications
 
 Accessibility
 
-Voice Navigation
-
-Heading
-
-Facebook
-
-Linkedin
-
-Instagram
-
-Twitter
-
-Email
+Services
 
 About Us
 
@@ -136,11 +124,9 @@ Service Name Updates
 This site is best viewed on latest versions of Chrome / Firefox / Edge - Resolution 1920x1080
 
 Site was last updated on
-03 September 2026 - 10:09 AM
+07 October 2026 - 09:10 AM
 
 Copyright © 2024 Dubai Land Department - All Right Reserved
-
-Happiness Meter
 
 Services
 
@@ -161,18 +147,6 @@ Chat
 
 Follow Us on Social Media
 
-Close
-
-Facebook
-
-Linkedin
-
-Instagram
-
-Twitter
-
-Email
-
 Malik
 
 Close
@@ -186,8 +160,6 @@ Chat with Malik
 
 Noqodi Customer Support
 
-Close
-
 For payment-related issues, please reach us via phone or through our support form
 
 Call Us
@@ -197,5 +169,3 @@ Submit
 Support Request
 
 For general enquiries, send us an email : [email&#160;protected]
-
-Close
