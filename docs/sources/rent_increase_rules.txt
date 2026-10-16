@@ -13,8 +13,6 @@ We would like to inform you that from 1st August 2021, we have changed our techn
 
 Close
 
-Our Voice Bot is currently undergoing scheduled upgrades to provide you with a better experience. The service will be available again tomorrow. We apologize for the inconvenience and appreciate your patience.
-
 Toggle navigation
 
 Main Menu
@@ -47,7 +45,7 @@ Policies
 
 Rules & Regulations
 
-Download Documents
+Accessibility
 
 Services
 
@@ -74,6 +72,8 @@ Indexes
 Real Estate Data
 
 News & Media
+
+Downloads
 
 Support
 
@@ -149,6 +149,8 @@ Residency Status
 
 All
 
+Call Support: +971 - 8004488
+
 About Us
 
 Support
@@ -170,7 +172,7 @@ Service Name Updates
 This site is best viewed on latest versions of Chrome / Firefox / Edge - Resolution 1920x1080
 
 Site was last updated on
-07 October 2026 - 09:10 AM
+14 October 2026 - 11:10 AM
 
 Copyright © 2024 Dubai Land Department - All Right Reserved
 
