@@ -45,6 +45,8 @@ Policies
 
 Rules & Regulations
 
+Accessibility
+
 Services
 
 Information
@@ -70,8 +72,6 @@ Indexes
 Real Estate Data
 
 News & Media
-
-User Guide
 
 Downloads
 
@@ -101,9 +101,7 @@ View All Notifications
 
 Accessibility
 
-Voice Navigation
-
-Heading
+Rental Index
 
 Home
 
@@ -151,15 +149,7 @@ Residency Status
 
 All
 
-Facebook
-
-Linkedin
-
-Instagram
-
-Twitter
-
-Email
+Call Support: +971 - 8004488
 
 About Us
 
@@ -182,11 +172,9 @@ Service Name Updates
 This site is best viewed on latest versions of Chrome / Firefox / Edge - Resolution 1920x1080
 
 Site was last updated on
-03 September 2026 - 10:09 AM
+14 October 2026 - 11:10 AM
 
 Copyright © 2024 Dubai Land Department - All Right Reserved
-
-Happiness Meter
 
 Services
 
@@ -207,18 +195,6 @@ Chat
 
 Follow Us on Social Media
 
-Close
-
-Facebook
-
-Linkedin
-
-Instagram
-
-Twitter
-
-Email
-
 Malik
 
 Close
@@ -232,8 +208,6 @@ Chat with Malik
 
 Noqodi Customer Support
 
-Close
-
 For payment-related issues, please reach us via phone or through our support form
 
 Call Us
@@ -243,5 +217,3 @@ Submit
 Support Request
 
 For general enquiries, send us an email : [email&#160;protected]
-
-Close
