@@ -73,9 +73,9 @@ Every figure below is read from `docs/results/`, produced by the models in `fina
 | Cost | $0.00/month; the free tier binds at ~100 daily users, on embeddings before generation | stays free at course scale |
 | Journey | 78 Playwright tests green on a desktop viewport and a Pixel 7, run in CI | the full journey, on a phone |
 | Degraded mode | every route loaded with the API refusing: the ten that fetch on load show an error and a working retry, the six form pages stay usable, nothing crashes | never a blank page |
-| Python | 1,020 tests, 14 skipped | — |
+| Python | 1,025 tests, 14 skipped | — |
 | Front end | 25 tests, including one that fails if a string renders in English under another locale | every key translated |
-| Coverage | 83.8% of 6,650 statements; the 10 modules that are the sole mechanism behind a rule in `CLAUDE.md` are held to 85% and sit at 89–100% | 75% overall, 85% on those |
+| Coverage | 83.9% of 6,676 statements; the 10 modules that are the sole mechanism behind a rule in `CLAUDE.md` are held to 85% and sit at 89–100% | 75% overall, 85% on those |
 | Access control | writes need a token the API signed; the role is never something a caller sends | no credential, no write |
 | Frame rate | 60fps desktop, 61fps on a Pixel 7 — measured in software rasterisation, so a floor | 60 / 30 |
 | Accessibility | 0 violations across 7 pages, WCAG 2.1 AA, both viewports — was 7 serious | none serious |
