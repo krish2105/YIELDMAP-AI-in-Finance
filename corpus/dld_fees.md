@@ -5,7 +5,7 @@ title: Transaction fees on a Dubai property purchase
 source: Dubai Land Department fee schedule
 source_url: https://dubailand.gov.ae/en/services/
 status: archived, but the page does not contain the cited terms
-retrieved: 2026-10-23T07:40:49+00:00 · sha256 ea893476d12ea111 · docs/sources/dld_fees
+retrieved: 2026-10-24T07:24:31+00:00 · sha256 52c309c53125361b · docs/sources/dld_fees
 expect_terms: 4%, transfer fee, registration
 lang: en
 ---

@@ -43,7 +43,7 @@ BY INDUSTRY Healthcare
 Financial services
 Manufacturing
 Government
-View all industries
+See all industries
 
 View all solutions
 
@@ -148,8 +148,8 @@ Code Open more actions menu
 Latest commit
 
 History
-138 Commits
-138 Commits
+139 Commits
+139 Commits
 
 Folders and files
 Name Name Last commit message
