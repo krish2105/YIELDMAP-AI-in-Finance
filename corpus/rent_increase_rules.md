@@ -5,7 +5,7 @@ title: Rent increases on renewal in Dubai
 source: Dubai Land Department and RERA published guidance
 source_url: https://dubailand.gov.ae/en/eservices/rental-index/
 status: archived, but the page does not contain the cited terms
-retrieved: 2026-10-28T08:42:39+00:00 · sha256 5a141e0aa14bc8a2 · docs/sources/rent_increase_rules
+retrieved: 2026-10-29T08:38:33+00:00 · sha256 ea2e4c2c9fa91036 · docs/sources/rent_increase_rules
 expect_terms: rental index, rent increase, RERA
 lang: en
 ---
