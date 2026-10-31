@@ -27,6 +27,14 @@ REPORT = ROOT / "docs" / "AI217_YIELDMAP_report.docx"
 DECK = ROOT / "docs" / "AI217_YIELDMAP_deck.pptx"
 
 
+def _auto_shape(shape):
+    """The autoshape kind, or None. python-pptx raises on a text box rather than returning None."""
+    try:
+        return shape.auto_shape_type
+    except (ValueError, AttributeError):
+        return None
+
+
 class TestTheGuardIsLoadBearing:
     """Generation is refused while the guard blocks, unless the caller says --draft."""
 
@@ -93,7 +101,9 @@ class TestTheDraftIsStamped:
         assert "How provenance is enforced" in text, "no section explaining the guard"
 
         model_table = next(
-            t for t in doc.tables if any("hedonic.json" in c.text for r in t.rows for c in r.cells)
+            t
+            for t in doc.tables
+            if any(c.text.strip() == "hedonic" for r in t.rows for c in r.cells)
         )
         headers = [c.text for c in model_table.rows[0].cells]
         assert "Data" in headers, "the model table has no provenance column"
@@ -116,6 +126,86 @@ class TestTheDraftIsStamped:
         for i, slide in enumerate(Presentation(DECK).slides, start=1):
             assert slide.has_notes_slide, f"slide {i} has no notes"
             assert len(slide.notes_slide.notes_text_frame.text) > 80, f"slide {i} notes are thin"
+
+
+class TestTheLayoutDefectsARendererFound:
+    """Everything here was invisible until the documents were rendered and looked at.
+
+    LibreOffice could not open a .docx in this environment at first — only libreoffice-core was
+    installed, with no Writer or Impress import filter, so even a one-paragraph file failed.
+    Installing the filters turned "I cannot check this" into five real defects.
+    """
+
+    def test_the_cover_ends_with_a_page_break(self):
+        """add_break() defaults to a LINE break, so the cover, the contents and section 1 all
+        shared page one."""
+        from docx import Document
+        from docx.oxml.ns import qn
+
+        doc = Document(REPORT)
+        breaks = [br.get(qn("w:type")) for p in doc.paragraphs for br in p._p.iter(qn("w:br"))]
+        assert breaks.count("page") >= 2, "the cover and the contents need page breaks after them"
+
+    def test_every_table_header_repeats_across_a_page(self):
+        """A table that breaks across pages left its continuation with no column labels."""
+        from docx import Document
+        from docx.oxml.ns import qn
+
+        doc = Document(REPORT)
+        for i, table in enumerate(doc.tables):
+            if len(table.rows) < 2:
+                continue  # the cover's callout box is one cell, not a data table
+            header = table.rows[0]._tr
+            assert header.find(qn("w:trPr")) is not None, f"table {i} header has no properties"
+            assert header.find(qn("w:trPr")).find(qn("w:tblHeader")) is not None, (
+                f"table {i} header does not repeat on a page break"
+            )
+
+    def test_no_row_may_split_across_a_page(self):
+        """A split row orphaned the tail of one cell from the label that says what it measures."""
+        from docx import Document
+        from docx.oxml.ns import qn
+
+        doc = Document(REPORT)
+        for i, table in enumerate(doc.tables):
+            if len(table.rows) < 2:
+                continue  # the cover callout is a one-cell layout box, not a data table
+            for j, row in enumerate(table.rows):
+                properties = row._tr.find(qn("w:trPr"))
+                assert properties is not None and properties.find(qn("w:cantSplit")) is not None, (
+                    f"table {i} row {j} may split across a page"
+                )
+
+    def test_the_architecture_arrows_are_shapes_not_glyphs(self):
+        """The arrow rendered as a dot: the glyph is missing from the substituted font."""
+        from pptx import Presentation
+        from pptx.enum.shapes import MSO_SHAPE
+
+        slide = Presentation(DECK).slides[3]
+        arrows = [s for s in slide.shapes if _auto_shape(s) == MSO_SHAPE.RIGHT_ARROW]
+        assert len(arrows) == 4, "expected an arrow between each of the five stages"
+        assert not any("→" in s.text_frame.text for s in slide.shapes if s.has_text_frame), (
+            "an arrow glyph is back in the text"
+        )
+
+    def test_the_arrows_fit_the_gap_they_are_drawn_into(self):
+        """They were wider than the gap, so each card overdrew the arrow before it."""
+        from pptx import Presentation
+        from pptx.enum.shapes import MSO_SHAPE
+
+        slide = Presentation(DECK).slides[3]
+        cards, arrows = [], []
+        for shape in slide.shapes:
+            kind = _auto_shape(shape)
+            if kind == MSO_SHAPE.ROUNDED_RECTANGLE:
+                cards.append(shape)
+            elif kind == MSO_SHAPE.RIGHT_ARROW:
+                arrows.append(shape)
+        row = sorted([c for c in cards if c.top < 914400 * 3], key=lambda c: c.left)
+        gap = row[1].left - (row[0].left + row[0].width)
+        assert gap > 0, "the cards touch, so there is nowhere for an arrow"
+        for arrow in arrows:
+            assert arrow.width <= gap, "the arrow is wider than the gap between cards"
 
 
 class TestTheDocumentsFitTheirPages:
