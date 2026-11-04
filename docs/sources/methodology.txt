@@ -28,7 +28,7 @@ Integrations
 
 Explore Trending repos
 GitHub Sponsors
-Events
+Developer articles
 
 Changelog Changelog Your source for the latest features, improvements, and fixes across GitHub products, all in one place.
 
@@ -134,8 +134,8 @@ Code Open more actions menu
 Latest commit
 
 History
-149 Commits
-149 Commits
+150 Commits
+150 Commits
 
 Folders and files
 Name Name Last commit message
