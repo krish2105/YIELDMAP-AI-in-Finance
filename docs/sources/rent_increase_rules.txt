@@ -109,53 +109,291 @@ Rental Index
 
 Rental Index
 
-Description
+Residential
 
-This service allows a customer to calculate the rental increase and the average rental in the real estate market by entering data for the required area.
+Commercial
 
-Read More
+Industrial
 
-Access this Service
+Industrial Lands
 
-Expand All
+Staff Accomodation
 
-Service Procedures
+Location Map
 
-Service Time
+Note: All fields marked with asterisk (*) are mandatory
 
-Service Channels
+Contract End Date *
 
-Residency Status
+Please enter the valid contract end date (e.g. 01-01-2024)
 
-Need help?
+Property Type *
+Property Type
 
-Chat with Malik
+Select
 
-Chat on Whatsapp
+Please Select
 
-Call Support: &#x2B;971 - 8004488
+Please select the property type (e.g: villa)
 
-Service Procedures
+Search Index by *
 
-Via the website or App
-Step I: Log in to the App and select the service
-Step II: A customer enters the expiry date of the tenancy contract, specifies the type of property, the region, the number of rooms, and enters the current annual value of the rental
-Step III: A customer will view the required information that appears before it
+DEWA (Premise No.)
+Ejari Contract Number
+Area
 
-Service Time
+DEWA (Premise No.) *
 
-Immediate
+Please enter a valid 9 digit dewa number
 
-Service Channels
+Ejari Contract Number *
 
-1)Land Department website (Ejari system)
-2)Dubai REST App
-3)The Land Department website
-4)DubaiNow App
+Please enter a valid contract number
 
-Residency Status
+Area *
 
-All
+Select
+
+Please select an area (e.g: Abu Hail)
+
+Area *
+
+Select
+
+Please select an area (e.g: Abu Hail)
+
+Building Name *
+
+Select
+
+Community Name *
+
+Select
+
+Search Complex By *
+
+Land Number
+Municipality Number
+
+Land Number *
+
+Please enter a valid land number
+
+Land Sub Number *
+
+Please enter a valid sub land number
+
+Municipality Number *
+
+Please enter a valid municipality number
+
+Sub Number *
+
+Please enter a valid municipality sub number
+
+Bedrooms *
+
+Please select the bedrooms (e.g: 2 bed)
+
+Bedrooms *
+
+Please select the bedrooms (e.g: 2 bed)
+
+Current Annual Rent (AED)
+
+Please enter the current annual rent (e.g. 50,000)
+
+Invalid captcha
+
+Calculate
+Reset
+
+Note: All fields marked with asterisk (*) are mandatory
+
+Contract End Date *
+
+Please enter the valid contract end date (e.g. 01-01-2024)
+
+Property Type *
+
+Select
+
+Please select the property type (e.g: villa)
+
+Area (Sq.Ft)
+Area (Sq.Mt)
+
+Sq.Ft
+Sq.Mt
+
+Please select an area (e.g: 200 Sq.Ft)
+
+Current Annual Rent (AED)
+
+Please enter the current annual rent (e.g. 50,000)
+
+Area *
+
+Select
+
+Please select an area (e.g: Abu Hail)
+
+Shopping Mall *
+
+Select
+
+You cannot leave this field blank
+
+Retail Sub Type *
+
+Select
+
+You cannot leave this field blank
+
+Shopping Mall Unit Type *
+
+Select
+
+You cannot leave this field blank
+
+Building Name *
+
+Select
+
+Invalid captcha
+
+Calculate
+Reset
+
+Note: All fields marked with asterisk (*) are mandatory
+
+Contract End Date *
+
+You cannot leave this field blank
+
+Property Type *
+
+Select
+
+Please select the property type (e.g: villa)
+
+Area (Sq.Ft)
+Area (Sq.Mt)
+
+Sq.Ft
+Sq.Mt
+
+You cannot leave this field blank
+
+Area *
+
+Select
+
+You cannot leave this field blank
+
+Current Annual Rent (AED)
+
+You cannot leave this field blank
+
+Invalid captcha
+
+Calculate
+Reset
+
+Dubai Real Estate Corporation (DREC)
+
+Note: All fields marked with asterisk (*) are mandatory
+
+Municipality Number *
+
+Please enter a valid municipality number
+
+Sub Number *
+
+Please enter a valid municipality sub number
+
+Invalid captcha
+
+Calculate
+Reset
+
+Note: All fields marked with asterisk (*) are mandatory
+
+Contract End Date *
+
+You cannot leave this field blank
+
+Area *
+
+Select
+
+You cannot leave this field blank
+
+Number of Rooms
+
+You cannot leave this field blank
+
+Current Annual Rent (AED)
+
+You cannot leave this field blank
+
+Invalid captcha
+
+Calculate
+Reset
+
+Please select an area on the map to view details
+
+Note: All fields marked with asterisk (*) are mandatory
+
+Contract End Date *
+
+You cannot leave this field blank
+
+Rental Index Type *
+
+Select
+
+Property Type *
+
+Select
+
+Area *
+
+Select
+
+Bedrooms *
+
+Select
+
+Retail Sub Type *
+
+Select
+
+Shopping Mall Unit Type *
+
+Select
+
+Invalid captcha
+
+Close
+
+Display Result
+
+How does
+Rental Calculator
+work?
+
+Where can I find Ejari Contract Number?
+
+Understand your Certificate
+
+Rental Calculator
+
+Rental<br/> Index
+
+Calculate again
+Close
 
 Call Support: +971 - 8004488
 
@@ -184,7 +422,7 @@ Site was last updated on
 
 Copyright © 2024 Dubai Land Department - All Right Reserved
 
-Services
+Explore
 
 Payment
 Support
