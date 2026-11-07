@@ -25,17 +25,17 @@ Dubai Land Department
 
 About Dubai Land Department
 
-Customer Happiness Charter
-
 Organization Chart
 
 Regional & International Relations
 
-Strategic Map
-
 Dubai Land Department Annual Report 2024
 
 Cyber Security Awareness
+
+Customer Happiness Charter
+
+Strategic Plan 2025 - 2027
 
 Management&#x2019;s Message
 
@@ -44,6 +44,8 @@ Partnership
 Policies
 
 Rules & Regulations
+
+Accessibility
 
 Services
 
@@ -71,9 +73,7 @@ Real Estate Data
 
 News & Media
 
-User Guide
-
-Downloads
+Download Documents
 
 Support
 
@@ -101,19 +101,9 @@ View All Notifications
 
 Accessibility
 
-Voice Navigation
+Services
 
-Heading
-
-Facebook
-
-Linkedin
-
-Instagram
-
-Twitter
-
-Email
+Call Support: +971 - 8004488
 
 About Us
 
@@ -136,13 +126,11 @@ Service Name Updates
 This site is best viewed on latest versions of Chrome / Firefox / Edge - Resolution 1920x1080
 
 Site was last updated on
-03 September 2026 - 10:09 AM
+03 November 2026 - 14:11 PM
 
 Copyright © 2024 Dubai Land Department - All Right Reserved
 
-Happiness Meter
-
-Services
+Explore
 
 Payment
 Support
@@ -163,30 +151,14 @@ Follow Us on Social Media
 
 Close
 
-Facebook
-
-Linkedin
-
-Instagram
-
-Twitter
-
-Email
-
-Malik
-
-Close
-
 Malik - DLD&#x27;s Virtual Assistant
 Powered by OpenAI
 
-Talk to Malik
-
 Chat with Malik
 
-Noqodi Customer Support
+Talk to Malik
 
-Close
+Noqodi Customer Support
 
 For payment-related issues, please reach us via phone or through our support form
 
@@ -197,5 +169,3 @@ Submit
 Support Request
 
 For general enquiries, send us an email : [email&#160;protected]
-
-Close

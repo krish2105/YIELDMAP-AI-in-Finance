@@ -112,6 +112,20 @@ def _bullets(slide, x, y, w, h, items, *, size=15, colour=INK, gap=10):
     return box
 
 
+def _band(slide, height, *, fill=ACCENT):
+    """A full-bleed header block.
+
+    Square-cornered on purpose: a rounded rectangle flush with the slide edge leaves white
+    notches where the corner radius cuts in, which is visible on a projector.
+    """
+    shape = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0), Inches(0), WIDE_W, height)
+    shape.fill.solid()
+    shape.fill.fore_color.rgb = fill
+    shape.line.fill.background()
+    shape.shadow.inherit = False
+    return shape
+
+
 def _card(slide, x, y, w, h, *, fill=ACCENT_SOFT):
     shape = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, x, y, w, h)
     shape.fill.solid()
@@ -196,7 +210,7 @@ def _notes(slide, text: str) -> None:
 
 def slide_01_title(prs, b: Bundle, draft: bool) -> None:
     s = _blank(prs)
-    _card(s, Inches(0), Inches(0), WIDE_W, Inches(4.5), fill=ACCENT)
+    _band(s, Inches(4.5))
     _text(
         s,
         MARGIN,
@@ -411,15 +425,19 @@ def slide_04_architecture(prs, b: Bundle, draft: bool) -> None:
         ("API", "FastAPI on Render\ntyped KPI objects"),
         ("Interface", "Next.js on Vercel\n20 routes, 3 languages"),
     ]
-    width = Inches(2.28)
+    # 2.14 not 2.28: at the old width the gap between cards was 0.14in and the arrow drawn into
+    # it was 0.34in wide, so each card overdrew the arrow before it and all that survived was a
+    # square. The cards are narrower now, and the arrows are drawn after all of them.
+    width = Inches(2.14)
+    step = Inches(2.42)
     for i, (head, body) in enumerate(stages):
-        x = MARGIN + i * Inches(2.42)
+        x = MARGIN + i * step
         _card(s, x, Inches(2.5), width, Inches(1.7))
         _text(
             s,
-            x + Inches(0.16),
+            x + Inches(0.14),
             Inches(2.68),
-            width - Inches(0.32),
+            width - Inches(0.28),
             Inches(0.4),
             head,
             size=15,
@@ -430,27 +448,30 @@ def slide_04_architecture(prs, b: Bundle, draft: bool) -> None:
         )
         _text(
             s,
-            x + Inches(0.16),
+            x + Inches(0.14),
             Inches(3.13),
-            width - Inches(0.32),
+            width - Inches(0.28),
             Inches(0.95),
             body.replace("\n", " · "),
             size=10.5,
             colour=MUTED,
             align=PP_ALIGN.CENTER,
         )
-        if i < len(stages) - 1:
-            _text(
-                s,
-                x + width,
-                Inches(3.02),
-                Inches(0.42),
-                Inches(0.4),
-                "→",
-                size=19,
-                colour=ACCENT,
-                align=PP_ALIGN.CENTER,
-            )
+
+    gap = step - width
+    for i in range(len(stages) - 1):
+        arrow = s.shapes.add_shape(
+            MSO_SHAPE.RIGHT_ARROW,
+            MARGIN + i * step + width + (gap - Inches(0.22)) / 2,
+            Inches(3.26),
+            Inches(0.22),
+            Inches(0.16),
+        )
+        arrow.fill.solid()
+        arrow.fill.fore_color.rgb = ACCENT
+        arrow.line.fill.background()
+        arrow.shadow.inherit = False
+
     _card(s, MARGIN, Inches(4.55), WIDE_W - 2 * MARGIN, Inches(1.55), fill=ACCENT_SOFT)
     _text(
         s,
@@ -803,11 +824,11 @@ def slide_10_business(prs, b: Bundle, draft: bool) -> None:
     _card(s, MARGIN, Inches(2.35), Inches(3.4), Inches(2.1), fill=ACCENT_SOFT)
     _stat(
         s,
-        MARGIN,
+        MARGIN + Inches(0.2),
         Inches(2.6),
-        Inches(3.4),
+        Inches(3.0),
         "$0.00",
-        "per month · verified against published rates",
+        "per month · against published rates",
         value_size=44,
     )
     if u:
@@ -944,7 +965,7 @@ def slide_11_limitations(prs, b: Bundle, draft: bool) -> None:
 
 def slide_12_next(prs, b: Bundle, draft: bool) -> None:
     s = _blank(prs)
-    _card(s, Inches(0), Inches(0), WIDE_W, Inches(3.15), fill=ACCENT)
+    _band(s, Inches(3.15))
     _text(
         s,
         MARGIN,
