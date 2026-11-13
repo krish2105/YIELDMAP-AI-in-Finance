@@ -9,10 +9,6 @@ Skip to main content
 ●
 ●
 
-We would like to inform you that from 1st August 2021, we have changed our technical support email from [email&#160;protected] to [email&#160;protected] . Kindly ensure to use the new email.
-
-Close
-
 Toggle navigation
 
 Main Menu
@@ -50,6 +46,8 @@ Accessibility
 Services
 
 Information
+
+All
 
 Owner
 
@@ -104,6 +102,8 @@ Accessibility
 Rental Index
 
 Home
+
+Rental Index
 
 Rental Index
 
@@ -418,7 +418,7 @@ Service Name Updates
 This site is best viewed on latest versions of Chrome / Firefox / Edge - Resolution 1920x1080
 
 Site was last updated on
-03 November 2026 - 14:11 PM
+10 November 2026 - 13:11 PM
 
 Copyright © 2024 Dubai Land Department - All Right Reserved
 

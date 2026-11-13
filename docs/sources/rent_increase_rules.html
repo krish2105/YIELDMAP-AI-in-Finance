@@ -67,9 +67,9 @@
     <link rel="preload" as="style" onload="this.rel='stylesheet';this.removeAttribute('as')" href="/scripts/plugins/highcharts/highcharts.css" />
         <link rel="preload" as="style" onload="this.rel='stylesheet';this.removeAttribute('as')" href="/css/animate.css" />
         <link rel="preload" as="style" onload="this.rel='stylesheet';this.removeAttribute('as')" href="/css/owl.carousel.min.css" />
-        <link rel="preload" as="style" onload="this.rel='stylesheet';this.removeAttribute('as')" href="/css/main.css?v=202611031415480000" />
-        <link rel="preload" as="style" onload="this.rel='stylesheet';this.removeAttribute('as')" href="/css/main_nav.css?v=202611031415480000" />
-        <link rel="preload" as="style" onload="this.rel='stylesheet';this.removeAttribute('as')" href="/css/responsive.css?v=202611031415480000" />
+        <link rel="preload" as="style" onload="this.rel='stylesheet';this.removeAttribute('as')" href="/css/main.css?v=202611031040060000" />
+        <link rel="preload" as="style" onload="this.rel='stylesheet';this.removeAttribute('as')" href="/css/main_nav.css?v=202611031040060000" />
+        <link rel="preload" as="style" onload="this.rel='stylesheet';this.removeAttribute('as')" href="/css/responsive.css?v=202611031040060000" />
 
     <link rel="preload" as="style" onload="this.rel='stylesheet';this.removeAttribute('as')" href="/scripts/UI/plugins/fontawesome-free-5.11.2-web/css/all.css" />
     <link rel="preload" as="style" onload="this.rel='stylesheet';this.removeAttribute('as')" href="/css/icomoon/icomoon.css" />
@@ -460,64 +460,6 @@
     </div>
 
     
-    <div id="annuncementDiv" style="display:none;">
-        <div class="home-feature-announcement alert-orange alert-icon-orange alert-dismissible">
-<div class="container">
-<p>We would like to inform you that from 1st August 2021, we have changed our technical support email from <strong style="text-decoration: line-through;"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7a13141c153a1f081f09541b1f">[email&#160;protected]</a></strong> to <span><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="046d6a626b44607166656d68656a602a636b722a6561">[email&#160;protected]</a></span>. Kindly ensure to use the new email.</p>
-<button class="close annuncementDivClose" data-bs-dismiss="alert" aria-label="Close"> <span class="sr-only">Close</span> </button></div>
-</div>
-
-    </div>
-    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-    var storageKey = "alert-settings";
-    $(document).ready(function () {
-
-
-        if (false) {
-            var settings = getAlertSettings();
-            if (settings) {
-                if (Date.parse(settings.nextAlertDate) < new Date() || Date.parse(settings.lastPublishDate) < new Date('10/28/2025 12:41:33 PM')) {
-                    showAlertPerDay();
-                }
-            }
-            else {
-                showAlertPerDay();
-                $("html, body").animate({ scrollTop: 0 }, "slow");
-            }
-        }
-
-        $(".annuncementDivClose").click('click', function () {
-            $('#annuncementDiv').fadeOut();
-        });
-
-
-    });
-
-    function showAlertPerDay() {
-        var tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        setAlertSettings(tomorrow, new Date('10/28/2025 12:41:33 PM'));
-        $('#annuncementDiv').show();
-        //setTimeout(function () {
-
-        //}, 3000);
-    }
-
-    function getAlertSettings() {
-        var str = localStorage.getItem(storageKey);
-
-        if (str) {
-            return JSON.parse(str);
-        }
-
-        return null;
-    }
-
-    function setAlertSettings(nextAlertDate, lastPublishDate) {
-        var settings = { "nextAlertDate": nextAlertDate, "lastPublishDate": lastPublishDate };
-        localStorage.setItem(storageKey, JSON.stringify(settings));
-    }
-    </script>
 
     
 
@@ -631,6 +573,9 @@
                                 <a href="#" class="nav-link" data-bs-toggle="dropdown">Information <b class="caret"></b></a>
                                 <ul class="dropdown-menu animated fadeIn">
                                                 <li>
+                                                    <a href="/en/eservices/stakeholders?id=28569">All</a>
+                                                </li>
+                                                <li>
                                                     <a href="/en/eservices/stakeholders?id=17760">Owner</a>
                                                 </li>
                                                 <li>
@@ -690,7 +635,7 @@
                             </button>
                         </li>
                         <li class="nav-item">
-                                <a href="/ar/eservices/rental-index/" class="dld-sub-header__btn dld-sub-header__locale d-flex align-items-center justify-content-center bg">
+                                <a href="/ar/eservices/rental-index-overview/rental-index/" class="dld-sub-header__btn dld-sub-header__locale d-flex align-items-center justify-content-center bg">
                                     العربية
                                 </a>
                         </li>
@@ -742,7 +687,7 @@
 						</div>
 					</li>
 					<li class="nav-item d-none d-md-flex">
-							<a href="/ar/eservices/rental-index/" class="dld-sub-header__btn dld-sub-header__locale d-flex align-items-center justify-content-center bg">
+							<a href="/ar/eservices/rental-index-overview/rental-index/" class="dld-sub-header__btn dld-sub-header__locale d-flex align-items-center justify-content-center bg">
 								العربية
 							</a>
 					</li>
@@ -943,6 +888,7 @@
     <div class="container">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/en/">Home</a></li>
+                <li class="breadcrumb-item"><a href="/en/eservices/rental-index-overview/">Rental Index</a></li>
             <li class="breadcrumb-item active" aria-current="page">Rental Index</li>
         </ol>
     </div>
@@ -1174,7 +1120,7 @@
                             </div>
                             <div class="form-group">
                                 <button class="btn btn_1 btn_style1" type="submit" id="resdential-submit">Calculate </button>
-                                <a href="/en/eservices/rental-index/#Residential" class="btn btn-grey btn_style1 ms-2 me-2 js-rental-reset">Reset</a>
+                                <a href="/en/eservices/rental-index-overview/rental-index/#Residential" class="btn btn-grey btn_style1 ms-2 me-2 js-rental-reset">Reset</a>
                             </div>
 
                             <div class="row">
@@ -1304,7 +1250,7 @@
                             </div>
                             <div class="form-group">
                                 <button class="btn btn_1 btn_style1" type="submit" id="com-resdential-submit">Calculate</button>
-                                <a href="/en/eservices/rental-index/#Commercial" class="btn btn-grey btn_style1 ms-2 me-2 js-rental-reset">Reset</a>
+                                <a href="/en/eservices/rental-index-overview/rental-index/#Commercial" class="btn btn-grey btn_style1 ms-2 me-2 js-rental-reset">Reset</a>
                             </div>
                             <div class="row">
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mb-12">
@@ -1387,7 +1333,7 @@
                             </div>
                             <div class="form-group">
                                 <button class="btn btn_1 btn_style1" type="submit" id="ind-submit"> Calculate</button>
-                                <a href="/en/eservices/rental-index/#Industrial" class="btn btn-grey btn_style1 ms-2 me-2 js-rental-reset">Reset</a>
+                                <a href="/en/eservices/rental-index-overview/rental-index/#Industrial" class="btn btn-grey btn_style1 ms-2 me-2 js-rental-reset">Reset</a>
                             </div>
                             <div class="row">
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mb-12">
@@ -1433,7 +1379,7 @@
                             </div>
                             <div class="form-group">
                                 <button class="btn btn_1 btn_style1" type="submit" id="indLand-submit"> Calculate</button>
-                                <a href="/en/eservices/rental-index/#IndustrialLand" class="btn btn-grey btn_style1 ms-2 me-2 js-rental-reset">Reset</a>
+                                <a href="/en/eservices/rental-index-overview/rental-index/#IndustrialLand" class="btn btn-grey btn_style1 ms-2 me-2 js-rental-reset">Reset</a>
                             </div>
                         </form>
                     </div>
@@ -1488,7 +1434,7 @@
                             </div>
                             <div class="form-group">
                                 <button class="btn btn_1 btn_style1" type="submit" id="staff-submit"> Calculate</button>
-                                <a href="/en/eservices/rental-index/#StuffAcc" class="btn btn-grey btn_style1 ms-2 me-2 js-rental-reset">Reset</a>
+                                <a href="/en/eservices/rental-index-overview/rental-index/#StuffAcc" class="btn btn-grey btn_style1 ms-2 me-2 js-rental-reset">Reset</a>
                             </div>
                             <div class="row">
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mb-12">
@@ -2312,7 +2258,7 @@
         <i class="icon-twitter" aria-hidden="true"></i>
     </a>
 
-    <a href="/cdn-cgi/l/email-protection#553c3b333a15312037343c39343b317b323a237b3430" class="link-mailto" aria-label="Email: info@dubailand.gov.ae">
+    <a href="/cdn-cgi/l/email-protection#20494e464f6044554241494c414e440e474f560e4145" class="link-mailto" aria-label="Email: info@dubailand.gov.ae">
         <i class="icon-gmail" aria-hidden="true"></i>
     </a>
 </div>
@@ -2358,7 +2304,7 @@
                     <div>
                         <span class="txt-best-view">This site is best viewed on latest versions of  Chrome / Firefox / Edge - Resolution 1920x1080<br />
 Site was last updated on</span>
-                        <span class="txt-last-modify">03 November 2026 - 14:11 PM</span>
+                        <span class="txt-last-modify">10 November 2026 - 13:11 PM</span>
                     </div>
                     <div class="txt-copyright">
                         Copyright © 2024 Dubai Land Department - All Right Reserved
@@ -2476,7 +2422,7 @@ Site was last updated on</span>
         <i class="icon-twitter" aria-hidden="true"></i>
     </a>
 
-    <a href="/cdn-cgi/l/email-protection#31585f575e7155445350585d505f551f565e471f5054" class="link-mailto" aria-label="Email: info@dubailand.gov.ae">
+    <a href="/cdn-cgi/l/email-protection#9af3f4fcf5dafeeff8fbf3f6fbf4feb4fdf5ecb4fbff" class="link-mailto" aria-label="Email: info@dubailand.gov.ae">
         <i class="icon-gmail" aria-hidden="true"></i>
     </a>
 </div>
@@ -2539,7 +2485,7 @@ Site was last updated on</span>
                         <div class="card call-noqodi-sprt">
                             <div>
                                 <span class="noqodi-call"></span>
-                                <span class="noqodi-call-title"><span class="noqodi-call-title-sub">Call Us</span><br /><span class="ff-bold">600 503 036</span></span>
+                                <span class="noqodi-call-title"><span class="noqodi-call-title-sub">Call Us</span><br /><span class="ff-bold"><bdi>600 503 036</bdi></span></span>
                             </div>
                         </div>
                     </div>
@@ -2554,7 +2500,7 @@ Site was last updated on</span>
                     </div>
                 </div>
 
-                <p class="text-center mb-0">For general enquiries, send us an email : <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8ffcfaffffe0fdfbcfe1e0fee0ebe6a1ece0e2">[email&#160;protected]</a></p>
+                <p class="text-center mb-0">For general enquiries, send us an email : <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5d2e282d2d322f291d33322c323934733e3230">[email&#160;protected]</a></p>
             </div>
         </div>
     </div>
@@ -2659,7 +2605,7 @@ Site was last updated on</span>
     <script src="/scripts/UI/plugins/owl.carousel.min.js"></script>
     <script src="/scripts/UI/plugins/jquery.autocomplete.min.js"></script>
 
-    <script src="/scripts/UI/js/main.js?v=202611022223100000"></script>
+    <script src="/scripts/UI/js/main.js?v=202610281447480000"></script>
     <script src="/scripts/happiness-meter-1.0.1.js"></script>
     <script src="/scripts/UI/plugins/chosen/chosen.jquery.min.js"></script>
 
@@ -2876,7 +2822,7 @@ Site was last updated on</span>
         // letting the browser follow the href as-is.
         $(document).on('click', '.js-rental-reset', function (e) {
             e.preventDefault();
-            window.location.href = '/en/eservices/rental-index/';
+            window.location.href = '/en/eservices/rental-index-overview/rental-index/';
         });
 
         // var widget1, widget2, widget3, widget4, widget5, widget6, widget7;
@@ -3078,9 +3024,9 @@ Site was last updated on</span>
 
 
 
-    <script src="/static/bundle.js?v=202610291133160000"></script>
-<script src="/static/js/5.4d949f30.chunk.js"></script>
-<script src="/static/js/main.631fc991.chunk.js"></script>
+    <script src="/static/bundle.js?v=202611121045160000"></script>
+<script src="/static/js/5.0e6f08c0.chunk.js"></script>
+<script src="/static/js/main.338ab7df.chunk.js"></script>
 
 
 
