@@ -1,11 +1,11 @@
 {
   "provenance": "REAL",
   "note": "Each page the corpus cites, fetched once and stored with a SHA-256 so a citation points at a fixed thing rather than at a URL that can change. A changed hash later is information, not a fault: it says the rule may have moved and the figures derived from it want re-checking.",
-  "generated_at": "2026-09-08T07:19:20+00:00",
+  "generated_at": "2026-11-14T09:05:01+00:00",
   "attempted": 5,
   "archived": 4,
-  "corroborated": 0,
-  "archived_without_corroboration": 4,
+  "corroborated": 1,
+  "archived_without_corroboration": 3,
   "corpus_documents_stamped": [
     "dld_fees.md",
     "ejari.md",
@@ -18,11 +18,11 @@
       "url": "https://dubailand.gov.ae/en/services/",
       "ok": true,
       "status": 200,
-      "sha256": "8f91fce1163505a1a8413388821eeca7e164e7a6b4c62e40b8a16ffd7a3396d8",
-      "bytes": 97218,
+      "sha256": "b31c98df782a9d5c822caa841414ecb7b3a4398df8beb54096d0b16c501dd095",
+      "bytes": 95030,
       "content_type": "text/html; charset=utf-8",
-      "retrieved_at": "2026-09-08T07:19:18+00:00",
-      "text_chars": 2083,
+      "retrieved_at": "2026-11-14T09:04:57+00:00",
+      "text_chars": 1786,
       "redacted": 1,
       "corroborated": false,
       "missing_terms": [
@@ -41,11 +41,11 @@
       "url": "https://dubailand.gov.ae/en/eservices/",
       "ok": true,
       "status": 200,
-      "sha256": "03d80eefa1f462aab4155094c8b255476a75f93815211b626a9306059a342cf6",
-      "bytes": 97232,
+      "sha256": "fc138b21388462eeeaf56a348fd9b366049130723bf28380daa862c2a3d09269",
+      "bytes": 95048,
       "content_type": "text/html; charset=utf-8",
-      "retrieved_at": "2026-09-08T07:19:18+00:00",
-      "text_chars": 2087,
+      "retrieved_at": "2026-11-14T09:04:57+00:00",
+      "text_chars": 1794,
       "redacted": 1,
       "corroborated": false,
       "missing_terms": [
@@ -64,32 +64,28 @@
       "url": "https://github.com/krish2105/YIELDMAP-AI-in-Finance",
       "ok": true,
       "status": 200,
-      "sha256": "bb814befbb7ceddacfb8143388ea16e2b424548da64e7b1852db8e94f4e9098a",
-      "bytes": 352645,
+      "sha256": "08a0338cf6e4d89ac2f4efb681575dbff2d52ba6ffd19fd3e2794c3473c9c7d0",
+      "bytes": 312353,
       "content_type": "text/html; charset=utf-8",
-      "retrieved_at": "2026-09-08T07:19:19+00:00",
-      "text_chars": 11876,
+      "retrieved_at": "2026-11-14T09:04:58+00:00",
+      "text_chars": 12433,
       "redacted": 0,
-      "corroborated": false,
-      "missing_terms": [
-        "provenance"
-      ],
+      "corroborated": true,
+      "missing_terms": [],
       "error": null,
-      "notes": [
-        "the page was archived but does not contain the terms this citation rests on \u2014 it is client-rendered, so a fetch returns the navigation and none of the substance"
-      ]
+      "notes": []
     },
     {
       "key": "rent_increase_rules",
       "url": "https://dubailand.gov.ae/en/eservices/rental-index/",
       "ok": true,
       "status": 200,
-      "sha256": "a73584d34b442e9073b08bba9950d28aa16b9820bdd2082caafe1fc0acb79ffd",
-      "bytes": 133516,
+      "sha256": "6435bd875b13d5033f08afe781d8f86a5f9933d8e4ca0dc1d9c5477e9683ce12",
+      "bytes": 238852,
       "content_type": "text/html; charset=utf-8",
-      "retrieved_at": "2026-09-08T07:19:20+00:00",
-      "text_chars": 2927,
-      "redacted": 2,
+      "retrieved_at": "2026-11-14T09:05:00+00:00",
+      "text_chars": 5193,
+      "redacted": 4,
       "corroborated": false,
       "missing_terms": [
         "rent increase",
@@ -97,7 +93,7 @@
       ],
       "error": null,
       "notes": [
-        "2 credential-shaped string(s) redacted from the stored copy; the sha256 is of the bytes as served",
+        "4 credential-shaped string(s) redacted from the stored copy; the sha256 is of the bytes as served",
         "the page was archived but does not contain the terms this citation rests on \u2014 it is client-rendered, so a fetch returns the navigation and none of the substance"
       ]
     },
